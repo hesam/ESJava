@@ -1,0 +1,22 @@
+package polyglot.ext.esj.ast;
+
+import polyglot.ast.*;
+import polyglot.types.Context;
+import polyglot.ext.esj.types.ESJTypeSystem;
+
+import java.util.*;
+
+import polyglot.ext.jl5.ast.JL5MethodDecl;
+
+/** a method decl w/ a body of a quantify expr... will be desugared to a foreach stmt. **/
+public interface ESJPredMethodDecl extends JL5MethodDecl {
+
+    public String id();	  
+    public boolean quantKind();
+    public String quantVar();
+    public List quantVarD();
+    public Expr quantListExpr();
+    public Expr quantClauseExpr();
+    
+
+}

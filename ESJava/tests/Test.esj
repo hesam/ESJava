@@ -1,0 +1,29 @@
+import java.util.ArrayList;
+
+class Test {
+    
+    protected ArrayList<Integer> nums;
+
+    public ArrayList<Integer> nums() {
+	return nums;
+    }
+
+    predicate public boolean isFoo() {
+	some w : nums() | w < 0 &&
+	nums.size() > 1
+    }
+
+    public void fallback() {
+	System.out.println("fallback initiated...");
+    }
+
+    ensured public void m1() ensures isFoo() {
+	nums.add(0);
+    }
+
+    public static void main(String[] args) {
+	Test t1 = new Test();
+	t1.m1();
+    }
+
+}

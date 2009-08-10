@@ -1,0 +1,119 @@
+The ESJ Compiler
+============
+
+This software distribution contains an extension to Polyglot compiler
+framework (http://www.cs.cornell.edu/Projects/polyglot) that adds
+support for the ESJ extension to Java.  Information about the ESJ
+language is available here:
+
+http://www.cs.ucla.edu/~hesam
+
+The ESJ compiler extends an existing extension to the Polyglot
+compiler, which adds support for Java 1.5 language features.  A
+jarfile of that extension is included in this distribution; that
+project is maintained here:
+
+http://www.cs.ucla.edu/~milanst/projects/polyglot5/
+
+
+This software is released under the GNU Lesser General Public Licence,
+the full text of which can be found in the file LICENCE.LGPL in this
+directory.
+
+
+Requirements
+-----------
+
+* The compiler is written in Java, so to run (and build) it you need
+  to have a virtual machine (and compiler) for Java 5 or greater
+  installed.  Make sure that the java and javac commands are available
+  in your PATH.
+
+* If you are running Windows, you should use cygwin to build the ESJ
+  compiler and the auxiliary tools it requires:
+
+  http://www.cygwin.com
+
+* If you want to build the compiler, you will need Apache Ant, which
+  can be found here:
+
+  http://ant.apache.org
+
+  Make sure that the ant command is available in your PATH.
+
+* Finally, the compiler relies on several Java libraries, including
+  the Polyglot compiler, the extension to Polyglot for Java 1.5, the
+  JFlex scanner generator, and the CUP parser generator.  Jar files
+  for these libraries are included as part of this distribution, in
+  the lib directory.
+
+
+Running the compiler via the command line
+----------------------------------
+
+You can create an executable script to run the compiler by invoking:
+
+$ ant bin
+
+This will create the script jlc in the bin directory.  Make sure to
+add the bin directory to your PATH.
+
+You can now invoke the compiler on a file File.esj as follows:
+
+$ jlc -assert -ext esj File.esj 
+
+If the file typechecks, the compiler will create a file File.java
+containing the translation of the ESJ code to Java.  It will then
+use the javac compiler to compile File.java to bytecode.  (This last
+step can be omitted with the -c flag.)
+
+To see command line options, just type jlc.
+
+If you don't want to use the script, you can run the compiler directly
+by adding the libraries esj.jar, jl5.jar, polyglot.jar,
+java_cup.jar, and JFlex.jar from the lib directory to your CLASSPATH
+and then invoking the following command:
+
+$ java polyglot.main.Main -a -ext esj File.esj
+
+There are a lot of test files in the tests directory.  For each .esj,
+there is a corresponding .esj-expected file, which contains the
+expected error messages output by the compiler, as well as a
+.java-expected file, which contains the expected Java code output by
+the compiler as a .java file.
+
+
+Running the compiler via Eclipse
+--------------------------
+
+Undergraduates in a software engineering course at UCLA made an
+Eclipse plugin for ESJ, which invokes the ESJ compiler from within
+Eclipse and reports error messages back to the Eclipse console.  It
+also supports some helpful features including syntax highlighting and
+support for viewing a graph that represents the overriding partial
+order among a group of related predicate methods.  The plugin can be
+found here:
+
+http://sourceforge.net/projects/eclipse-plug130
+
+  
+Building
+-------
+
+In the top-level directory of the compiler, invoke ant:
+
+$ ant
+
+This will compile the compiler, placing the resulting .class files in
+the classes directory, and it will also create the jar file esj.jar
+in the lib directory.
+
+
+Credits and Acknowledgments
+---------------------------
+
+This code is heavily based on JPred compiler by Todd Millstein: 
+http://www.cs.ucla.edu/~todd/research/jpred.html
+
+language and compiler.  Questions, bug reports, patches, ideas,
+etc. are all welcome and should be sent to Hesam at hesam@cs.ucla.edu.

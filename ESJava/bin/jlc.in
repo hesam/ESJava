@@ -1,0 +1,34 @@
+while true; do
+    case "$1" in
+        "") break;;
+	-ea) ea="-ea"; shift;;
+        -v) verbose="1"; shift;;
+        -classpath) shift; extra_cp=$1; shift;;
+        -profile) profile="-Xrunhprof:cpu=samples"; shift;;
+        -ext) shift; ext=$1; shift;;
+        *) args="$args '$1'"; shift;;
+    esac
+done
+
+if [ -n "$extra_cp" ]
+then
+    extra_cp="${PATH_SEP}${extra_cp}"
+fi
+
+extargs=""
+if [ -n "$ext" ]
+then
+    ext_cp="${PATH_SEP}${TOP}${FILE_SEP}lib${FILE_SEP}${ext}.jar"
+    extargs="-ext ${ext}"
+fi
+
+classpath="${PATH_SEP}${TOP}${FILE_SEP}lib${FILE_SEP}polyglot.jar${PATH_SEP}${TOP}${FILE_SEP}lib${FILE_SEP}jl5.jar${PATH_SEP}${TOP}${FILE_SEP}lib${FILE_SEP}java_cup.jar${ext_cp}${extra_cp}"
+#enable assertions by default
+command="\"$JAVA\" $profile $ea -classpath \"$classpath\" polyglot.main.Main $extargs $args"
+
+if [ -n "$verbose" ]
+then
+  echo "$command"
+fi
+
+eval "$command"
