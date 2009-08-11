@@ -1,3 +1,4 @@
+package polyglot.ext.esj.primitives;
 
 public final class ESJInteger extends Number implements Comparable<ESJInteger>
 {

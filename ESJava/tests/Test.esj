@@ -1,10 +1,11 @@
 import java.util.ArrayList;
+import polyglot.ext.esj.primitives.*;
 
 class Test {
     
-    protected ArrayList<Integer> nums;
+    protected ESJList nums;
 
-    public ArrayList<Integer> nums() {
+    public ESJList nums() {
 	return nums;
     }
 
@@ -14,10 +15,11 @@ class Test {
     }
 
     public void fallback() {
-	System.out.println("fallback initiated...");
+	System.out.println("--> fallback initiated...");
     }
 
-    ensured public void m1() ensures isFoo() {
+    ensured public void m1() 
+	ensures isFoo() {
 	nums.add(0);
     }
 

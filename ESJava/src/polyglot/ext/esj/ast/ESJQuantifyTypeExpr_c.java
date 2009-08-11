@@ -47,7 +47,7 @@ public class ESJQuantifyTypeExpr_c extends Expr_c implements ESJQuantifyTypeExpr
 	//System.out.println("ESJQuantifyTypeExpr tc...");
 	//System.out.println("ESJQuantifyTypeExpr tc done");
 	ESJQuantifyTypeExpr n = (ESJQuantifyTypeExpr) super.typeCheck(tc);
-	n = (ESJQuantifyTypeExpr)n.type(tc.typeSystem().typeForName("ESJList")); //"java.util.ArrayList")); FIXME
+	n = (ESJQuantifyTypeExpr)n.type(tc.typeSystem().typeForName("polyglot.ext.esj.primitives.ESJList")); //"java.util.ArrayList")); FIXME
 
 	return n;
     } 

@@ -223,7 +223,7 @@ quant_list_expr ::=
         primary_no_new_array:a
            {:  RESULT = a;  :}
      |  INT:a
-           {:  RESULT = parser.nf.ESJQuantifyTypeExpr(null,parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("ESJInteger")));
+           {:  RESULT = parser.nf.ESJQuantifyTypeExpr(null,parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.primitives.ESJInteger"))); 
 	   :}
      |  name:a
            {:  RESULT = parser.nf.ESJQuantifyTypeExpr(null,parser.nf.CanonicalTypeNode(null, parser.ts.typeForName(a.toString())));
