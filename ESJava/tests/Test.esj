@@ -10,10 +10,10 @@ class Test {
     }
 
     predicate public boolean isFoo() {
-	some w : nums() | w < 0 &&
-	nums.size() > 1
+	this.nums().get(0) < 0
     }
 
+    /*
     public void fallback() {
 	System.out.println("--> fallback initiated...");
     }
@@ -22,10 +22,11 @@ class Test {
 	ensures isFoo() {
 	nums.add(0);
     }
+    */
 
     public static void main(String[] args) {
 	Test t1 = new Test();
-	t1.m1();
+	//t1.m1();
     }
 
 }

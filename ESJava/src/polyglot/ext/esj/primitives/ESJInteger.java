@@ -1,5 +1,7 @@
 package polyglot.ext.esj.primitives;
 
+import polyglot.ext.esj.tologic.*;
+
 public final class ESJInteger extends Number implements Comparable<ESJInteger>
 {
   /**
@@ -11,13 +13,13 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
    * The minimum value an <code>int</code> can represent is -2147483648 (or
    * -2<sup>31</sup>).
    */
-  public static int MIN_VALUE = 0; //0x80000000;
+  public static int MIN_VALUE = 0x80000000;
 
   /**
    * The maximum value an <code>int</code> can represent is 2147483647 (or
    * 2<sup>31</sup> - 1).
    */
-  public static int MAX_VALUE = 30; //0x7fffffff;
+  public static int MAX_VALUE = 0x7fffffff;
 
   /**
    * All possible chars for representing a number as a String
@@ -713,6 +715,20 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
   public static void setBounds(int min, int max) {
       MIN_VALUE = min;
       MAX_VALUE = max;
+      for(int i=min;i<=max;i++) {
+	  int i_log = log(i);
+	  LogMap.put1(i,i_log);
+	  LogMap.put2(i_log,i);
+      }
+  }
+
+  // ESJInteger class init
+  static {
+      setBounds(0,30); // FIXME
+  }
+
+  public static int BoundsSize() {
+      return  MAX_VALUE - MIN_VALUE + 1;
   }
   
   public static ESJList range(int l, int u) {
@@ -721,6 +737,18 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
 	  res.add(new Integer(i));
       }
       return res;
+  }
+
+  public static int log(int num) {
+      return num - MIN_VALUE;
+  }
+
+  public static String atom_log(int num) {
+      return "A" + log(num);
+  }
+
+  public static LogSet zeroTo_log(int n) {
+      return new LogSet("u" + n + (MIN_VALUE == 0 ? "" : "@" +  (-1 * MIN_VALUE)));
   }
 
   public static ESJList allInstances() {
