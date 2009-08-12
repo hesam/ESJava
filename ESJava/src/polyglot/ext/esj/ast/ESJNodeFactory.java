@@ -20,7 +20,7 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					List formals, List throwTypes, Block body, 
 					List paramTypes, String quantMtdId, boolean quantKind,
 					String quantVarN, List quantVarD, Expr quantListExpr, 
-					Expr quantClauseExpr);
+					ESJQuantifyClauseExpr quantClauseExpr);
 
     ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,
@@ -33,7 +33,7 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					      List paramTypes, Expr ensuresExpr, 
 					      JL5Formal catchFormal);
 
-    ESJQuantifyExpr ESJQuantifyExpr(Position pos, boolean quantKind, String quantVar, Expr quantListExpr, Expr quantClauseExpr);
+    ESJQuantifyExpr ESJQuantifyExpr(Position pos, boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr);
 
     ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, CanonicalTypeNode theType);
 }

@@ -20,7 +20,7 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     // TODO:  Implement factory methods for new AST nodes.
     // TODO:  Override factory methods for overriden AST nodes.
     // TODO:  Override factory methods for AST nodes with new extension nodes.
-    public ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags, TypeNode returnType, String name, List formals, List throwTypes, Block body, List paramTypes, String quantMtdId, boolean quantKind, String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr) {	
+    public ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags, TypeNode returnType, String name, List formals, List throwTypes, Block body, List paramTypes, String quantMtdId, boolean quantKind, String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {	
     	return new ESJPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantMtdId, quantKind, quantVarN, quantVarD, quantListExpr, quantClauseExpr);
     }
 
@@ -38,8 +38,8 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 
     }
 
-    public ESJQuantifyExpr ESJQuantifyExpr(Position pos, boolean quantKind, String quantVar, Expr quantListExpr, Expr quantClauseExpr) {
-	return new ESJQuantifyExpr_c(pos, quantKind, quantVar, quantListExpr, quantClauseExpr);
+    public ESJQuantifyExpr ESJQuantifyExpr(Position pos, boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr) {
+	return new ESJQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
     }
 
     public ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, CanonicalTypeNode theType) {

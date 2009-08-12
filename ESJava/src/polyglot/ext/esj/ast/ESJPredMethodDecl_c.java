@@ -1,5 +1,6 @@
 package polyglot.ext.esj.ast;
 
+import polyglot.parse.VarDeclarator;
 import polyglot.ast.*;
 import polyglot.ext.jl.ast.*;
 import polyglot.util.*;
@@ -23,13 +24,13 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     protected String quantVarN;
     protected List quantVarD;
     protected Expr quantListExpr;
-    protected Expr quantClauseExpr;
+    protected ESJQuantifyClauseExpr quantClauseExpr;
 
     public ESJPredMethodDecl_c(Position pos, FlagAnnotations flags,
 			       TypeNode returnType, String name,
 			       List formals,
 			       List throwTypes, Block body, List paramTypes, String quantMtdId, boolean quantKind,
-			       String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr) {
+			       String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
 	this.quantMtdId = quantMtdId;
 	this.quantKind = quantKind;
@@ -60,55 +61,62 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	return quantListExpr;
     }
 
-    public Expr quantClauseExpr() {
+    public ESJQuantifyClauseExpr quantClauseExpr() {
 	return quantClauseExpr;
     }
 
-    /** Reconstruct the pred expr. */
+    /** Reconstruct the method. */
+    protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
+				       List throwTypes, Block body, Expr quantListExpr, 
+				       ESJQuantifyClauseExpr quantClauseExpr, List quantVarD) {
+	if (returnType != this.returnType ||
+	    ! CollectionUtil.equals(formals, this.formals) ||
+	    quantListExpr != this.quantListExpr ||
+	    quantClauseExpr != this.quantClauseExpr ||
+	    ! CollectionUtil.equals(throwTypes, this.throwTypes) ||
+	    body != this.body) {
+	    ESJPredMethodDecl_c n = (ESJPredMethodDecl_c) copy();
+	    n.formals = formals; //TypedList.copyAndCheck(throwTypes, Formal.class, true);
+	    n.throwTypes = TypedList.copyAndCheck(throwTypes, TypeNode.class, true);
+	    n.quantListExpr = quantListExpr;
+	    n.quantClauseExpr = quantClauseExpr;
+	    n.quantVarD = TypedList.copyAndCheck(quantVarD, LocalDecl.class, true);
+	    n.body = body;
+	    return n;
+	}
 
-    /*
-      
-      FIXME: investigate.... (from JL5MethodDecl_c.java):
-
-    @Override
-    public Context enterScope(Context c) {
-        c = super.enterScope(c);
-        for (ParamTypeNode pn : paramTypes) {
-            c = ((JL5Context)c).addTypeVariable((TypeVariable)pn.type());
-        }
-        return c;
-    }
-
-    @Override
-    public Node buildTypes(TypeBuilder tb) throws SemanticException {
-        return super.buildTypes(tb);
-    }
-
-     */
-
-    protected ESJPredMethodDecl_c reconstruct() { 
-
-	/*(FlagAnnotations flags,
-			       TypeNode returnType, String name,
-			       List formals,
-			       List throwTypes, Block body, String quantMtdId, boolean quantKind,
-			       String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr) {*/
-	return this; //super.reconstruct();
-    }
-
-
-    public Node visitChildren(NodeVisitor v) {
-	super.visitChildren(v);
-	Expr quantLExpr = (Expr) visitChild(this.quantListExpr, v);
-	Expr quantCExpr = (Expr) visitChild(this.quantClauseExpr, v);
-	return (reconstruct()); //this.flags, this.returnType, this.name, this.formals, this.throwTypes, this.body, this.quantMtdId, this.quantKind, this.quantVarN, this.quantVarD, this.quantListExpr, this.quantClauseExpr);
-	//return this; //super.visitChildren(v);
-    }
-    
-
-    public Node typeCheck(TypeChecker tc) throws SemanticException {
 	return this;
     }
+    
+    // Visit the children of the method. 
+    public Node visitChildren(NodeVisitor v) {
+	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
+	List formals = visitList(this.formals, v);
+	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
+	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
+	//List quantVarD = visitList(this.quantVarD, v);
+	List throwTypes = visitList(this.throwTypes, v);
+	Block body = (Block) visitChild(this.body, v);
+	return reconstruct(returnType, formals, throwTypes, body, quantListExpr, 
+			   quantClauseExpr, this.quantVarD);
+    }
+
+    public Node typeCheck(TypeChecker tc) throws SemanticException {
+	return super.typeCheck(tc);
+    }
 
     
+    public Context enterScope(Node child, Context c) {
+
+	c.addVariable(quantClauseExpr.quantVarI());
+	//child.addDecls(c);
+
+	for (Formal f : (List<Formal>) formals) {
+	    c.addVariable(c.typeSystem().localInstance(null,  flags(),f.declType(), f.name()));
+	}
+	
+        return super.enterScope(child, c);
+    }
+    
+
 }

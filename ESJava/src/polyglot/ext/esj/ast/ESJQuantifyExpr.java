@@ -10,7 +10,8 @@ public interface ESJQuantifyExpr extends Expr {
 
     public String id();
     public boolean quantKind();
-    public String quantVar();
+    public String quantVarN();
+    public List quantVarD();
     public Expr quantListExpr();
     public ESJQuantifyClauseExpr quantClauseExpr();
     public JL5MethodDecl parentMethod();

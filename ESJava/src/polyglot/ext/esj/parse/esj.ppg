@@ -34,47 +34,30 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	          a.parentMethod(methodDecl);
     	      	  String quantMtdId = a.id();	  
     	      	  boolean quantKind = a.quantKind();
-	      	  String quantVarN = a.quantVar();
+	      	  String quantVarN = a.quantVarN();
 	      	  Expr quantList = a.quantListExpr();
-	      	  Expr quantExpr = a.quantClauseExpr().expr();
+	      	  ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr(); //.expr();
+		  List quantVarD = a.quantVarD();
 	          List mStmts = new TypedList(new LinkedList(), Stmt.class, false);
 
 
-		  VarDeclarator quantVar = new VarDeclarator(null, quantVarN);
+		  //VarDeclarator quantVar = new VarDeclarator(null, quantVarN);
 
-		  quantVar.init = nf.IntLit(null, IntLit.INT, 0);
-              	  List quantVarD = this.variableDeclarators(nf.CanonicalTypeNode(null, ts.Int()), quantVar, fl);
-
-	List quantClauseStmts = new TypedList(new LinkedList(), Stmt.class, false);
-	Expr quantMainIfExpr = quantKind ? nf.Unary(null, Unary.NOT, quantExpr) : quantExpr;
-	Stmt quantMainStmt = ((ESJNodeFactory)nf).JL5If(null, quantMainIfExpr, 
-				      ((ESJNodeFactory)nf).JL5Return(null, nf.BooleanLit(null, !quantKind)), null);
-	quantClauseStmts.add(quantMainStmt);	    
-	Stmt forLoopBody = nf.Block(null, quantClauseStmts);
-	Stmt forLoop = ((ESJNodeFactory)nf).ExtendedFor(null,quantVarD, quantList, quantMainStmt);	
-	mStmts.add(forLoop);
+		  //quantVar.init = nf.IntLit(null, IntLit.INT, 0);
+              	  //List quantVarD = this.variableDeclarators(nf.CanonicalTypeNode(null, ts.Int()), quantVar, fl);
 	mStmts.add(nf.JL5Return(null, nf.BooleanLit(null,quantKind)));
-		  /*
+
 	      	  ESJPredMethodDecl extraMtd = nf.ESJPredMethodDecl(null, fl,
 	                                          nf.CanonicalTypeNode(null,ts.Boolean()), 
 						  methodDecl.name() + "_" + quantMtdId, 
 						  methodDecl.formals(), 
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
-						  nf.Block(null, mStmts),
+						  nf.Block(null, mStmts), methodDecl.throwTypes(),
 						  quantMtdId, quantKind, quantVarN, quantVarD,
-						  quantList, quantExpr); */
-
-	      	  JL5MethodDecl extraMtd = nf.JL5MethodDecl(null, fl,
-	                                          nf.CanonicalTypeNode(null,ts.Boolean()), 
-						  methodDecl.name() + "_" + quantMtdId, 
-						  methodDecl.formals(), 
-						  new TypedList(new LinkedList(), TypeNode.class, false), 
-						  nf.Block(null, mStmts),
-						  new TypedList(new LinkedList(), TypeNode.class, false));
+						  quantList, quantExpr); 
                   
                   extraMtds.add(extraMtd);
              }
-
              ESJLogPredMethodDecl extraMtdLog = nf.ESJLogPredMethodDecl(null, fl,
 	                                          nf.CanonicalTypeNode(null,ts.Boolean()), 
 						  methodDecl.name() + "_log" , 
@@ -83,8 +66,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 						  methodDecl.body(),
 						  new TypedList(new LinkedList(), TypeNode.class, false));
 
-             extraMtds.add(extraMtdLog);	
-
+             extraMtds.add(extraMtdLog);
 	     return extraMtds;
     }
 
@@ -104,35 +86,30 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    }
      }
 
-     public JL5MethodDecl makeESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
+     public ESJEnsuredMethodDecl makeESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
 				  TypeNode returnType, String name,
 				  List formals, List throwTypes, Block body, 
 				  List paramTypes, Expr ensuresExpr) throws Exception {
 	    FlagAnnotations fl = new FlagAnnotations();
 	    fl.classicFlags(Flags.NONE);
 	    fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
-	    JL5Formal catchFormal = this.nf.JL5Formal(null, fl, this.array(new JL5Name(this, null, "Throwable").toType(), 0), "rte");
-
-	    /*
+	    TypeNode cftn = new JL5Name(this, null, "Throwable").toType();
+	    JL5Formal catchFormal = this.nf.JL5Formal(null, fl, this.array(cftn, 0), "rte");
        	    return this.nf.ESJEnsuredMethodDecl(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal); 
-	    */
-
-	List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
-	extraMtdBody.add(nf.JL5Assert(null, ensuresExpr, null));
-	List catches = new TypedList(new LinkedList(), Catch.class, false);
-	Block extraMtdBlock = nf.Block(null, extraMtdBody);
-	List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
-	catchBody.add(nf.Eval(null, nf.Call(null, null, "fallback",
-					      new TypedList(new LinkedList(), Expr.class, false))));
-	Block catchBlock = nf.Block(null,catchBody);
-	catches.add(nf.JL5Catch(null, catchFormal, catchBlock));
-	List tryBody = new TypedList(new LinkedList(), Stmt.class, false);
-	tryBody.add(nf.Try(null, extraMtdBlock, catches));
-	Block tryCatchBlock = nf.Block(null, tryBody);
-       	return this.nf.JL5MethodDecl(pos, flags, returnType, name, formals, throwTypes, tryCatchBlock, paramTypes); 
-
      }    
 
+     public ESJQuantifyExpr makeESJQuantifyExpr(Position pos, boolean quantKind, String quantVarN, Expr quantListExpr, Expr quantClauseExpr) throws Exception {
+	    FlagAnnotations fl = new FlagAnnotations(); 
+            fl.classicFlags(Flags.NONE);
+            fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
+
+	    LocalInstance quantVarI = ts.localInstance(null, fl.classicFlags(),
+                                            ts.Int(), quantVarN);
+
+     	    VarDeclarator quantVar = new VarDeclarator(null, quantVarN); 
+	    List quantVarD = this.variableDeclarators(nf.CanonicalTypeNode(null, ts.Int()), quantVar, fl);
+	    return this.nf.ESJQuantifyExpr(pos,quantKind,quantVarN, quantVarD, quantVarI, quantListExpr,quantClauseExpr);
+}
 :};
 
 terminal Token PREDICATE;
@@ -141,7 +118,8 @@ terminal Token ENSURED;
 terminal Token SOME;
 terminal Token ALL;
 
-non terminal JL5MethodDecl pred_method_header, ensured_method_header;
+non terminal JL5MethodDecl pred_method_header;
+non terminal ESJEnsuredMethodDecl ensured_method_header;
 non terminal List pred_method_declaration, ensured_method_declaration;
 non terminal Block pred_method_body, pred_block;
 non terminal List pred_block_statements;
@@ -226,9 +204,16 @@ pred_statement ::=
 
 quantify_expression ::=
         ALL:a name:b COLON:c quant_list_expr:d OR:e equality_predicate_expr:f
-       	   {: RESULT = parser.nf.ESJQuantifyExpr(parser.pos(a),true,b.toString(),d,f); :} 
+       	   {: 
+	   //RESULT = parser.nf.ESJQuantifyExpr(parser.pos(a),true,b.toString(),d,f); 
+	   RESULT = parser.makeESJQuantifyExpr(parser.pos(a),true,b.toString(),d,f); 
+
+	   :} 
      |  SOME:a name:b COLON:c quant_list_expr:d OR:e equality_predicate_expr:f
-       	   {: RESULT = parser.nf.ESJQuantifyExpr(parser.pos(a),false,b.toString(),d,f); :} 
+       	   {: 
+	   //RESULT = parser.nf.ESJQuantifyExpr(parser.pos(a),false,b.toString(),d,f); 
+	   RESULT = parser.makeESJQuantifyExpr(parser.pos(a),false,b.toString(),d,f); 
+	   :} 
 	   ;
 
 quant_list_expr ::=	
@@ -405,14 +390,7 @@ predicate_literal ::=
 
 ensured_method_declaration ::=
         ENSURED ensured_method_header:a method_body:b 
-	   {: List body = new TypedList(new LinkedList(), Stmt.class, false); 
-	      List newBody = new TypedList(new LinkedList(), Stmt.class, false); 	      
-	      Block tryBlock = ((Try) ((List) a.body().statements()).get(0)).tryBlock();
-	      body.addAll(b.statements());
-	      body.addAll(tryBlock.statements());
-	      Try newTryBlock = ((Try) ((List) a.body().statements()).get(0)).tryBlock(parser.nf.Block(null, body));
-	      newBody.add(newTryBlock);
-	      JL5MethodDecl mainMtdDecl = (JL5MethodDecl) a.body(parser.nf.Block(null, newBody));
+	   {: ESJEnsuredMethodDecl mainMtdDecl = (ESJEnsuredMethodDecl) a.body(b);
               List l = new TypedList(new LinkedList(), ClassMember.class, false);
               l.add(mainMtdDecl);
               RESULT = l; 
@@ -421,9 +399,8 @@ ensured_method_declaration ::=
 
 ensured_method_header ::=
     modifiers_or_annotations_opt:a type:b method_declarator:c throws_opt:d ensures_opt:z {:
-
        RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, parser.array(b, c.dims().intValue()), c.name(), c.formals(), d, null, new TypedList(new LinkedList(), TypeNode.class, false), z); 
-                                                                           :}
+        :}
  |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c type:d method_declarator:e throws_opt:f ensures_opt:z {:
                                                                                                         RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, parser.array(d, e.dims().intValue()), e.name(), e.formals(), f, null, c, z); 
                                                                                                         :}

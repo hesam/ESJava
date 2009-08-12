@@ -73,12 +73,16 @@ public class ExtensionInfo extends polyglot.ext.jl5.ExtensionInfo {
 		  new VisitorPass(PURITY_CHECK, job,
 				  new PurityChecker(job, ts, nf)));
 
+	beforePass(passes, polyglot.ext.jl5.ExtensionInfo.TYPE_CHECK_ALL,
+		  new VisitorPass(TESTING_ESJ, job,
+				  new ESJTesting(job, ts, nf)));
+
 	// now translate ESJ AST to Java AST
 	beforePass(passes, Pass.PRE_OUTPUT_ALL,
 		   new VisitorPass(TRANSLATE_TO_JAVA, job,
 				   new ESJJavaTranslator(job, ts, nf)));
 
-	afterPass(passes, TRANSLATE_TO_JAVA,
+	beforePass(passes, TRANSLATE_TO_JAVA,
 		   new VisitorPass(TRANSLATE_TO_LOGIC, job,
 				   new ESJLogicTranslator(job, ts, nf)));	
 

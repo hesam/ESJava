@@ -45,8 +45,7 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 
     /** Reconstruct the method. */
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
-				       Expr ensuresExpr,
-				       List throwTypes, Block body) {
+				       List throwTypes, Block body, Expr ensuresExpr, JL5Formal catchFormal) {
 	if (returnType != this.returnType ||
 	    ! CollectionUtil.equals(formals, this.formals) ||
 	    ensuresExpr != this.ensuresExpr ||
@@ -56,6 +55,7 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	    n.returnType = returnType;
 	    n.formals = TypedList.copyAndCheck(formals, Formal.class, true);
 	    n.ensuresExpr = ensuresExpr;
+	    n.catchFormal = catchFormal;
 	    n.throwTypes = TypedList.copyAndCheck(throwTypes,
 						  TypeNode.class, true);
 	    n.body = body;
@@ -70,10 +70,10 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 	List formals = visitList(this.formals, v);
 	Expr ensuresExpr = (Expr) visitChild(this.ensuresExpr, v);
-	//JL5Formal catchFormal = (JL5Formal) visitChild(this.catchFormal, v);
+	JL5Formal catchFormal = (JL5Formal) visitChild(this.catchFormal, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	Block body = (Block) visitChild(this.body, v);
-	return reconstruct(returnType, formals, ensuresExpr, throwTypes, body);
+	return reconstruct(returnType, formals, throwTypes, body, ensuresExpr, catchFormal);
     }
     /*
     public Node typeCheck(TypeChecker tc) throws SemanticException {
