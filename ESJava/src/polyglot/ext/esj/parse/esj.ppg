@@ -26,6 +26,9 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
 	      // find the pred_expression subexprs within the body and mark them	    
 	      List predExprs = getPredExprsWithinBody(methodDecl);
+	      FlagAnnotations fl = new FlagAnnotations(); 
+              fl.classicFlags(Flags.NONE);
+              fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 
 	      for (ESJQuantifyExpr a : (List<ESJQuantifyExpr>)predExprs) { 
 	          a.parentMethod(methodDecl);
@@ -34,9 +37,6 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	      	  String quantVarN = a.quantVar();
 	      	  Expr quantList = a.quantListExpr();
 	      	  Expr quantExpr = a.quantClauseExpr().expr();
-		  FlagAnnotations fl = new FlagAnnotations(); 
-              	  fl.classicFlags(Flags.NONE);
-              	  fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 	          List mStmts = new TypedList(new LinkedList(), Stmt.class, false);
 
 
@@ -71,8 +71,20 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
 						  nf.Block(null, mStmts),
 						  new TypedList(new LinkedList(), TypeNode.class, false));
+                  
                   extraMtds.add(extraMtd);
              }
+
+             ESJLogPredMethodDecl extraMtdLog = nf.ESJLogPredMethodDecl(null, fl,
+	                                          nf.CanonicalTypeNode(null,ts.Boolean()), 
+						  methodDecl.name() + "_log" , 
+						  methodDecl.formals(), 
+						  new TypedList(new LinkedList(), TypeNode.class, false), 
+						  methodDecl.body(),
+						  new TypedList(new LinkedList(), TypeNode.class, false));
+
+             extraMtds.add(extraMtdLog);	
+
 	     return extraMtds;
     }
 

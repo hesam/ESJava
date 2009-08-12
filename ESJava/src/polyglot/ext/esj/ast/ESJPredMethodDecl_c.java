@@ -28,9 +28,9 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     public ESJPredMethodDecl_c(Position pos, FlagAnnotations flags,
 			       TypeNode returnType, String name,
 			       List formals,
-			       List throwTypes, Block body, String quantMtdId, boolean quantKind,
+			       List throwTypes, Block body, List paramTypes, String quantMtdId, boolean quantKind,
 			       String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr) {
-	super(pos, flags, returnType, name, formals, throwTypes, body);
+	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
 	this.quantMtdId = quantMtdId;
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;

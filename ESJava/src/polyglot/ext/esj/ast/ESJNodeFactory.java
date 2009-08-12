@@ -17,8 +17,15 @@ public interface ESJNodeFactory extends JL5NodeFactory {
     // TODO: Declare any factory methods for new AST nodes.
     ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags,
 					TypeNode returnType, String name,
-					List formals, List throwTypes, Block body, String quantMtdId, boolean quantKind,
-					String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr);
+					List formals, List throwTypes, Block body, 
+					List paramTypes, String quantMtdId, boolean quantKind,
+					String quantVarN, List quantVarD, Expr quantListExpr, 
+					Expr quantClauseExpr);
+
+    ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
+					      TypeNode returnType, String name,
+					      List formals, List throwTypes, Block body, 
+					      List paramTypes); 
     
     ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,

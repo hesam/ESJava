@@ -10,7 +10,8 @@ class Test {
     }
 
     predicate public boolean isFoo() {
-	this.nums().get(0) < 0
+	all i : nums() | this.nums().get(i) < 0
+        //this.nums().get(0) < 0
     }
 
     /*
