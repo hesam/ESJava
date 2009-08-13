@@ -3,15 +3,14 @@ import polyglot.ext.esj.primitives.*;
 
 class Test {
     
-    protected ESJList nums;
+    protected ArrayList<String> words;
 
-    public ESJList nums() {
-	return nums;
+    public ArrayList<String> words() {
+	return words;
     }
 
     predicate public boolean isFoo(int j) {
-	all i : nums() | this.nums().get(i) < j
-        //this.nums().get(0) < 0
+	all w : words() | this.words().size() > j
     }
 
     public void fallback() {
@@ -20,7 +19,7 @@ class Test {
 
     ensured public void m1() 
 	ensures isFoo(3) {
-	nums.add(0);
+	words.add("0");
     }
 
     public static void main(String[] args) {

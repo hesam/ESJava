@@ -1,7 +1,8 @@
 package polyglot.ext.esj.ast;
 
 import polyglot.ast.*;
-import polyglot.types.Context;
+import polyglot.ext.jl5.ast.*;
+import polyglot.types.*;
 import polyglot.ext.esj.types.ESJTypeSystem;
 
 import java.util.*;
@@ -15,6 +16,7 @@ public interface ESJPredMethodDecl extends JL5MethodDecl {
     public boolean quantKind();
     public String quantVar();
     public List quantVarD();
+    public LocalInstance quantVarI();
     public Expr quantListExpr();
     public ESJQuantifyClauseExpr quantClauseExpr();
     

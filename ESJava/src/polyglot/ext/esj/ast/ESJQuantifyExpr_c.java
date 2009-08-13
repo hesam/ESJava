@@ -17,6 +17,7 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
     protected boolean quantKind;
     protected String id,quantVarN;
     protected List quantVarD;
+    protected LocalInstance quantVarI;
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
     protected JL5MethodDecl parentMethod;
@@ -27,8 +28,9 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
+	this.quantVarI = quantVarI;
 	this.quantListExpr = quantListExpr;
-	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantVarD, quantVarI, quantClauseExpr);
+	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantClauseExpr);
     }
 
     public Expr quantListExpr() {
@@ -53,6 +55,10 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 
     public List quantVarD() {
 	return quantVarD;
+    }
+
+    public LocalInstance quantVarI() {
+	return quantVarI;
     }
 
     public JL5MethodDecl parentMethod() {

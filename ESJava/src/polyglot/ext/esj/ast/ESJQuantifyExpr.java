@@ -2,6 +2,7 @@ package polyglot.ext.esj.ast;
 
 import java.util.*;
 
+import polyglot.types.*;
 import polyglot.ast.*;
 import polyglot.ext.jl5.ast.*;
 
@@ -12,6 +13,7 @@ public interface ESJQuantifyExpr extends Expr {
     public boolean quantKind();
     public String quantVarN();
     public List quantVarD();
+    public LocalInstance quantVarI();
     public Expr quantListExpr();
     public ESJQuantifyClauseExpr quantClauseExpr();
     public JL5MethodDecl parentMethod();

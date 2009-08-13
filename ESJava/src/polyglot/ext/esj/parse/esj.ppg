@@ -38,14 +38,10 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	      	  Expr quantList = a.quantListExpr();
 	      	  ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr(); //.expr();
 		  List quantVarD = a.quantVarD();
+		  LocalInstance quantVarI = a.quantVarI();
 	          List mStmts = new TypedList(new LinkedList(), Stmt.class, false);
 
-
-		  //VarDeclarator quantVar = new VarDeclarator(null, quantVarN);
-
-		  //quantVar.init = nf.IntLit(null, IntLit.INT, 0);
-              	  //List quantVarD = this.variableDeclarators(nf.CanonicalTypeNode(null, ts.Int()), quantVar, fl);
-	mStmts.add(nf.JL5Return(null, nf.BooleanLit(null,quantKind)));
+		  mStmts.add(nf.JL5Return(null, nf.BooleanLit(null,quantKind)));
 
 	      	  ESJPredMethodDecl extraMtd = nf.ESJPredMethodDecl(null, fl,
 	                                          nf.CanonicalTypeNode(null,ts.Boolean()), 
@@ -54,7 +50,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
 						  nf.Block(null, mStmts), methodDecl.throwTypes(),
 						  quantMtdId, quantKind, quantVarN, quantVarD,
-						  quantList, quantExpr); 
+						  quantVarI, quantList, quantExpr); 
                   
                   extraMtds.add(extraMtd);
              }
@@ -103,6 +99,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
             fl.classicFlags(Flags.NONE);
             fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 
+	    // for now make it an Int, the type checking later will fix to right type
 	    LocalInstance quantVarI = ts.localInstance(null, fl.classicFlags(),
                                             ts.Int(), quantVarN);
 

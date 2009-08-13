@@ -9,9 +9,6 @@ import polyglot.types.*;
 public interface ESJQuantifyClauseExpr extends Expr {
 
     public Expr expr();
-
-    public List quantVarD();
-    public LocalInstance quantVarI();
     public Expr expr(Expr e);
 }
 

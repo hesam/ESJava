@@ -20,8 +20,8 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     // TODO:  Implement factory methods for new AST nodes.
     // TODO:  Override factory methods for overriden AST nodes.
     // TODO:  Override factory methods for AST nodes with new extension nodes.
-    public ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags, TypeNode returnType, String name, List formals, List throwTypes, Block body, List paramTypes, String quantMtdId, boolean quantKind, String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {	
-    	return new ESJPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantMtdId, quantKind, quantVarN, quantVarD, quantListExpr, quantClauseExpr);
+    public ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags, TypeNode returnType, String name, List formals, List throwTypes, Block body, List paramTypes, String quantMtdId, boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {	
+    	return new ESJPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantMtdId, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
     }
 
 

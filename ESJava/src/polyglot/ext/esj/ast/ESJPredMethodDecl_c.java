@@ -1,8 +1,9 @@
 package polyglot.ext.esj.ast;
 
-import polyglot.parse.VarDeclarator;
 import polyglot.ast.*;
 import polyglot.ext.jl.ast.*;
+import polyglot.ext.jl5.ast.*;
+import polyglot.ext.jl5.types.*;
 import polyglot.util.*;
 import polyglot.types.*;
 import polyglot.ext.esj.types.ESJTypeSystem;
@@ -23,6 +24,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     protected boolean quantKind;
     protected String quantVarN;
     protected List quantVarD;
+    protected LocalInstance quantVarI;
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
 
@@ -30,12 +32,13 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 			       TypeNode returnType, String name,
 			       List formals,
 			       List throwTypes, Block body, List paramTypes, String quantMtdId, boolean quantKind,
-			       String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
+			       String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
 	this.quantMtdId = quantMtdId;
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
+	this.quantVarI = quantVarI;
 	this.quantListExpr = quantListExpr;
 	this.quantClauseExpr = quantClauseExpr;
 	
@@ -55,6 +58,10 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 
     public List quantVarD() {
 	return quantVarD;
+    }
+
+    public LocalInstance quantVarI() {
+	return quantVarI;
     }
 
     public Expr quantListExpr() {
@@ -102,20 +109,39 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {
+	    // findout what type is quantListExpr list of (can be a subtype a generic...)
+	    TypeSystem ts = tc.typeSystem();
+	    ReferenceType t = (ReferenceType) quantListExpr.type();
+	    while (! ((JL5ParsedClassType) t).isGeneric()) {
+		t = (ReferenceType) ts.superType((ReferenceType) t);
+	    }
+	    System.out.println(t);
+	    System.out.println(((ParameterizedType) t).typeArguments());
+	    List newVarD = new TypedList(new LinkedList(), LocalDecl.class, false);
+	    //System.out.println(quantVarI);
+	    for (LocalDecl d : (List<LocalDecl>) quantVarD) {
+		//System.out.println(d.type());	       
+		newVarD.add(d.type(d.type().type((Type) ((ParameterizedType) t).typeArguments().get(0))));
+	    }
+	    this.quantVarD = newVarD;
+	    System.out.println(quantVarD);
+	
 	return super.typeCheck(tc);
     }
 
     
     public Context enterScope(Node child, Context c) {
 
-	c.addVariable(quantClauseExpr.quantVarI());
-	//child.addDecls(c);
-
-	for (Formal f : (List<Formal>) formals) {
-	    c.addVariable(c.typeSystem().localInstance(null,  flags(),f.declType(), f.name()));
+	if (child instanceof ESJQuantifyClauseExpr) {
+	    c.addVariable(quantVarI);
+	    //child.addDecls(c);
+	    
+	    for (Formal f : (List<Formal>) formals) {
+		c.addVariable(c.typeSystem().localInstance(null,  flags(),f.declType(), f.name()));
+	    }
 	}
-	
-        return super.enterScope(child, c);
+
+	return super.enterScope(child, c);
     }
     
 

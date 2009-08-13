@@ -14,13 +14,9 @@ import polyglot.visit.*;
 public class ESJQuantifyClauseExpr_c extends Expr_c implements ESJQuantifyClauseExpr {
 
     protected Expr expr;
-    protected List quantVarD;
-    protected LocalInstance quantVarI;
 
-    public ESJQuantifyClauseExpr_c(Position pos, List quantVarD, LocalInstance quantVarI, Expr expr) {
+    public ESJQuantifyClauseExpr_c(Position pos, Expr expr) {
 	super(pos);
-	this.quantVarD = quantVarD;
-	this.quantVarI = quantVarI;
 	this.expr = expr;
     }
 
@@ -33,13 +29,6 @@ public class ESJQuantifyClauseExpr_c extends Expr_c implements ESJQuantifyClause
 	return this;
     }
 
-    public List quantVarD() {
-	return quantVarD;
-    }
-
-    public LocalInstance quantVarI() {
-	return quantVarI;
-    }
 
     public List acceptCFG(CFGBuilder v, List succs) {
 	return new ArrayList();
@@ -50,12 +39,9 @@ public class ESJQuantifyClauseExpr_c extends Expr_c implements ESJQuantifyClause
     }
 
     // Reconstruct the pred expr.
-    protected ESJQuantifyClauseExpr_c reconstruct(List quantVarD, LocalInstance quantVarI, Expr expr) {
-	if (expr != this.expr || quantVarI != this.quantVarI || 
-	    ! CollectionUtil.equals(quantVarD, this.quantVarD)) {
+    protected ESJQuantifyClauseExpr_c reconstruct(Expr expr) {
+	if (expr != this.expr) {
 	    ESJQuantifyClauseExpr_c n = (ESJQuantifyClauseExpr_c) copy();
-	    n.quantVarD = TypedList.copyAndCheck(quantVarD, LocalDecl.class, true);
-	    n.quantVarI = quantVarI;
 	    n.expr = expr;
 
 	    return n;
@@ -69,8 +55,7 @@ public class ESJQuantifyClauseExpr_c extends Expr_c implements ESJQuantifyClause
     public Node visitChildren(NodeVisitor v) {
 
 	Expr expr = (Expr) visitChild(this.expr, v);
-	//List quantVarD = visitList(this.quantVarD, v);
-	return reconstruct(this.quantVarD, this.quantVarI, expr);
+	return reconstruct(expr);
     }
 
     
