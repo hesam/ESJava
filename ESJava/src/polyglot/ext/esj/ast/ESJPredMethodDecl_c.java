@@ -115,8 +115,6 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	    while (! ((JL5ParsedClassType) t).isGeneric()) {
 		t = (ReferenceType) ts.superType((ReferenceType) t);
 	    }
-	    System.out.println(t);
-	    System.out.println(((ParameterizedType) t).typeArguments());
 	    List newVarD = new TypedList(new LinkedList(), LocalDecl.class, false);
 	    //System.out.println(quantVarI);
 	    for (LocalDecl d : (List<LocalDecl>) quantVarD) {
@@ -124,7 +122,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 		newVarD.add(d.type(d.type().type((Type) ((ParameterizedType) t).typeArguments().get(0))));
 	    }
 	    this.quantVarD = newVarD;
-	    System.out.println(quantVarD);
+	    //System.out.println(quantVarD);
 	
 	return super.typeCheck(tc);
     }

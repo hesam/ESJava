@@ -1,16 +1,18 @@
 import java.util.ArrayList;
 import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.tologic.*;
 
 class Test {
     
-    protected ArrayList<String> words;
+    protected ArrayList<Integer> nums;
 
-    public ArrayList<String> words() {
-	return words;
+    public ArrayList<Integer> nums() {
+	return nums;
     }
 
     predicate public boolean isFoo(int j) {
-	all w : words() | this.words().size() > j
+	all w : nums() | w > j &&
+	nums.get(0) < j * 2
     }
 
     public void fallback() {
@@ -19,7 +21,7 @@ class Test {
 
     ensured public void m1() 
 	ensures isFoo(3) {
-	words.add("0");
+	nums.add(0);
     }
 
     public static void main(String[] args) {

@@ -11,6 +11,10 @@ public class LogFormula extends LogObject {
 	this(string, 0, false);
     }
 
+    public LogFormula(LogObject s1, String o, LogObject s2) {
+	this("(" + s1.string() + o + s2.string() + ")", 0, false);
+    }
+
     public LogFormula(String string, int listSize, boolean isaListInstVar) {
 	super(string, listSize, isaListInstVar);
     }

@@ -13,7 +13,11 @@ public class LogObject  {
     protected boolean isaListInstVar;
 
     public LogObject(String string) {
-	this(string, 1, false);
+	this(string, 0, false);
+    }
+
+    public LogObject(LogObject s1, String o, LogObject s2) {
+	this("(" + s1.string() + o + s2.string() + ")", 0, false);
     }
 
     public LogObject(String string, int listSize, boolean isaListInstVar) {
@@ -22,6 +26,7 @@ public class LogObject  {
 	this.listSize = listSize;
 	this.isaListInstVar = isaListInstVar;
     }
+
 
     public String string() {
 	return string;

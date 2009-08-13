@@ -1,6 +1,7 @@
 package polyglot.ext.esj.ast;
 
 import polyglot.ast.*;
+import polyglot.types.*;
 import polyglot.ext.jl.ast.*;
 import polyglot.types.*;
 import polyglot.ext.esj.types.*;
@@ -36,4 +37,7 @@ public interface ESJNodeFactory extends JL5NodeFactory {
     ESJQuantifyExpr ESJQuantifyExpr(Position pos, boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr);
 
     ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, CanonicalTypeNode theType);
+
+    ESJBinary ESJBinary(Position pos, Expr left, Binary.Operator op, Expr right);
+
 }

@@ -57,6 +57,7 @@ public class LogRelation extends Hashtable {
     public boolean hasFixedSize() { return fixedSize != 0; }
 
     public void put_log(int key, Object value) {
+	System.out.println("1" + "\n" + key + "\n" + value);
 	if (value instanceof ArrayList) {
 	    ArrayList l = new ArrayList();
 	    for(int v: (ArrayList<Integer>)value) {
@@ -69,6 +70,8 @@ public class LogRelation extends Hashtable {
     }
 
     public void atIntIdxPut_log(int index, Object value) {
+	System.out.println("1" + index);
+	System.out.println(ESJInteger.log(index));
 	put_log(ESJInteger.log(index),value);
     }
 

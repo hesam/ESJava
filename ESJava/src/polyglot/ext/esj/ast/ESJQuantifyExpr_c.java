@@ -106,24 +106,6 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	ESJQuantifyExpr n = (ESJQuantifyExpr) super.typeCheck(tc);
 	n = (ESJQuantifyExpr)n.type(tc.typeSystem().Boolean()); //FIXME
-	/*
-	System.out.println("ESJQuantifyExpr tc...");
-	System.out.println(n);
-	System.out.println(n.type());
-	System.out.println(quantListExpr);
-	//System.out.println(((Expr)(quantListExpr.typeCheck(tc))).type());
-	System.out.println(quantClauseExpr);
-	//quantClauseExpr = (ESJQuantifyClauseExpr)(quantClauseExpr.typeCheck(tc)); //FIXME
-	System.out.println(quantClauseExpr.type());
-	*/
-	/*
-	    // make sure the predicateExpr has type boolean
-	if (!(quantClauseExpr.type().isBoolean())) {
-	    throw new SemanticException("A quantify clause must have type "
-				        + "boolean.", position());
-					}*/
-	    // make sure that the restrictions on array accesses are met
-	//System.out.println("ESJQuantifyExpr tc done");
 	return n;
     } 
 
