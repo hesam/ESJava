@@ -20,7 +20,7 @@ public class LogFormula extends LogObject {
     }
 
     public LogFormula FormulaOp(String o, LogFormula o2) {
-	return new LogFormula("(" + string + o + o2.string() + ")");
+	return new LogFormula("(" + string + " " + o + " " + o2.string() + ")");
     }
 
 

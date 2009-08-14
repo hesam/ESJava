@@ -38,6 +38,7 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 
     ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, CanonicalTypeNode theType);
 
-    ESJBinary ESJBinary(Position pos, Expr left, Binary.Operator op, Expr right);
+    FormulaBinary FormulaBinary(Position pos, Expr left, Binary.Operator op, Expr right);
+    CmpBinary CmpBinary(Position pos, Expr left, Binary.Operator op, Expr right);
 
 }

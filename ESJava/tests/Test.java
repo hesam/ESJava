@@ -5,11 +5,14 @@ import polyglot.ext.esj.tologic.*;
 class Test {
     protected ESJList nums;
     
+    public Test() { super();
+                    this.nums = new ESJList(); }
+    
     public ESJList nums() { return nums; }
     
     public boolean isFoo(int j) { return nums.get(0) < j; }
     
-    LogFormula isFoo_log(int j) { return nums.get_log(new LogInt("0")).ArithOp("<", j); }
+    LogFormula isFoo_log(LogInt j) { return nums.get_log(new LogInt("0")).cmpOp("<", j); }
     
     public void fallback() { System.out.println("--> fallback initiated..."); }
     
@@ -17,7 +20,10 @@ class Test {
                              assert isFoo(3); }
                        catch (Throwable rte) { fallback(); } }
     
-    public static void main(String[] args) { Test t1 = new Test(); }
-    
-    public Test() { super(); }
+    public static void main(String[] args) { Test t1 = new Test();
+                                             t1.nums.add(0);
+                                             t1.nums.add(3);
+                                             t1.nums.add(5);
+                                             t1.nums.add(1);
+                                             System.out.println(t1.nums.indices_log().allButLast_log()); }
 }

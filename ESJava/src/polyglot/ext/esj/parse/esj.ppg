@@ -236,7 +236,7 @@ or_predicate_expr ::=
 	    {: if (b == null)
 		  RESULT = a;
 	       else
-		  RESULT = parser.nf.ESJBinary(parser.pos(a), a,
+		  RESULT = parser.nf.FormulaBinary(parser.pos(a), a,
 		                            Binary.COND_OR, b); :}
     ;
 
@@ -252,7 +252,7 @@ and_predicate_expr ::=
 	    {: if (b == null)
 		  RESULT = a;
 	       else
-		  RESULT = parser.nf.ESJBinary(parser.pos(a), a,
+		  RESULT = parser.nf.FormulaBinary(parser.pos(a), a,
 				            Binary.COND_AND, b); :}
     ;
 
@@ -272,7 +272,7 @@ equality_predicate_expr ::=
             {: RESULT = a; :}
     |   relational_predicate_expr:a  equality_predicate_op:b
         equality_predicate_expr:c
-	    {: RESULT = parser.nf.Binary(parser.pos(a), a, b, c); :} 
+	    {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, b, c); :} 
     ;
 
 equality_predicate_op ::=
@@ -286,7 +286,7 @@ relational_predicate_expr ::=
             {: RESULT = a; :}
     |   additive_predicate_expr:a  relational_predicate_op:b
         relational_predicate_expr:c
-	    {: RESULT = parser.nf.Binary(parser.pos(a), a, b, c); :}
+	    {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, b, c); :}
     ;
 
 relational_predicate_op ::=

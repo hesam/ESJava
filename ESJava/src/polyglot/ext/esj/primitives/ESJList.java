@@ -17,11 +17,11 @@ public class ESJList extends ArrayList<Integer> {
     public ESJList(boolean isaPrime, int fixedSize) {
 	super();
 	this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, isaPrime, fixedSize);
+	this.prime = isaPrime ? null : newPrime();
     }
 
     public ESJList newPrime() {
-	this.prime = new ESJList(true, size());
-	return prime;
+	return new ESJList(true, size());
     }
 
     public ESJList prime_log() { return prime; }
@@ -37,7 +37,7 @@ public class ESJList extends ArrayList<Integer> {
 
     public LogSet lastIndex_log() {
 	int s = rel_log.hasFixedSize() ? rel_log.fixedSize() : size();	
-	return new LogSet(ESJInteger.atom_log(s));
+	return ESJInteger.atom_log(s);
     }
 
     public LogAtom get_log(LogInt index) {

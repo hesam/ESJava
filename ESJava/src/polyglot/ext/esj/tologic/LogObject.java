@@ -53,12 +53,12 @@ public class LogObject  {
 	return s1 + "." + s2;
     }
 
-    public LogObject CmpOp(String o, LogObject o2) {
-	return new LogFormula("(" + sumValue_log() + o + o2.sumValue_log() + ")");
+    public LogFormula cmpOp(String o, LogObject o2) {
+	return new LogFormula("(" + sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
     }
 
-    public LogObject ArithOp(String o, LogObject o2) {
-	return new LogSet("(" + sumValue_log() + o + o2.sumValue_log() + ")");
+    public LogSet arithOp(String o, LogObject o2) {
+	return new LogSet("(" + sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
     }
 
 

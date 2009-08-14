@@ -743,8 +743,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
       return num - MIN_VALUE;
   }
 
-  public static String atom_log(int num) {
-      return "A" + log(num);
+  public static LogSet atom_log(int num) {
+      return new LogSet("A" + log(num));
   }
 
   public static LogSet zeroTo_log(int n) {
