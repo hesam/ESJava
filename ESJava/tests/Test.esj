@@ -4,15 +4,15 @@ import polyglot.ext.esj.tologic.*;
 
 class Test {
     
-    protected ArrayList<Integer> nums;
+    protected ESJList nums;
 
-    public ArrayList<Integer> nums() {
+    public ESJList nums() {
 	return nums;
     }
 
     predicate public boolean isFoo(int j) {
-	all w : nums() | w > j &&
-	nums.get(0) < j * 2
+	//all w : nums() | w > j &&
+	nums.get(0) < j
     }
 
     public void fallback() {

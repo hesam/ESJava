@@ -3,16 +3,13 @@ import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
 class Test {
-    protected ArrayList<Integer> nums;
+    protected ESJList nums;
     
-    public ArrayList<Integer> nums() { return nums; }
+    public ESJList nums() { return nums; }
     
-    public boolean isFoo(int j) { return isFoo_univQuantify_0(j) && nums.get(0) < j * 2; }
+    public boolean isFoo(int j) { return nums.get(0) < j; }
     
-    boolean isFoo_univQuantify_0(int j) { for (Integer w : nums()) if (!(w > j)) return false;
-                                          return true; }
-    
-    LogFormula isFoo_log(int j) { return new LogFormula(new LogFormula(""), "&&", new LogFormula("")); }
+    LogFormula isFoo_log(int j) { return nums.get_log(new LogInt("0")).ArithOp("<", j); }
     
     public void fallback() { System.out.println("--> fallback initiated..."); }
     

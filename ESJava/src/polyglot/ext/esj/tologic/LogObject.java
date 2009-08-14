@@ -16,10 +16,6 @@ public class LogObject  {
 	this(string, 0, false);
     }
 
-    public LogObject(LogObject s1, String o, LogObject s2) {
-	this("(" + s1.string() + o + s2.string() + ")", 0, false);
-    }
-
     public LogObject(String string, int listSize, boolean isaListInstVar) {
 	super();
 	this.string = string;
@@ -49,11 +45,20 @@ public class LogObject  {
     }
 
     public String sumValue_log() {
+	//return new LogInt("sum (" + string + ")");
 	return "sum (" + string + ")";
     }
 
     public static String join(String s1, String s2) {
 	return s1 + "." + s2;
+    }
+
+    public LogObject CmpOp(String o, LogObject o2) {
+	return new LogFormula("(" + sumValue_log() + o + o2.sumValue_log() + ")");
+    }
+
+    public LogObject ArithOp(String o, LogObject o2) {
+	return new LogSet("(" + sumValue_log() + o + o2.sumValue_log() + ")");
     }
 
 
