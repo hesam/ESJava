@@ -30,7 +30,9 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
               fl.classicFlags(Flags.NONE);
               fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 	      List mStmts = new TypedList(new LinkedList(), Stmt.class, false);
+	      List logmStmts = new TypedList(new LinkedList(), Stmt.class, false);
               mStmts.add(nf.JL5Return(null, nf.BooleanLit(null,true)));
+              logmStmts.add(nf.JL5Return(null, nf.NullLit(null)));
 
 	      for (ESJQuantifyExpr a : (List<ESJQuantifyExpr>)predExprs) { 
 	          a.parentMethod(methodDecl);
@@ -38,7 +40,6 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		  boolean quantKind = a.quantKind();
 		  String quantVarN = a.quantVarN();
 		  Expr quantList = a.quantListExpr();
-		  System.out.println("=>" + quantList);
                   ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr();
 		  List quantVarD = a.quantVarD();
 		  LocalInstance quantVarI = a.quantVarI();
@@ -53,20 +54,20 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 						  quantList, quantExpr); 
                   
                   extraMtds.add(extraMtd);
+
+		  ESJLogPredMethodDecl extraLogMtd = nf.ESJLogPredMethodDecl(null, fl,
+	                                          nf.CanonicalTypeNode(null,ts.typeForName("polyglot.ext.esj.tologic.LogFormula")),
+						  methodDecl.name() + "_log", 
+						  methodDecl.formals(), 
+						  new TypedList(new LinkedList(), TypeNode.class, false), 
+						  methodDecl.body(), methodDecl.throwTypes(),
+						  quantKind, quantVarN, quantVarD, quantVarI, 
+						  quantList, quantExpr); 
+                  
+                  extraMtds.add(extraLogMtd);
+
              }
 
-             ESJLogPredMethodDecl extraMtdLog = nf.ESJLogPredMethodDecl(null, fl,
-	                                          nf.CanonicalTypeNode(null,ts.Boolean()), 
-	                                          //nf.CanonicalTypeNode(null,ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), 
-						  methodDecl.name() + "_log" , 
-						  //TypedList.copyAndCheck(methodDecl.formals(), Formal.class, true),
-						  methodDecl.formals(),
-						  new TypedList(new LinkedList(), TypeNode.class, false), 
-						  //nf.Block(null, TypedList.copyAndCheck(methodDecl.body().statements(), Stmt.class, true)),
-						  methodDecl.body(),
-						  new TypedList(new LinkedList(), TypeNode.class, false), ((ESJQuantifyExpr) predExprs.get(0)).quantVarI(), predExprs);
-
-             //extraMtds.add(extraMtdLog);
 	     return extraMtds;
     }
 
@@ -120,6 +121,10 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
 	    return this.nf.ESJQuantifyExpr(pos,quantKind,quantVarN, quantVarD, quantVarI, quantListExpr,quantClauseExpr);
 }
+
+
+
+
 :};
 
 terminal Token PREDICATE;

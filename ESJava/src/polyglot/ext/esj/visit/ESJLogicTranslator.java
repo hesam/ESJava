@@ -56,8 +56,8 @@ public class ESJLogicTranslator extends ContextVisitor {
     public Node toLogicExpr(Node r) throws SemanticException {
 
 
+	System.out.println("Hi. We've got a: " + r.getClass());
 	System.out.println(r);
-	System.out.println(r.getClass());
 	if (r instanceof ESJLogPredMethodDecl) {	 
 	    ESJLogPredMethodDecl methodDecl = (ESJLogPredMethodDecl) r;
 	    List formals = new TypedList(new LinkedList(), Formal.class, false);
@@ -71,11 +71,9 @@ public class ESJLogicTranslator extends ContextVisitor {
 	    fl.classicFlags(Flags.NONE);
 	    fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 
-	    for (ESJQuantifyExpr q : (List<ESJQuantifyExpr>) methodDecl.predExprs()) {
-		System.out.println(q.quantVarI());		
-		LocalDecl d = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), q.quantVarN(), nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), args, null, new TypedList(new LinkedList(), TypeNode.class, false)));
-		block = block.prepend((Stmt) d);
-	    }
+	    LocalDecl d = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), methodDecl.quantVarN(), nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), args, null, new TypedList(new LinkedList(), TypeNode.class, false)));
+	    //block = block.prepend((Stmt) d);
+
 	    System.out.println(block.statements());		
 	    return methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula"))).formals(formals).body(block);
 	    				    
@@ -102,6 +100,7 @@ public class ESJLogicTranslator extends ContextVisitor {
 	    args.add((Expr) toLogicExpr(b.right()));
 	    return nf.Call(null,(Expr) toLogicExpr(b.left()), "arithOp", args);
 	} else if (r instanceof ESJQuantifyExpr) {
+	    System.out.println("for sure!");		
 	    ESJQuantifyExpr q = (ESJQuantifyExpr) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
@@ -116,9 +115,12 @@ public class ESJLogicTranslator extends ContextVisitor {
 	    return nf.Call(null, (Receiver) toLogicExpr(c.target()), c.name() + "_log" , args);
 	} else if (r instanceof Field) {
 	    return r;
-	} else if (r instanceof Expr) {
-	    return r;
 	} else if (r instanceof Local) {
+	    System.out.println("this-----> " + r);
+	    Local l = (Local) r;
+	    System.out.println(l.name());
+	    return l;	    
+	} else if (r instanceof Expr) {
 	    return r;
 	} else if (r instanceof IntLit) {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);

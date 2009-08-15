@@ -18,7 +18,7 @@ class Test {
     predicate public boolean isFoo(int j) {
 	//nums.get(0) > j
 	all w : nums() | w > j 
-	//nums.indices().allButLast().get(0) < j
+	    //&& nums.indices().allButLast().get(0) < j
     }
 
     public void fallback() {

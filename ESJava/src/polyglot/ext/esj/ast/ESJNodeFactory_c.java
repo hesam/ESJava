@@ -34,10 +34,11 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     public ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags, 
 						     TypeNode returnType, String name, 
 						     List formals, List throwTypes, Block body, 
-						     List paramTypes, 
-						     LocalInstance quantVarI,
-						     List predExprs) {	
-    	return new ESJLogPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantVarI, predExprs);
+						     List paramTypes, boolean quantKind, 
+						     String quantVarN,
+						     List quantVarD, LocalInstance quantVarI,
+						     Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {	
+    	return new ESJLogPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
     }
 
     public ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
@@ -53,6 +54,12 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 					   List quantVarD, LocalInstance quantVarI, 
 					   Expr quantListExpr, Expr quantClauseExpr) {
 	return new ESJQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
+    }
+
+    public ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, boolean quantKind, String quantVarN, 
+					   List quantVarD, LocalInstance quantVarI, 
+					   Expr quantListExpr, Expr quantClauseExpr) {
+	return new ESJLogQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
     }
 
     public ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, CanonicalTypeNode theType) {

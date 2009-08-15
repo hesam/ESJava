@@ -103,19 +103,20 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     public Node visitChildren(NodeVisitor v) {
 	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 	List formals = visitList(this.formals, v);
+	System.out.println("1a");
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
+	System.out.println("2a");
 	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
 	//List quantVarD = visitList(this.quantVarD, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	Block body = (Block) visitChild(this.body, v);
+	System.out.println("3a");
 	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN , this.quantVarD, this.quantVarI, quantListExpr, quantClauseExpr);
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	    // findout what type is quantListExpr list of (can be a subtype a generic...)
 	    TypeSystem ts = tc.typeSystem();
-	    System.out.println("list: " + quantListExpr);
-	    System.out.println("type: " + (ReferenceType) quantListExpr.type());
 	    ReferenceType t = (ReferenceType) quantListExpr().type();
 	    while (! ((JL5ParsedClassType) t).isGeneric()) {
 		t = (ReferenceType) ts.superType((ReferenceType) t);

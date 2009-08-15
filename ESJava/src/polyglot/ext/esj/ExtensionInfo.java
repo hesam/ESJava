@@ -81,13 +81,15 @@ public class ExtensionInfo extends polyglot.ext.jl5.ExtensionInfo {
 	beforePass(passes, Pass.PRE_OUTPUT_ALL,
 		   new VisitorPass(TRANSLATE_TO_JAVA, job,
 				   new ESJJavaTranslator(job, ts, nf)));
-	/*
+
 	beforePass(passes, TRANSLATE_TO_JAVA,
 		   new VisitorPass(TRANSLATE_TO_LOGIC, job,
 				   new ESJLogicTranslator(job, ts, nf)));	
-	*/
+
 	removePass(passes, Pass.REACH_CHECK); //FIXME
 	removePass(passes, Pass.EXC_CHECK); //FIXME
+
+	//removePass(passes, TRANSLATE_TO_JAVA); //FIXME
 
         return passes;
     }

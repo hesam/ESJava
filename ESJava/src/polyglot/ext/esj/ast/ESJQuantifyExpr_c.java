@@ -88,10 +88,8 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	    n.quantVarI = quantVarI;
 	    n.quantListExpr = quantListExpr;
 	    n.quantClauseExpr = quantClauseExpr;
-	    System.out.println("hi:" + n);
 	    return n;
 	}
-	System.out.println("hi");
 	return this;
     }
 

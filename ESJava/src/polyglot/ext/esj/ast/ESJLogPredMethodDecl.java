@@ -11,6 +11,11 @@ import polyglot.ext.jl5.ast.JL5MethodDecl;
 /** the relational logic counterpart of the predicate method decl **/
 public interface ESJLogPredMethodDecl extends JL5MethodDecl {
 
-    public List predExprs();  
+    public boolean quantKind();
+    public String quantVarN();    
+    public List quantVarD();
     public LocalInstance quantVarI();
+    public Expr quantListExpr();
+    public ESJQuantifyClauseExpr quantClauseExpr();
+
 }
