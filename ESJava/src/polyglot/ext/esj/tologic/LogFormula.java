@@ -19,9 +19,14 @@ public class LogFormula extends LogObject {
 	super(string, listSize, isaListInstVar);
     }
 
-    public LogFormula FormulaOp(String o, LogFormula o2) {
+    public LogFormula formulaOp(String o, LogFormula o2) {
 	return new LogFormula("(" + string + " " + o + " " + o2.string() + ")");
     }
 
+    
+    public static LogFormula quantifyOp(LogFormula f) {
+	//return new LogFormula("(");// + string + " " + o + " " + o2.string() + ")");
+	return f;
+    }
 
 }

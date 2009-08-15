@@ -19,6 +19,10 @@ public class LogSet extends LogObject {
 	return arithOp("-", ESJInteger.atom_log(listSize));
     }
 
+    public LogAtom get_log(LogInt index) {
+	return new LogAtom(LogObject.join_log(index.intValue_log().string(),string));
+    }                              
+
     public LogSet arithOp(String o, LogSet o2) {
 	return new LogSet("(" + string + " " + o + " " + o2.string() + ")");
     }

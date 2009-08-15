@@ -41,7 +41,7 @@ public class ESJList extends ArrayList<Integer> {
     }
 
     public LogAtom get_log(LogInt index) {
-	return new LogAtom(LogObject.join(index.intValue_log().string(),rel_log.id()));
+	return new LogAtom(LogObject.join_log(index.intValue_log().string(),rel_log.id()));
     }                              
 
     public void fallback() { System.out.println("--> fallback initiated..."); }

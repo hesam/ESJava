@@ -49,7 +49,7 @@ public class LogObject  {
 	return "sum (" + string + ")";
     }
 
-    public static String join(String s1, String s2) {
+    public static String join_log(String s1, String s2) {
 	return s1 + "." + s2;
     }
 

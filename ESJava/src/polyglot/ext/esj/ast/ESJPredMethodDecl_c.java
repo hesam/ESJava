@@ -24,15 +24,16 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     protected boolean quantKind;
     protected String quantVarN;
     protected List quantVarD;
-    protected LocalInstance quantVarI;
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
-
+    protected LocalInstance quantVarI;
+    
     public ESJPredMethodDecl_c(Position pos, FlagAnnotations flags,
 			       TypeNode returnType, String name,
 			       List formals,
-			       List throwTypes, Block body, List paramTypes, String quantMtdId, boolean quantKind,
-			       String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
+			       List throwTypes, Block body, List paramTypes, String quantMtdId,
+			       boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, 
+			       Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
 	this.quantMtdId = quantMtdId;
 	this.quantKind = quantKind;
@@ -47,15 +48,15 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     public String id() {
 	return quantMtdId;
     }
-    
+
     public boolean quantKind() {
 	return quantKind;
     }
 
-    public String quantVar() {
+    public String quantVarN() {
 	return quantVarN;
     }
-
+    
     public List quantVarD() {
 	return quantVarD;
     }
@@ -74,8 +75,8 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 
     /** Reconstruct the method. */
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
-				       List throwTypes, Block body, Expr quantListExpr, 
-				       ESJQuantifyClauseExpr quantClauseExpr, List quantVarD) {
+				       List throwTypes, Block body,  
+				       boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	if (returnType != this.returnType ||
 	    ! CollectionUtil.equals(formals, this.formals) ||
 	    quantListExpr != this.quantListExpr ||
@@ -85,9 +86,12 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	    ESJPredMethodDecl_c n = (ESJPredMethodDecl_c) copy();
 	    n.formals = formals; //TypedList.copyAndCheck(throwTypes, Formal.class, true);
 	    n.throwTypes = TypedList.copyAndCheck(throwTypes, TypeNode.class, true);
+	    n.quantKind = quantKind;
+	    n.quantVarN = quantVarN;
 	    n.quantListExpr = quantListExpr;
 	    n.quantClauseExpr = quantClauseExpr;
 	    n.quantVarD = TypedList.copyAndCheck(quantVarD, LocalDecl.class, true);
+	    n.quantVarI = quantVarI;
 	    n.body = body;
 	    return n;
 	}
@@ -104,14 +108,15 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	//List quantVarD = visitList(this.quantVarD, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	Block body = (Block) visitChild(this.body, v);
-	return reconstruct(returnType, formals, throwTypes, body, quantListExpr, 
-			   quantClauseExpr, this.quantVarD);
+	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN , this.quantVarD, this.quantVarI, quantListExpr, quantClauseExpr);
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	    // findout what type is quantListExpr list of (can be a subtype a generic...)
 	    TypeSystem ts = tc.typeSystem();
-	    ReferenceType t = (ReferenceType) quantListExpr.type();
+	    System.out.println("list: " + quantListExpr);
+	    System.out.println("type: " + (ReferenceType) quantListExpr.type());
+	    ReferenceType t = (ReferenceType) quantListExpr().type();
 	    while (! ((JL5ParsedClassType) t).isGeneric()) {
 		t = (ReferenceType) ts.superType((ReferenceType) t);
 	    }
@@ -122,25 +127,25 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 		newVarD.add(d.type(d.type().type((Type) ((ParameterizedType) t).typeArguments().get(0))));
 	    }
 	    this.quantVarD = newVarD;
-	    //System.out.println(quantVarD);
 	
 	return super.typeCheck(tc);
     }
 
-    
+
     public Context enterScope(Node child, Context c) {
 
+	//System.out.println("qi: " + quantVarI);
+	
 	if (child instanceof ESJQuantifyClauseExpr) {
+	System.out.println(child + "(" + child.getClass() + ")");
 	    c.addVariable(quantVarI);
 	    //child.addDecls(c);
-	    
 	    for (Formal f : (List<Formal>) formals) {
 		c.addVariable(c.typeSystem().localInstance(null,  flags(),f.declType(), f.name()));
 	    }
 	}
 
 	return super.enterScope(child, c);
-    }
-    
+	}
 
 }

@@ -10,9 +10,10 @@ class Test {
     
     public ESJList nums() { return nums; }
     
-    public boolean isFoo(int j) { return nums.get(0) < j; }
+    public boolean isFoo(int j) { return isFoo_univQuantify_0(j); }
     
-    LogFormula isFoo_log(LogInt j) { return nums.get_log(new LogInt("0")).cmpOp("<", j); }
+    boolean isFoo_univQuantify_0(int j) { for (Integer w : nums()) if (!(w > j)) return false;
+                                          return true; }
     
     public void fallback() { System.out.println("--> fallback initiated..."); }
     

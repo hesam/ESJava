@@ -14,9 +14,8 @@ public interface ESJPredMethodDecl extends JL5MethodDecl {
 
     public String id();	  
     public boolean quantKind();
-    public String quantVar();
+    public String quantVarN();    
     public List quantVarD();
-    public LocalInstance quantVarI();
     public Expr quantListExpr();
     public ESJQuantifyClauseExpr quantClauseExpr();
     

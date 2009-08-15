@@ -84,18 +84,22 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	    ESJQuantifyExpr_c n = (ESJQuantifyExpr_c) copy();
 	    n.quantKind = quantKind;
 	    n.quantVarN = quantVarN;
-	    n.quantVarD = TypedList.copyAndCheck(quantVarD, LocalDecl.class, true);
+	    n.quantVarD = quantVarD; //TypedList.copyAndCheck(quantVarD, LocalDecl.class, true);
+	    n.quantVarI = quantVarI;
 	    n.quantListExpr = quantListExpr;
 	    n.quantClauseExpr = quantClauseExpr;
+	    System.out.println("hi:" + n);
 	    return n;
 	}
+	System.out.println("hi");
 	return this;
     }
 
     // Visit the children of the method. 
 
     public Node visitChildren(NodeVisitor v) {
-
+	System.out.println("-->" + quantVarD);
+	System.out.println("-->" + ((LocalDecl) quantVarD.get(0)).localInstance());
 	List quantVarD = (List) visitList(this.quantVarD, v);
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
 	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
@@ -108,6 +112,19 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	n = (ESJQuantifyExpr)n.type(tc.typeSystem().Boolean()); //FIXME
 	return n;
     } 
+    /*
+    public Context enterScope(Node child, Context c) {
+	System.out.println(child);
+	System.out.println("qi2: " + quantVarI);
+	if (child instanceof ESJQuantifyClauseExpr) {
+	    c.addVariable(quantVarI);
+	    //child.addDecls(c);
+	    
+	}
+
+	return super.enterScope(child, c);
+	}
+    */
 
 }
 
