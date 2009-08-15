@@ -1,0 +1,79 @@
+import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.tologic.*;
+
+public class MyList extends ESJList
+{
+
+    /*@
+        // CLASS INVARIANTS	
+    @*/
+
+    // Constructor
+    //none..
+
+
+    public MyList prime() {
+	return this;
+    }
+
+
+    // PREDICATE METHODS
+    
+    predicate public boolean isSorted() {
+	all i : indices().allButLast() | get(i) <= get(i+1)
+    }
+
+    predicate public boolean isPermutationOf(ESJList L) {
+	all i : int | count(i) == L.count(i)
+    }
+
+    ensured public void sort() 
+	ensures (this.prime().isPermutationOf(this) && 
+		 this.prime().isSorted()) {
+	int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
+	for(int i=size()-1;i>0;i--) {
+	    //for(int i=size()-2;i>0;i--) { // <-- TEST: ASSERTION VIOLATION BUG INTRODUCED
+	    for(int j=0;j<i;j++) {
+		if (get(j).intValue() > get(i).intValue()) {
+		    Integer t = get(i);
+		    remove(i);
+		    add(i,get(j));
+		    remove(j);
+		    add(j,t);
+		}
+	    }
+	}
+    }
+    
+    public static void main(String[] args) {
+
+        MyList ta = new MyList();	
+        MyList tb = new MyList();
+	int [] a = {1,2,3,4,4,5};
+	int [] b = {4,3,2,4,5,1};
+	for(int i=0;i<a.length;i++) {
+	    ta.add(new Integer(a[i]));
+	    tb.add(new Integer(b[i]));
+	}
+
+        ta.println();
+	System.out.println("sorted?...");
+	System.out.println(ta.isSorted());
+        tb.println();
+	System.out.println("sorted?...");
+	System.out.println(tb.isSorted());
+	System.out.println("permutations?...");
+	System.out.println(ta.isPermutationOf(tb));
+	System.out.println("sorting second...");
+	tb.sort();
+	System.out.println(tb);
+	System.out.println("now sorted?...");
+	System.out.println(tb.isSorted());
+	ta.newPrime();
+	System.out.println(ta.get_log( new LogInt("1")).string());
+
+
+    }
+
+}
+
