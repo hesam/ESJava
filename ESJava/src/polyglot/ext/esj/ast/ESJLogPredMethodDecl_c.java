@@ -96,15 +96,11 @@ public class ESJLogPredMethodDecl_c extends JL5MethodDecl_c
     public Node visitChildren(NodeVisitor v) {
 	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 	List formals = visitList(this.formals, v);
-	System.out.println("1");
 	////List quantVarD = (List) visitList(this.quantVarD, v);
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
-	System.out.println("2a");
 	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
 	List throwTypes = visitList(this.throwTypes, v);
-	System.out.println("2");
 	Block body = (Block) visitChild(this.body, v);
-	System.out.println("3");
 	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN, this.quantVarD, quantListExpr, quantClauseExpr);
     }
 

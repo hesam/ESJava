@@ -90,7 +90,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 	for(Formal f : (List<Formal>)(a.parentMethod().formals())) {
 	    args.add(new Local_c(null,f.name()));
 	}
-	System.out.println("doing it");
 	return nf.Call(null,null,quantId, args);
     }
 
@@ -103,7 +102,6 @@ public class ESJJavaTranslator extends ContextVisitor {
     }
 
     protected Node leaveCall(Node n) throws SemanticException {
-	System.out.println("now java trans");
 	if (n instanceof ESJPredMethodDecl) {	    
 	    return super.leaveCall(DesugarPredMethodDecl((ESJPredMethodDecl)n));
 	} else if (n instanceof ESJEnsuredMethodDecl) {
