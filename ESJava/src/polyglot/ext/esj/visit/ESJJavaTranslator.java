@@ -103,6 +103,7 @@ public class ESJJavaTranslator extends ContextVisitor {
     }
 
     protected Node leaveCall(Node n) throws SemanticException {
+	System.out.println("now java trans");
 	if (n instanceof ESJPredMethodDecl) {	    
 	    return super.leaveCall(DesugarPredMethodDecl((ESJPredMethodDecl)n));
 	} else if (n instanceof ESJEnsuredMethodDecl) {

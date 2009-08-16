@@ -98,14 +98,14 @@ public class ESJLogPredMethodDecl_c extends JL5MethodDecl_c
 	List formals = visitList(this.formals, v);
 	System.out.println("1");
 	////List quantVarD = (List) visitList(this.quantVarD, v);
-	//Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
+	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
 	System.out.println("2a");
-	//ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
+	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	System.out.println("2");
 	Block body = (Block) visitChild(this.body, v);
 	System.out.println("3");
-	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN, this.quantVarD, this.quantListExpr, this.quantClauseExpr);
+	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN, this.quantVarD, quantListExpr, quantClauseExpr);
     }
 
     public Context enterScope(Node child, Context c) {
@@ -125,10 +125,10 @@ public class ESJLogPredMethodDecl_c extends JL5MethodDecl_c
 	    }
 	}
 
-	if (child instanceof ESJQuantifyClauseExpr){ // || child instanceof ESJLogQuantifyExpr) {
+	if (child instanceof ESJLogQuantifyExpr){ // || child instanceof ESJLogQuantifyExpr) {
 
 
-	    //c.addVariable(quantVarI);
+	    c.addVariable(quantVarI);
 
 	    for (Formal f : (List<Formal>) formals) {
 		c.addVariable(c.typeSystem().localInstance(null,  flags(),f.declType(), f.name()));
