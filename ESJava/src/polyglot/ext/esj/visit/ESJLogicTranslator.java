@@ -120,8 +120,6 @@ public class ESJLogicTranslator extends ContextVisitor {
 	    Local l = (Local) r;
 	    System.out.println(l.name());
 	    return l;	    
-	} else if (r instanceof Expr) {
-	    return r;
 	} else if (r instanceof IntLit) {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, "" + ((IntLit) r).value() ));

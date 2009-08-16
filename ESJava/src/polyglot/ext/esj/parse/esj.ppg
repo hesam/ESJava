@@ -55,18 +55,19 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
                   
                   extraMtds.add(extraMtd);
 
+
+             }
+
 		  ESJLogPredMethodDecl extraLogMtd = nf.ESJLogPredMethodDecl(null, fl,
-	                                          nf.CanonicalTypeNode(null,ts.typeForName("polyglot.ext.esj.tologic.LogFormula")),
+	                                          nf.CanonicalTypeNode(null,ts.Boolean()), //typeForName("polyglot.ext.esj.tologic.LogFormula")),
 						  methodDecl.name() + "_log", 
 						  methodDecl.formals(), 
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
 						  methodDecl.body(), methodDecl.throwTypes(),
-						  quantKind, quantVarN, quantVarD, quantVarI, 
-						  quantList, quantExpr); 
+						  true, null, null, null, 
+						  null, null); 
                   
                   extraMtds.add(extraLogMtd);
-
-             }
 
 	     return extraMtds;
     }

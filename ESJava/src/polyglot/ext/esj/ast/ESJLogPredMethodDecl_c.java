@@ -97,28 +97,28 @@ public class ESJLogPredMethodDecl_c extends JL5MethodDecl_c
 	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 	List formals = visitList(this.formals, v);
 	System.out.println("1");
-	//List quantVarD = (List) visitList(this.quantVarD, v);
-	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
+	////List quantVarD = (List) visitList(this.quantVarD, v);
+	//Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
 	System.out.println("2a");
-	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
+	//ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	System.out.println("2");
 	Block body = (Block) visitChild(this.body, v);
 	System.out.println("3");
-	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN, this.quantVarD, quantListExpr, quantClauseExpr);
+	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN, this.quantVarD, this.quantListExpr, this.quantClauseExpr);
     }
 
     public Context enterScope(Node child, Context c) {
-
+	System.out.println("\nchild: " + child + "\n" + child.getClass() + "\n" );
 	if (child instanceof Block) { //ESJQuantifyExpr) {
-	    /*try {
-		 System.out.println("adding: " + quantVarI);
-		    System.out.println("\nchild: " + child + "\n" + child.getClass() + "\n" );
-		    c.addVariable(quantVarI.type(c.typeSystem().typeForName("polyglot.ext.esj.tologic.LogObject")));
+	    //try {
+	    //	 System.out.println("adding: " + quantVarI);
+	    //	    System.out.println("\nchild: " + child + "\n" + child.getClass() + "\n" );
+	    //	    c.addVariable(quantVarI.type(c.typeSystem().typeForName("polyglot.ext.esj.tologic.LogObject")));
 
-		    } catch (SemanticException e) {}*/
+	    //	    } catch (SemanticException e) {}*/
 
-	    c.addVariable(quantVarI);
+	    //c.addVariable(quantVarI);
 
 	    for (Formal f : (List<Formal>) formals) {
 		c.addVariable(c.typeSystem().localInstance(null,  flags(),f.declType(), f.name()));
@@ -127,14 +127,8 @@ public class ESJLogPredMethodDecl_c extends JL5MethodDecl_c
 
 	if (child instanceof ESJQuantifyClauseExpr){ // || child instanceof ESJLogQuantifyExpr) {
 
-	    /*try {
-		 System.out.println("2 adding: " + quantVarI);
-		    System.out.println("\nchild: " + child + "\n" + child.getClass() + "\n" );
-		    c.addVariable(quantVarI.type(c.typeSystem().typeForName("polyglot.ext.esj.tologic.LogObject")));
 
-		    } catch (SemanticException e) {}*/
-
-	    c.addVariable(quantVarI);
+	    //c.addVariable(quantVarI);
 
 	    for (Formal f : (List<Formal>) formals) {
 		c.addVariable(c.typeSystem().localInstance(null,  flags(),f.declType(), f.name()));
