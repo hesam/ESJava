@@ -12,21 +12,19 @@ public class MyList extends ESJList
     //none..
 
 
-    public MyList prime() {
-	return this;
-    }
-
-
     // PREDICATE METHODS
-    
+    /*
     predicate public boolean isSorted() {
 	all i : indices().allButLast() | get(i) <= get(i+1)
-    }
+	}*/
 
+    
     predicate public boolean isPermutationOf(ESJList L) {
-	all i : int | count(i) == L.count(i)
-    }
+	//all i : int | count(i) == L.count(i)
+	all k : indices() | get(k) == get(k+1)
+	}
 
+    /*
     ensured public void sort() 
 	ensures (this.prime().isPermutationOf(this) && 
 		 this.prime().isSorted()) {
@@ -43,7 +41,7 @@ public class MyList extends ESJList
 		}
 	    }
 	}
-    }
+	}*/
     
     public static void main(String[] args) {
 
@@ -55,7 +53,7 @@ public class MyList extends ESJList
 	    ta.add(new Integer(a[i]));
 	    tb.add(new Integer(b[i]));
 	}
-
+	/*
         ta.println();
 	System.out.println("sorted?...");
 	System.out.println(ta.isSorted());
@@ -71,7 +69,7 @@ public class MyList extends ESJList
 	System.out.println(tb.isSorted());
 	ta.newPrime();
 	System.out.println(ta.get_log( new LogInt("1")).string());
-
+	*/
 
     }
 

@@ -34,11 +34,8 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     public ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags, 
 						     TypeNode returnType, String name, 
 						     List formals, List throwTypes, Block body, 
-						     List paramTypes, boolean quantKind, 
-						     String quantVarN,
-						     List quantVarD, LocalInstance quantVarI,
-						     Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {	
-    	return new ESJLogPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
+						     List paramTypes) {	
+    	return new ESJLogPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
     }
 
     public ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,

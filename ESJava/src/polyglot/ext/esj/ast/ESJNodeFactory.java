@@ -27,10 +27,7 @@ public interface ESJNodeFactory extends JL5NodeFactory {
     ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,
 					      List formals, List throwTypes, Block body, 
-					      List paramTypes, boolean quantKind, 
-					      String quantVarN, List quantVarD, 
-					      LocalInstance quantVarI,  Expr quantListExpr, 
-					      ESJQuantifyClauseExpr quantClauseExpr); 
+					      List paramTypes); 
     
     ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,

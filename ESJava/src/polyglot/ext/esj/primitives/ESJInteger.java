@@ -751,6 +751,10 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
       return new LogSet("u" + n + (MIN_VALUE == 0 ? "" : "@" +  (-1 * MIN_VALUE)));
   }
 
+  public static LogSet allInstances_log() {
+      return new LogSet("u" + BoundsSize());
+  }
+
   public static ESJList allInstances() {
       return range(MIN_VALUE,MAX_VALUE);
   }

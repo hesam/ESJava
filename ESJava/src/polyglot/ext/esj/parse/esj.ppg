@@ -59,7 +59,18 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
              }
 
-	     ESJQuantifyExpr a = (ESJQuantifyExpr) predExprs.get(0);
+	     	  boolean quantKind = true;
+		  String quantVarN = null;
+		  List quantVarD = null;
+		  LocalInstance quantVarI = null;
+		  
+		  if (predExprs.size() > 0) {
+	     	      ESJQuantifyExpr a = (ESJQuantifyExpr) predExprs.get(0);
+		  quantKind = a.quantKind();
+		  quantVarN = a.quantVarN();
+		  quantVarD = a.quantVarD();
+		  quantVarI = a.quantVarI();
+		  }
 
 
 		  ESJLogPredMethodDecl extraLogMtd = nf.ESJLogPredMethodDecl(null, fl,
@@ -67,10 +78,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 						  methodDecl.name() + "_log", 
 						  methodDecl.formals(), 
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
-						  this.makeESJLogPredBlock(methodDecl,a.quantVarN()), methodDecl.throwTypes(),
-						  a.quantKind(), a.quantVarN(), a.quantVarD(), 
-						  a.quantVarI(), 
-						  null, null); 
+						  this.makeESJLogPredBlock(methodDecl,quantVarN), methodDecl.throwTypes()); 
                   
                   extraMtds.add(extraLogMtd);
 
@@ -135,25 +143,30 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
             fl.classicFlags(Flags.NONE);
             fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 
-	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    args.add(nf.StringLit(null, ""));
-	    //LocalDecl d = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), quantVarN, nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), args, null, new TypedList(new LinkedList(), TypeNode.class, false )));
-	    LocalDecl d = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.Int()), quantVarN, nf.IntLit(null, IntLit.INT, 0));
 
 	    //FIXME
 	    System.out.println("==== " + ((Return) methodDecl.body().statements().get(0)).expr());
 	    Expr newExpr = makeESJLogPredBlockHelper(((Return) methodDecl.body().statements().get(0)).expr());
 	    List l = new TypedList(new LinkedList(), Stmt.class, false);
-	    l.add((Stmt) d);
+	    if (quantVarN != null) {
+	    LocalDecl d = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.Int()), quantVarN, nf.IntLit(null, IntLit.INT, 0));
+	    	    l.add((Stmt) d);		
+            }
 	    l.add(nf.Return(null, newExpr));
 	    System.out.println("=====RESULT=====" + methodDecl.body(methodDecl.body().statements(l)).body());	    
 	    return methodDecl.body((Block) methodDecl.body().statements(l)).body();
      }    
 
      public Expr makeESJLogPredBlockHelper(Expr e) {
-     	    if (e instanceof Binary) {
+     	    if (e instanceof FormulaBinary) {
 	       	  Binary b = (Binary) e;
 	       	  return nf.FormulaBinary(null, b.left(), b.operator(), b.right());
+	    } else if (e instanceof CmpBinary) {
+	       	  Binary b = (Binary) e;
+	       	  return nf.CmpBinary(null, b.left(), b.operator(), b.right());
+	    } else if (e instanceof Binary) {
+	       	  Binary b = (Binary) e;
+	       	  return nf.Binary(null, b.left(), b.operator(), b.right());
 	    } else if (e instanceof ESJQuantifyExpr) {
 	       	  ESJQuantifyExpr q = (ESJQuantifyExpr) e;
 	       	  return nf.ESJLogQuantifyExpr(null, q.quantKind(), q.quantVarN(), q.quantVarD(), q.quantVarI(), q.quantListExpr(), q.quantClauseExpr().expr());

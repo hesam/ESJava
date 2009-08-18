@@ -71,9 +71,6 @@ public class ESJLogicTranslator extends ContextVisitor {
 	    fl.classicFlags(Flags.NONE);
 	    fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 
-	    //LocalDecl d = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), methodDecl.quantVarN(), nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), args, null, new TypedList(new LinkedList(), TypeNode.class, false)));
-	    //block = block.prepend((Stmt) d);
-
 	    System.out.println(block.statements());		
 	    return methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula"))).formals(formals).body(block);
 	    				    
@@ -107,9 +104,9 @@ public class ESJLogicTranslator extends ContextVisitor {
 	    args.add(nf.BooleanLit(null, q.quantKind()));
 	    args.add(nf.StringLit(null, q.quantVarN()));
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
-	    //return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
-	    //return nf.Call(null,nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "quantifyOp", args);
 	    return nf.Call(null,(Expr) toLogicExpr(q.quantListExpr()), "quantifyOp", args);
+	} else if (r instanceof ESJQuantifyTypeExpr) {
+	    return nf.Call(null, ((ESJQuantifyTypeExpr) r).theType(), "allInstances_log",new TypedList(new LinkedList(), Expr.class, false));
 	} else if (r instanceof Return) {
 	    return nf.JL5Return(null, (Expr) toLogicExpr(((Return) r).expr()));
 	} else if (r instanceof Call) {

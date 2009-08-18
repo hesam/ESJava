@@ -40,7 +40,7 @@ public class ESJList extends ArrayList<Integer> {
 	return ESJInteger.atom_log(s);
     }
 
-    public LogAtom get_log(LogInt index) {
+    public LogAtom get_log(LogObject index) {
 	return new LogAtom(LogObject.join_log(index.intValue_log().string(),rel_log.id()));
     }                              
 
