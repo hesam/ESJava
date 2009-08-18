@@ -14,7 +14,7 @@ class Test {
     
     public boolean isFoo(int j) { return nums.get(0) > j; }
     
-    LogFormula isFoo_log(LogInt j) { return nums.get_log(new LogInt("0")).cmpOp(">", j); }
+    LogFormula isFoo_log(int j) { return nums.get_log(new LogInt("0")).cmpOp(">", j); }
     
     public void fallback() { System.out.println("--> fallback initiated..."); }
     

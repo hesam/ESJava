@@ -16,7 +16,7 @@ public class LogSet extends LogObject {
     }
 
     public LogSet allButLast_log() {
-	return arithOp("-", ESJInteger.atom_log(listSize));
+	return arithOp("-", ESJInteger.atom_log(listSize-1));
     }
 
     public LogAtom get_log(LogInt index) {
@@ -27,8 +27,12 @@ public class LogSet extends LogObject {
 	return new LogSet("(" + string + " " + o + " " + o2.string() + ")");
     }
 
-    public LogFormula quantifyOp(boolean quantKind, String quantVarN, LogFormula quantClauseExpr) {
+    public LogFormula quantifyOp(boolean quantKind, LogObject quantVarN, LogFormula quantClauseExpr) {
 	return new LogFormula("(" + (quantKind ? "all [" : "some [") + quantVarN + ": one " + string + "] | " + quantClauseExpr.string() + ")");
+    }
+
+    public LogInt count_log(LogObject itm) {
+	return new LogInt("#(" + string + "." + itm.string() + ")");
     }
 
 }

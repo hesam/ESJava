@@ -7,24 +7,40 @@ public class MyList extends ESJList
     /*@
         // CLASS INVARIANTS	
     @*/
+    public MyList() {
+	this(false, 0);
+    }
+
+    public MyList(boolean isaPrime, int fixedSize) {
+	super(isaPrime, fixedSize);
+	this.rel_log = new LogRelation("MyList" , Integer.class, Integer.class, true, isaPrime, fixedSize);
+	this.prime = isaPrime ? null : newPrime();
+
+    }
+
+    public MyList newPrime() {
+	return new MyList(true, size());
+    }
+
+
+    public MyList prime() { return this; }
+    public MyList prime_log() { return (MyList) prime; }
 
     // Constructor
     //none..
 
-
     // PREDICATE METHODS
-    /*
+    
     predicate public boolean isSorted() {
 	all i : indices().allButLast() | get(i) <= get(i+1)
-	}*/
-
-    
-    predicate public boolean isPermutationOf(ESJList L) {
-	//all i : int | count(i) == L.count(i)
-	all k : indices() | get(k) == get(k+1)
 	}
 
-    /*
+    
+    predicate public boolean isPermutationOf(ESJList l) {
+	all i : int | count(i) == l.count(i)
+	    }
+
+
     ensured public void sort() 
 	ensures (this.prime().isPermutationOf(this) && 
 		 this.prime().isSorted()) {
@@ -41,7 +57,7 @@ public class MyList extends ESJList
 		}
 	    }
 	}
-	}*/
+	}
     
     public static void main(String[] args) {
 
@@ -53,7 +69,6 @@ public class MyList extends ESJList
 	    ta.add(new Integer(a[i]));
 	    tb.add(new Integer(b[i]));
 	}
-	/*
         ta.println();
 	System.out.println("sorted?...");
 	System.out.println(ta.isSorted());
@@ -69,7 +84,9 @@ public class MyList extends ESJList
 	System.out.println(tb.isSorted());
 	ta.newPrime();
 	System.out.println(ta.get_log( new LogInt("1")).string());
-	*/
+	System.out.println(ta.prime_log().isSorted_log());
+	System.out.println(ta.prime_log().isPermutationOf_log(ta));
+
 
     }
 

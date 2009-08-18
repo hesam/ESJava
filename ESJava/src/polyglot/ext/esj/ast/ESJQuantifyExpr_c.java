@@ -96,8 +96,6 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
     // Visit the children of the method. 
 
     public Node visitChildren(NodeVisitor v) {
-	System.out.println("-->" + quantVarD);
-	System.out.println("-->" + ((LocalDecl) quantVarD.get(0)).localInstance());
 	List quantVarD = (List) visitList(this.quantVarD, v);
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
 	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);

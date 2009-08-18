@@ -36,13 +36,17 @@ public class ESJList extends ArrayList<Integer> {
     }
 
     public LogSet lastIndex_log() {
-	int s = rel_log.hasFixedSize() ? rel_log.fixedSize() : size();	
+	int s = rel_log.hasFixedSize() ? rel_log.fixedSize() - 1 : size() - 1;	
 	return ESJInteger.atom_log(s);
     }
 
     public LogAtom get_log(LogObject index) {
 	return new LogAtom(LogObject.join_log(index.intValue_log().string(),rel_log.id()));
     }                              
+
+    public LogInt count_log(LogObject itm) {
+	return new LogInt("#(" + rel_log.id() + "." + itm.string() + ")");
+    }
 
     public void fallback() { System.out.println("--> fallback initiated..."); }
     

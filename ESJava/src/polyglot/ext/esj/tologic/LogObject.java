@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 public class LogObject  {
 
+    static int VarCtr = 0;
+
     protected String string;
     //log0type log0listType 
     protected int listSize;
@@ -23,6 +25,9 @@ public class LogObject  {
 	this.isaListInstVar = isaListInstVar;
     }
 
+    public static String genVar_log() {
+    	return "S" + VarCtr++;
+    }
 
     public String string() {
 	return string;

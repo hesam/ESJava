@@ -38,6 +38,7 @@ public class ESJLogicTranslator extends ContextVisitor {
 	this.nf = (ESJNodeFactory) jlnf;
 	try {
 	    JTypeToLog.put("int", nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt"))); 
+	    JTypeToLog.put("polyglot.ext.esj.primitives.ESJList", nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogSet"))); 
 	} catch (SemanticException e) {
 	    
 	}
@@ -60,10 +61,11 @@ public class ESJLogicTranslator extends ContextVisitor {
 	//System.out.println(r);
 	if (r instanceof ESJLogPredMethodDecl) {	 
 	    ESJLogPredMethodDecl methodDecl = (ESJLogPredMethodDecl) r;
-	    List formals = new TypedList(new LinkedList(), Formal.class, false);
+	    List formals = methodDecl.formals(); /*new TypedList(new LinkedList(), Formal.class, false);
 	    for (Formal f : (List<Formal>) methodDecl.formals()) {
+		System.out.println("getting type map for: " + f.type().toString());
 		formals.add(f.type((TypeNode) JTypeToLog.get(f.type().toString())));
-	    }
+		}*/ //FIXME?
 	    Block block = (Block) toLogicExpr(methodDecl.body());
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, ""));
@@ -101,8 +103,9 @@ public class ESJLogicTranslator extends ContextVisitor {
 	} else if (r instanceof ESJLogQuantifyExpr) {
 	    ESJLogQuantifyExpr q = (ESJLogQuantifyExpr) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
+	    System.out.println("quantify expr: " + q.quantListExpr().type());
 	    args.add(nf.BooleanLit(null, q.quantKind()));
-	    args.add(nf.StringLit(null, q.quantVarN()));
+	    args.add(nf.Local(null, q.quantVarN()));
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
 	    return nf.Call(null,(Expr) toLogicExpr(q.quantListExpr()), "quantifyOp", args);
 	} else if (r instanceof ESJQuantifyTypeExpr) {
@@ -121,8 +124,8 @@ public class ESJLogicTranslator extends ContextVisitor {
 	} else if (r instanceof LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    args.add(nf.StringLit(null, l.name()));
-	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject"))).init(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), args, null, new TypedList(new LinkedList(), TypeNode.class, false )));
+	    args.add(nf.StringLit(null, LogObject.genVar_log())); //l.name()));
+	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt"))).init(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")), args, null, new TypedList(new LinkedList(), TypeNode.class, false ))); //FIXME
 	} else if (r instanceof Local) {
 	    return r;	    
 	}  else if (r instanceof Special) {
