@@ -16,11 +16,11 @@ class Test {
     
     LogFormula isFoo_log(int j) { return nums.get_log(new LogInt("0")).cmpOp(">", j); }
     
-    public void fallback() { System.out.println("--> fallback initiated..."); }
-    
     public void m1() { try { nums.add(0);
                              assert isFoo(3); }
-                       catch (Throwable rte) { fallback(); } }
+                       catch (Throwable rte) { m1_fallback(); } }
+    
+    LogFormula m1_fallback() { return this.isFoo_log(new LogInt("3")); }
     
     public static void main(String[] args) { Test t1 = new Test();
                                              t1.nums.add(0);

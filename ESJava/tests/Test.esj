@@ -25,10 +25,6 @@ class Test {
 	    //&& nums.indices().allButLast().get(0) < j
     }
 
-    public void fallback() {
-	System.out.println("--> fallback initiated...");
-    }
-
     ensured public void m1() 
 	ensures isFoo(3) {
 	nums.add(0);

@@ -55,6 +55,7 @@ public class ESJList extends ArrayList<Integer> {
     public boolean add (Integer o) {	
 	super.add(o);
 	rel_log.atIntIdxPut_log(size()-1, o);
+	prime.rel_log().incrFixedSize();
 	return true;
     }
 

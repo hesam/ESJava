@@ -124,8 +124,9 @@ public class ESJLogicTranslator extends ContextVisitor {
 	} else if (r instanceof LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    args.add(nf.StringLit(null, LogObject.genVar_log())); //l.name()));
-	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt"))).init(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")), args, null, new TypedList(new LinkedList(), TypeNode.class, false ))); //FIXME
+	    args.add(nf.StringLit(null, LogObject.genVar_log())); 
+	    args.add(nf.StringLit(null, l.type().toString()));
+	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar"))).init(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args, null, new TypedList(new LinkedList(), TypeNode.class, false ))); //FIXME
 	} else if (r instanceof Local) {
 	    return r;	    
 	}  else if (r instanceof Special) {

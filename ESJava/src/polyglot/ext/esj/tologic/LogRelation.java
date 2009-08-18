@@ -55,6 +55,8 @@ public class LogRelation extends Hashtable {
     public boolean isaList() { return isaList; }
     public boolean isaListInstVar() { return isaListInstVar; }
     public boolean hasFixedSize() { return fixedSize != 0; }
+    public void fixedSize(int s) { fixedSize = s; }
+    public void incrFixedSize() { fixedSize++; }
 
     public void put_log(int key, Object value) {
 	System.out.println("1" + "\n" + key + "\n" + value);

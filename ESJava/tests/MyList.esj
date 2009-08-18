@@ -40,7 +40,6 @@ public class MyList extends ESJList
 	all i : int | count(i) == l.count(i)
 	    }
 
-
     ensured public void sort() 
 	ensures (this.prime().isPermutationOf(this) && 
 		 this.prime().isSorted()) {

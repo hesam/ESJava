@@ -39,7 +39,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List catches = new TypedList(new LinkedList(), Catch.class, false);
 	Block extraMtdBlock = nf.Block(null, extraMtdBody);
 	List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
-	catchBody.add(nf.Eval(null, nf.Call(null, null, "fallback",
+	catchBody.add(nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback",
 					      new TypedList(new LinkedList(), Expr.class, false))));
 	Block catchBlock = nf.Block(null,catchBody);
 	catches.add(((ESJNodeFactory)nf).JL5Catch(null, methodDecl.catchFormal(), catchBlock));
