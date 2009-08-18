@@ -10,9 +10,13 @@ class Test {
 	super();
 	this.nums = new ESJList();
     }
-
+    
     public ESJList nums() {
 	return nums;
+    }
+
+    public LogSet nums_log() {
+	return new LogSet("A?.r?");
     }
 
     predicate public boolean isFoo(int j) {
@@ -36,7 +40,8 @@ class Test {
 	t1.nums.add(3);
 	t1.nums.add(5);
 	t1.nums.add(1);
-	System.out.println(t1.nums.indices_log().allButLast_log());
+	//System.out.println(t1.nums.indices_log().allButLast_log());
+	//System.out.println(t1.isFoo_log(new LogInt("2")));
     }
 
 }

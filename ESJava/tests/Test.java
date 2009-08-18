@@ -10,13 +10,15 @@ class Test {
     
     public ESJList nums() { return nums; }
     
+    public LogSet nums_log() { return new LogSet("A?.r?"); }
+    
     public boolean isFoo(int j) { return isFoo_univQuantify_0(j); }
     
     boolean isFoo_univQuantify_0(int j) { for (Integer w : nums()) if (!(w > j)) return false;
                                           return true; }
     
-    LogFormula isFoo_log(LogInt j) { LogObject w = new LogObject("");
-                                     return this.nums_log().quantifyOp(w.cmpOp(">", j)); }
+    LogFormula isFoo_log(LogInt j) { LogObject w = new LogObject("w");
+                                     return this.nums_log().quantifyOp(true, "w", w.cmpOp(">", j)); }
     
     public void fallback() { System.out.println("--> fallback initiated..."); }
     
@@ -28,6 +30,6 @@ class Test {
                                              t1.nums.add(0);
                                              t1.nums.add(3);
                                              t1.nums.add(5);
-                                             t1.nums.add(1);
-                                             System.out.println(t1.nums.indices_log().allButLast_log()); }
+                                             t1.nums.add(1); 
+					     System.out.println(t1.isFoo_log(new LogInt("2"))); }
 }

@@ -27,5 +27,8 @@ public class LogSet extends LogObject {
 	return new LogSet("(" + string + " " + o + " " + o2.string() + ")");
     }
 
+    public LogFormula quantifyOp(boolean quantKind, String quantVarN, LogFormula quantClauseExpr) {
+	return new LogFormula("(" + (quantKind ? "all [" : "some [") + quantVarN + ": one " + string + "] | " + quantClauseExpr.string() + ")");
+    }
 
 }
