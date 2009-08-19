@@ -8,6 +8,8 @@ public class LogMap {
 
     static Hashtable JtoLog = new Hashtable(); // Java Objs to Solver Atoms
     static Hashtable LogtoJ = new Hashtable(); 
+    static Hashtable ProblemRels = new Hashtable(); // Holds relations for given problem  
+
     static int AtomCtr = ESJInteger.BoundsSize();
 
     public static void put1(Object key, int value) { 
@@ -24,6 +26,12 @@ public class LogMap {
 
     public static Object get2(int key) { 
 	return LogtoJ.get((Object)key);
-    }    
+    }
+
+    public static boolean solve(Object obj, Object formula) {
+	return false;
+    }
+
+	
 
 }

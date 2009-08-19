@@ -139,9 +139,12 @@ public class ESJLogicTranslator extends ContextVisitor {
 	    args.add(nf.StringLit(null, LogObject.genVar_log())); 
 	    args.add(nf.StringLit(null, l.type().toString()));
 	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar"))).init(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args, null, new TypedList(new LinkedList(), TypeNode.class, false ))); //FIXME
-	} else if (r instanceof LocalDecl) {
+	} else if (r instanceof JL5LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula"))).init((Expr) toLogicExpr(l.init()));
+	} else if (r instanceof LocalDecl) {
+	    LocalDecl l = (LocalDecl) r;
+	    return r;
 	} else if (r instanceof Local) {
 	    return r;
 	}  else if (r instanceof Special) {
@@ -153,6 +156,8 @@ public class ESJLogicTranslator extends ContextVisitor {
 	} else if (r instanceof StringLit) {
 	    return r;
 	} else if (r instanceof BooleanLit) {
+	    return r;
+	} else if (r instanceof JL5CanonicalTypeNode) {
 	    return r;
 	}
 	/*else if (r instanceof Expr) {
