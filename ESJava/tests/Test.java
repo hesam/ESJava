@@ -21,9 +21,10 @@ class Test {
                        catch (Throwable rte) { m1_fallback(); } }
     
     boolean m1_fallback() { System.out.println("fallback initiated...");
-                            LogFormula blah = this.isFoo_log(new LogInt("3"));
-                            System.out.println(blah);
-                            return true; }
+                            LogFormula problem = this.isFoo_log(new LogInt("3"));
+                            boolean isSatisfiable = LogMap.solve(this, problem);
+                            System.out.println(problem);
+                            return isSatisfiable; }
     
     public static void main(String[] args) { Test t1 = new Test();
                                              t1.nums.add(0);

@@ -1,6 +1,7 @@
 package polyglot.ext.esj.tologic;
 
 import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 
 import java.util.Hashtable;
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.io.CharArrayWriter;
 
 public class LogMap {
 
-    static String SolverOpt_Solver = "MiniSat";
+    static String SolverOpt_Solver = "\"MiniSat\"";
     static String SolverOpt_Host = "localhost";
     static int SolverOpt_Port = 9128;
     static String SolverOpt_Flatten = "false";
@@ -43,21 +44,6 @@ public class LogMap {
 
     public static boolean solve(Object obj, Object formula) {
 
-	/*
-log0preProblemLines
-
-   | spacer problem problemUnknowns funDefs |
-
-     ESOOPLogSolver ProblemRels associationsDo: [:a | | rel |
-        rel := a value.
-        problem nextPutAll: 'bounds ' , a key , ': ' , rel log0 , spacer. 
-        rel isUnknown ifTrue: 
-          [ problemUnknowns add: rel.
-            funDefs nextPutAll: rel log0funDef ] ].
-     problem nextPutAll: (ESOOPInteger log0intBounds , spacer).
-     problem nextPutAll: 'solve ' , spacer , funDefs contents.
-     ^{problemUnknowns. problem contents}
-	 */
 	CharArrayWriter problem = new CharArrayWriter();
 	CharArrayWriter funDefs = new CharArrayWriter();
 	ArrayList unknowns = new ArrayList();
@@ -73,9 +59,8 @@ log0preProblemLines
 	problem.append("solver: " + SolverOpt_Solver + spacer);
 	problem.append("symmetry_breaking: " + SolverOpt_SymmetryBreaking + spacer);
 	problem.append("flatten: " + SolverOpt_Flatten + spacer);
-	problem.append("bit_with: " + ESJInteger.bitWidth() + spacer);
+	problem.append("bit_width: " + ESJInteger.bitWidth() + spacer);
 	problem.append("univ: u" + (AtomCtr+1) + spacer);
-	problem.append(ESJInteger.intBounds_log() + spacer);
 	for (Object k : ProblemRels.keySet() ) {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    problem.append("bounds " + k + ": " + r.log() + spacer);
@@ -84,12 +69,13 @@ log0preProblemLines
 		funDefs.append(r.funDef_log());
 	    }
 	}
-	problem.append("solve " + funDefs.toString() + spacer + formula.toString() + spacer);
+	problem.append(ESJInteger.intBounds_log() + spacer);
+	problem.append("solve " + funDefs.toString() + spacer + formula.toString() + ";");
 	
 	//ch.append(csq);
 	//ch.flush();
 	System.out.println(problem.toString());
-
+	System.out.println(Kodkodi.ESJCallSolver(problem.toString()));
 	return false;
     }
 
