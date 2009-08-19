@@ -2,6 +2,8 @@ package polyglot.ext.esj.primitives;
 
 import polyglot.ext.esj.tologic.*;
 
+import java.io.CharArrayWriter;
+
 public final class ESJInteger extends Number implements Comparable<ESJInteger>
 {
   /**
@@ -739,6 +741,12 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
       return res;
   }
 
+  public static int bitWidth() {
+      int b = BoundsSize() + 1;
+      return ((int) Math.ceil(Math.log(b) / Math.log(2))) + 2;
+
+  }
+
   public static int log(int num) {
       return num - MIN_VALUE;
   }
@@ -753,6 +761,16 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
 
   public static LogSet allInstances_log() {
       return new LogSet("u" + BoundsSize());
+  }
+
+  public static String intBounds_log() {
+	  CharArrayWriter res = new CharArrayWriter();
+	  res.append("int_bounds: " + MIN_VALUE + ": [");
+	  for(int i=MIN_VALUE;i<=MAX_VALUE;i++) {
+	      res.append("{A" + log(i) + "},");
+	  }
+	  res.append("{A" + log(MAX_VALUE) + "}]");
+	  return res.toString();
   }
 
   public static ESJList allInstances() {
