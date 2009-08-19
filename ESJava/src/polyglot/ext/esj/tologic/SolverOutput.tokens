@@ -1,0 +1,11 @@
+MINUS=5
+NUMBER=8
+DIV=7
+DIGIT=9
+PLUS=4
+MULT=6
+WHITESPACE=10
+'*'=6
+'-'=5
+'+'=4
+'/'=7

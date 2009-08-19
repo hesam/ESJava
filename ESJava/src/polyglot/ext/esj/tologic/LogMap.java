@@ -6,6 +6,13 @@ import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 import java.util.Hashtable;
 import java.util.ArrayList;
 import java.io.CharArrayWriter;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.Lexer;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.CommonTokenStream;
 
 public class LogMap {
 
@@ -75,7 +82,23 @@ public class LogMap {
 	//ch.append(csq);
 	//ch.flush();
 	System.out.println(problem.toString());
-	System.out.println(Kodkodi.ESJCallSolver(problem.toString()));
+	String solution = Kodkodi.ESJCallSolver(problem.toString());
+	SolverOutputParser parser = null;
+	try {
+	    ByteArrayInputStream solutionStream = new ByteArrayInputStream(solutionp.getBytes("UTF-8"));
+	    ANTLRInputStream stream = new ANTLRInputStream(solutionStream);
+	    SolverOutputLexer lexer = new SolverOutputLexer(stream);
+	    parser = new SolverOutputParser(new CommonTokenStream(lexer));
+	} catch (Exception e) {
+            e.printStackTrace();
+	}
+	try {
+	    parser.expr();
+	} catch (RecognitionException e) { 
+	    System.out.println("parsing solver result failed!"); 
+            e.printStackTrace();
+	}
+
 	return false;
     }
 
