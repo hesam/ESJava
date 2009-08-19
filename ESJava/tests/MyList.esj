@@ -40,7 +40,7 @@ public class MyList extends ESJList
 	all i : int | count(i) == l.count(i)
 	    }
 
-    ensured public void sort() 
+    ensured public void bubbleSort() 
 	ensures (this.prime().isPermutationOf(this) && 
 		 this.prime().isSorted()) {
 	int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
@@ -56,7 +56,7 @@ public class MyList extends ESJList
 		}
 	    }
 	}
-	}
+    }
     
     public static void main(String[] args) {
 
@@ -77,14 +77,14 @@ public class MyList extends ESJList
 	System.out.println("permutations?...");
 	System.out.println(ta.isPermutationOf(tb));
 	System.out.println("sorting second...");
-	tb.sort();
+	tb.bubbleSort();
 	System.out.println(tb);
 	System.out.println("now sorted?...");
 	System.out.println(tb.isSorted());
-	ta.newPrime();
+	/*ta.newPrime();
 	System.out.println(ta.get_log( new LogInt("1")).string());
 	System.out.println(ta.prime_log().isSorted_log());
-	System.out.println(ta.prime_log().isPermutationOf_log(ta));
+	System.out.println(ta.prime_log().isPermutationOf_log(ta));*/
 
 
     }

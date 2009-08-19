@@ -27,7 +27,7 @@ public interface ESJNodeFactory extends JL5NodeFactory {
     ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,
 					      List formals, List throwTypes, Block body, 
-					      List paramTypes); 
+					      List paramTypes, boolean isFallBack); 
     
     ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,
@@ -43,5 +43,5 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 
     FormulaBinary FormulaBinary(Position pos, Expr left, Binary.Operator op, Expr right);
     CmpBinary CmpBinary(Position pos, Expr left, Binary.Operator op, Expr right);
-
+    ESJQuantVarLocalDecl ESJQuantVarLocalDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init);
 }

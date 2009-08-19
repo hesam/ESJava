@@ -78,7 +78,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 						  methodDecl.name() + "_log", 
 						  methodDecl.formals(), 
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
-						  this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(),quantVarN), methodDecl.throwTypes()); 
+						  this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(),quantVarN), methodDecl.throwTypes(), false); 
                   
                   extraMtds.add(extraLogMtd);
 
@@ -118,13 +118,26 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    FlagAnnotations fl = new FlagAnnotations(); 
             fl.classicFlags(Flags.NONE);
             fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
-	    System.out.println(methodDecl.body());
+	    //System.out.println(methodDecl.body());
+	    List args = new TypedList(new LinkedList(), Expr.class, false);
+	    List args2 = new TypedList(new LinkedList(), Expr.class, false);
+	    args.add(nf.StringLit(null,"fallback initiated..."));
+	    LocalDecl d = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.Boolean()/*typeForName("polyglot.ext.esj.tologic.LogFormula")*/), "blah", methodDecl.ensuresExpr());
+	    args2.add(nf.Local(null,"blah"));
+	    List l = new TypedList(new LinkedList(), Stmt.class, false);
+	    l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args)));
+	    l.add(d);
+	    l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args2)));
+	    l.add(nf.Return(null, nf.BooleanLit(null, true)));
      	    return nf.ESJLogPredMethodDecl(null, fl,
 	                                          nf.CanonicalTypeNode(null,ts.Boolean()),
 						  methodDecl.name() + "_fallback", 
 						  methodDecl.formals(), 
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
-						  this.makeESJLogPredBlock(methodDecl.ensuresExpr(),null), methodDecl.throwTypes()); 
+						  
+						  //this.makeESJLogPredBlock(methodDecl.ensuresExpr(), null).prepend(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args2))).prepend(d).prepend(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args))),
+						  nf.Block(null,l),
+						  methodDecl.throwTypes(),true); 
 
      }
 
@@ -164,7 +177,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    Expr newExpr = makeESJLogPredBlockHelper(expr);
 	    List l = new TypedList(new LinkedList(), Stmt.class, false);
 	    if (quantVarN != null) {
-	    LocalDecl d = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.Int()), quantVarN, nf.IntLit(null, IntLit.INT, 0));
+	    LocalDecl d = nf.ESJQuantVarLocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.Int()), quantVarN, nf.IntLit(null, IntLit.INT, 0));
 	    	    l.add((Stmt) d);		
             }
 	    l.add(nf.Return(null, newExpr));

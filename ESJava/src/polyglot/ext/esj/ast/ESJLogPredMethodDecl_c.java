@@ -18,14 +18,20 @@ import java.util.*;
 public class ESJLogPredMethodDecl_c extends JL5MethodDecl_c
     implements ESJLogPredMethodDecl {
 
+    protected boolean isFallback;
+
     public ESJLogPredMethodDecl_c(Position pos, FlagAnnotations flags,
 				  TypeNode returnType, String name,
 				  List formals, List throwTypes, Block body, 
-				  List paramTypes) {
+				  List paramTypes, boolean isFallback) {
 
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
+	this.isFallback = isFallback;
     }
 
+    public boolean isFallback() {
+	return isFallback;
+    }
 
     /** Reconstruct the method. */
 

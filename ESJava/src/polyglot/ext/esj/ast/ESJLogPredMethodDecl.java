@@ -11,5 +11,6 @@ import polyglot.ext.jl5.ast.JL5MethodDecl;
 /** the relational logic counterpart of the predicate method decl **/
 public interface ESJLogPredMethodDecl extends JL5MethodDecl {
 
+    public boolean isFallback();
 
 }

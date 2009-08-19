@@ -47,8 +47,6 @@ public class ESJList extends ArrayList<Integer> {
     public LogInt count_log(LogObject itm) {
 	return new LogInt("#(" + rel_log.id() + "." + itm.string() + ")");
     }
-
-    public void fallback() { System.out.println("--> fallback initiated..."); }
     
     public ESJList prime() { return this; }
 

@@ -133,7 +133,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     public Context enterScope(Node child, Context c) {
 	
 	if (child instanceof ESJQuantifyClauseExpr) {
-	System.out.println(child + "(" + child.getClass() + ")");	
+	    //System.out.println(child + "(" + child.getClass() + ")");	
 	    c.addVariable(quantVarI);
 	    //child.addDecls(c);
 	    for (Formal f : (List<Formal>) formals) {
