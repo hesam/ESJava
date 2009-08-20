@@ -7,6 +7,7 @@ public class MyList extends ESJList
     /*@
         // CLASS INVARIANTS	
     @*/
+
     public MyList() {
 	this(false, 0);
     }
@@ -43,7 +44,8 @@ public class MyList extends ESJList
     ensured public void bubbleSort() 
 	ensures (this.prime().isPermutationOf(this) && 
 		 this.prime().isSorted()) {
-	
+	System.out.println();
+
 	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
 	for(int i=size()-1;i>0;i--) {
 	    //for(int i=size()-2;i>0;i--) { // <-- TEST: ASSERTION VIOLATION BUG INTRODUCED
@@ -57,7 +59,9 @@ public class MyList extends ESJList
 		}
 	    }
 	}
+
     }
+
     
     public static void main(String[] args) {
 
@@ -69,18 +73,21 @@ public class MyList extends ESJList
 	    ta.add(new Integer(a[i]));
 	    tb.add(new Integer(b[i]));
 	}
+	System.out.print("A=");
         ta.println();
-	System.out.println("sorted?...");
+	System.out.print("A sorted: ");
 	System.out.println(ta.isSorted());
+	System.out.print("B=");
         tb.println();
-	System.out.println("sorted?...");
+	System.out.print("B sorted: ");
 	System.out.println(tb.isSorted());
-	System.out.println("permutations?...");
+	System.out.print("permutations: ");
 	System.out.println(ta.isPermutationOf(tb));
 	System.out.println("sorting second...");
 	tb.bubbleSort();
+	System.out.print("B=");
 	System.out.println(tb);
-	System.out.println("now sorted?...");
+	System.out.print("now B sorted: ");
 	System.out.println(tb.isSorted());
 
 
