@@ -57,9 +57,10 @@ public class ESJList extends ArrayList<Integer> {
 	return true;
     }
 
-    public void add(int index, Integer element) {
-	super.add(index, element);
+    public Integer set(int index, Integer element) {
+	Integer ret = super.set(index, element);
 	rel_log.atIntIdxPut_log(index, element);
+	return ret;
     }
     
     public ESJList copy(int from, int to) { ESJList res = new ESJList();

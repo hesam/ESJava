@@ -43,7 +43,8 @@ public class MyList extends ESJList
     ensured public void bubbleSort() 
 	ensures (this.prime().isPermutationOf(this) && 
 		 this.prime().isSorted()) {
-	int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
+	
+	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
 	for(int i=size()-1;i>0;i--) {
 	    //for(int i=size()-2;i>0;i--) { // <-- TEST: ASSERTION VIOLATION BUG INTRODUCED
 	    for(int j=0;j<i;j++) {
@@ -81,10 +82,6 @@ public class MyList extends ESJList
 	System.out.println(tb);
 	System.out.println("now sorted?...");
 	System.out.println(tb.isSorted());
-	/*ta.newPrime();
-	System.out.println(ta.get_log( new LogInt("1")).string());
-	System.out.println(ta.prime_log().isSorted_log());
-	System.out.println(ta.prime_log().isPermutationOf_log(ta));*/
 
 
     }

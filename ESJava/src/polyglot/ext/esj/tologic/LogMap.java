@@ -3,7 +3,7 @@ package polyglot.ext.esj.tologic;
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.io.CharArrayWriter;
 import java.io.ByteArrayInputStream;
@@ -22,9 +22,9 @@ public class LogMap {
     static String SolverOpt_Flatten = "false";
     static int SolverOpt_SymmetryBreaking = 10;
         
-    static Hashtable JtoLog = new Hashtable(); // Java Objs to Solver Atoms
-    static Hashtable LogtoJ = new Hashtable(); 
-    static Hashtable ProblemRels = new Hashtable(); // Holds relations for given problem  
+    static HashMap JtoLog = new HashMap(); // Java Objs to Solver Atoms
+    static HashMap LogtoJ = new HashMap(); 
+    static HashMap ProblemRels = new HashMap(); // Holds relations for given problem  
 
     static int AtomCtr = ESJInteger.BoundsSize();
 
@@ -53,14 +53,14 @@ public class LogMap {
 
 	CharArrayWriter problem = new CharArrayWriter();
 	CharArrayWriter funDefs = new CharArrayWriter();
-	ArrayList unknowns = new ArrayList();
+	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
 
 	ESJList o = (ESJList) obj;
 
 	ProblemRels.put(o.rel_log().id(),o.rel_log());
 	ProblemRels.put(o.prime_log().rel_log().id(),o.prime_log().rel_log());
-	System.out.println(ProblemRels);
+	//System.out.println(ProblemRels);
 
 	
 	problem.append("solver: " + SolverOpt_Solver + spacer);
@@ -81,11 +81,11 @@ public class LogMap {
 	
 	//ch.append(csq);
 	//ch.flush();
-	System.out.println(problem.toString());
+	//System.out.println(problem.toString());
 	String solution = Kodkodi.ESJCallSolver(problem.toString());
 	SolverOutputParser parser = null;
 	try {
-	    ByteArrayInputStream solutionStream = new ByteArrayInputStream(solutionp.getBytes("UTF-8"));
+	    ByteArrayInputStream solutionStream = new ByteArrayInputStream(solution.getBytes("UTF-8"));
 	    ANTLRInputStream stream = new ANTLRInputStream(solutionStream);
 	    SolverOutputLexer lexer = new SolverOutputLexer(stream);
 	    parser = new SolverOutputParser(new CommonTokenStream(lexer));
@@ -93,7 +93,26 @@ public class LogMap {
             e.printStackTrace();
 	}
 	try {
-	    parser.expr();
+	    parser.solutions();
+	    ArrayList models = parser.models();
+	    ArrayList model = ((ArrayList<ArrayList>) models).get(0);
+	    boolean satisfiable = (Boolean) model.get(0);
+
+	    if (satisfiable) {
+		//System.out.println(model);
+		HashMap modelRels = (HashMap) model.get(1);
+		for (LogRelation u : (ArrayList<LogRelation>) unknowns) {
+		    ArrayList val = (ArrayList) modelRels.get(u.id());
+		    for (ArrayList v : (ArrayList<ArrayList>) val) {
+			((ESJList) obj).set((Integer) get2((Integer) v.get(0)), (Integer) get2((Integer) v.get(1)));
+		    }
+		}
+		return true;
+	    } else {
+		return false;
+	    }
+
+	    
 	} catch (RecognitionException e) { 
 	    System.out.println("parsing solver result failed!"); 
             e.printStackTrace();
