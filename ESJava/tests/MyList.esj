@@ -45,7 +45,6 @@ public class MyList extends ESJList
 	ensures (this.prime().isPermutationOf(this) && 
 		 this.prime().isSorted()) {
 	System.out.println();
-
 	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
 	for(int i=size()-1;i>0;i--) {
 	    //for(int i=size()-2;i>0;i--) { // <-- TEST: ASSERTION VIOLATION BUG INTRODUCED
@@ -59,7 +58,6 @@ public class MyList extends ESJList
 		}
 	    }
 	}
-
     }
 
     

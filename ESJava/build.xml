@@ -39,6 +39,7 @@
     <pathelement location="${lib}/JFlex.jar"/>
     <pathelement location="${lib}/ant.jar"/>
     <pathelement location="${src}/polyglot/ext/esj/solver/kodkodi-1.1.4/jar/kodkod.jar"/>
+    <pathelement location="${src}/polyglot/ext/esj/solver/kodkodi-1.1.4/jar/kodkodi-esj.jar"/>
     <pathelement location="${src}/polyglot/ext/esj/solver/kodkodi-1.1.4/jar/antlr-runtime-3.1.1.jar"/>
   </path>
 
