@@ -33,12 +33,18 @@ public class ESJJavaTranslator extends ContextVisitor {
     public JL5MethodDecl DesugarEnsuredMethodDecl (ESJEnsuredMethodDecl methodDecl) throws SemanticException {
 
 	List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
+	extraMtdBody.add(nf.Eval(null, 
+				 nf.Call(null, null, "setPrime", 
+					 new TypedList(new LinkedList(), Expr.class, false))));
 	extraMtdBody.addAll(methodDecl.body().statements());
 	extraMtdBody.add(((ESJNodeFactory)nf).JL5Assert(null, methodDecl.ensuresExpr(), null));
 
 	List catches = new TypedList(new LinkedList(), Catch.class, false);
 	Block extraMtdBlock = nf.Block(null, extraMtdBody);
 	List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
+	catchBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,"rte"), "printStackTrace",
+					      new TypedList(new LinkedList(), Expr.class, false))));
+
 	catchBody.add(nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback",
 					      new TypedList(new LinkedList(), Expr.class, false))));
 	Block catchBlock = nf.Block(null,catchBody);

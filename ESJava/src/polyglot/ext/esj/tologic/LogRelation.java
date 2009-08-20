@@ -12,14 +12,14 @@ public class LogRelation extends Hashtable {
 
     static int RelCtr = 0;
 
-    // id instVar domain range fixedSize isaPrime isaList isaListInstVar subRels
+    // id instVar domain range fixedSize isUnknown isaList isaListInstVar subRels
     protected String id;
     protected String instVar;
     protected Class domain;
     protected Class range;
     protected ArrayList subRels;
     protected int fixedSize;
-    protected boolean isaPrime;
+    protected boolean isUnknown;
     protected boolean isaList;
     protected boolean isaListInstVar;
 
@@ -31,18 +31,18 @@ public class LogRelation extends Hashtable {
 	this(instVar, domain, range, isaList, false, 0, false);
     }
 
-    public LogRelation(String instVar, Class domain, Class range, boolean isaList, boolean isaPrime, int fixedSize) {
-	this(instVar, domain, range, isaList, isaPrime, fixedSize, false);
+    public LogRelation(String instVar, Class domain, Class range, boolean isaList, boolean isUnknown, int fixedSize) {
+	this(instVar, domain, range, isaList, isUnknown, fixedSize, false);
     }
 
     public LogRelation(String instVar, Class domain, Class range, boolean isaList, 
-		       boolean isaPrime, int fixedSize, boolean isaListInstVar) {
+		       boolean isUnknown, int fixedSize, boolean isaListInstVar) {
 	super();
 	this.instVar = instVar;
 	this.domain = domain;
 	this.range = range;
 	this.fixedSize = fixedSize;
-	this.isaPrime = isaPrime;
+	this.isUnknown = isUnknown;
 	this.isaList = isaList;
 	this.isaListInstVar = isaListInstVar;
 	this.id = "r" + this.RelCtr++;
@@ -54,8 +54,7 @@ public class LogRelation extends Hashtable {
     public Class range() { return range; }
     public ArrayList subRels() { return subRels; }
     public int fixedSize() { return fixedSize; }
-    public boolean isaPrime() { return isaPrime; }
-    public boolean isUnknown() { return isaPrime; }
+    public boolean isUnknown() { return isUnknown; }
     public boolean isaList() { return isaList; }
     public boolean isaListInstVar() { return isaListInstVar; }
     public boolean hasFixedSize() { return fixedSize != 0; }

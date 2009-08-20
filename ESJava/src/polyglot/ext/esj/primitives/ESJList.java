@@ -10,20 +10,16 @@ public class ESJList extends ArrayList<Integer> {
     protected ESJList prime;
 
     // Constructor
-    public ESJList() {
-	this(false, 0);
+
+    // 1. keep my pre-state copy in prime field
+    // 2. relationize both of us
+    public void setPrime() {
+	this.prime = copy(0,size()-1);
+	this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, true, size());
     }
 
-    public ESJList(boolean isaPrime, int fixedSize) {
-	super();
-	this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, isaPrime, fixedSize);
-	this.prime = isaPrime ? null : newPrime();
-    }
-
-    public ESJList newPrime() {
-	return new ESJList(true, size());
-    }
-
+    public ESJList prime() { return prime; }
+    
     public ESJList prime_log() { return prime; }
 
     public LogRelation rel_log() {
@@ -47,24 +43,15 @@ public class ESJList extends ArrayList<Integer> {
     public LogInt count_log(LogObject itm) {
 	return new LogInt("#(" + rel_log.id() + "." + itm.string() + ")");
     }
-    
-    public ESJList prime() { return this; }
-
-    public boolean add (Integer o) {	
-	super.add(o);
-	rel_log.atIntIdxPut_log(size()-1, o);
-	prime.rel_log().incrFixedSize();
-	return true;
-    }
-
-    public Integer set(int index, Integer element) {
-	Integer ret = super.set(index, element);
-	rel_log.atIntIdxPut_log(index, element);
-	return ret;
-    }
-    
+   
+    // copies obj plus its relation
     public ESJList copy(int from, int to) { ESJList res = new ESJList();
-                                            for (int i = from; i <= to; i++) { res.add(get(i)); }
+	                                    res.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, size());
+                                            for (int i = from; i <= to; i++) {
+						Integer itm = get(i);
+						res.add(itm); 
+						res.rel_log.atIntIdxPut_log(i, itm);
+					    }
                                             return res; }
     
     public ESJList indices() { return ESJInteger.range(0, size() - 1); }

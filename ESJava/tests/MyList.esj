@@ -4,46 +4,21 @@ import polyglot.ext.esj.tologic.*;
 public class MyList extends ESJList
 {
 
-    /*@
-        // CLASS INVARIANTS	
-    @*/
 
-    public MyList() {
-	this(false, 0);
-    }
-
-    public MyList(boolean isaPrime, int fixedSize) {
-	super(isaPrime, fixedSize);
-	this.rel_log = new LogRelation("MyList" , Integer.class, Integer.class, true, isaPrime, fixedSize);
-	this.prime = isaPrime ? null : newPrime();
-
-    }
-
-    public MyList newPrime() {
-	return new MyList(true, size());
-    }
-
-
-    public MyList prime() { return this; }
-    public MyList prime_log() { return (MyList) prime; }
-
-    // Constructor
-    //none..
-
-    // PREDICATE METHODS
-    
+    // PREDICATE METHODS    
     predicate public boolean isSorted() {
 	all i : indices().allButLast() | get(i) <= get(i+1)
-	}
+    }
 
     
     predicate public boolean isPermutationOf(ESJList l) {
 	all i : int | count(i) == l.count(i)
-	    }
+    }
 
+    // ENSURED METHODS    
     ensured public void bubbleSort() 
-	ensures (this.prime().isPermutationOf(this) && 
-		 this.prime().isSorted()) {
+	ensures (this.isPermutationOf(this.prime()) && 
+		 this.isSorted()) {
 	System.out.println();
 	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
 	for(int i=size()-1;i>0;i--) {
@@ -59,7 +34,6 @@ public class MyList extends ESJList
 	    }
 	}
     }
-
     
     public static void main(String[] args) {
 
@@ -81,7 +55,7 @@ public class MyList extends ESJList
 	System.out.println(tb.isSorted());
 	System.out.print("permutations: ");
 	System.out.println(ta.isPermutationOf(tb));
-	System.out.println("sorting second...");
+	System.out.println("sorting B...");
 	tb.bubbleSort();
 	System.out.print("B=");
 	System.out.println(tb);
