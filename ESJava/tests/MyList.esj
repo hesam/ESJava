@@ -4,12 +4,15 @@ import polyglot.ext.esj.tologic.*;
 public class MyList extends ESJList
 {
 
+    // CLASS
+    fact { 
+	size() > 1
+    }
 
     // PREDICATE METHODS    
     predicate public boolean isSorted() {
 	all i : indices().allButLast() | get(i) <= get(i+1)
     }
-
     
     predicate public boolean isPermutationOf(ESJList l) {
 	all i : int | count(i) == l.count(i)
@@ -33,6 +36,7 @@ public class MyList extends ESJList
 		}
 	    }
 	}
+	set(0,0);
     }
     
     public static void main(String[] args) {
