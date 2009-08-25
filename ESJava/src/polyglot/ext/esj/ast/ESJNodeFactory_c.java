@@ -30,7 +30,7 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     public ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags, 
 					       TypeNode returnType, String name, List formals, 
 					       List throwTypes, Block body, List paramTypes, 
-					       String quantMtdId, boolean quantKind, 
+					       String quantMtdId, FormulaBinary.Operator quantKind, 
 					       String quantVarN, List quantVarD, 
 					       LocalInstance quantVarI,
 					       Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {	
@@ -54,13 +54,13 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 
     }
 
-    public ESJQuantifyExpr ESJQuantifyExpr(Position pos, boolean quantKind, String quantVarN, 
+    public ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, 
 					   List quantVarD, LocalInstance quantVarI, 
 					   Expr quantListExpr, Expr quantClauseExpr) {
 	return new ESJQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
     }
 
-    public ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, boolean quantKind, String quantVarN, 
+    public ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, 
 					   List quantVarD, LocalInstance quantVarI, 
 					   Expr quantListExpr, Expr quantClauseExpr) {
 	return new ESJLogQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);

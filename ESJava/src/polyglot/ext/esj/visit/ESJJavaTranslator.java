@@ -37,10 +37,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 	//System.out.println("init Translating...");
     }
 
-
-    public ESJEnsuredClassDecl DesugarEnsuredClassDecl (ESJEnsuredClassDecl classDecl) throws SemanticException {
-	return classDecl;
-    }
     
     public JL5MethodDecl DesugarEnsuredMethodDecl (ESJEnsuredMethodDecl methodDecl) throws SemanticException {
 
@@ -78,21 +74,23 @@ public class ESJJavaTranslator extends ContextVisitor {
     public JL5MethodDecl DesugarPredMethodDecl (ESJPredMethodDecl methodDecl)  {
 
 	String quantMtdId = methodDecl.id();	  
-	boolean quantKind = methodDecl.quantKind();
+	FormulaBinary.Operator quantKind = methodDecl.quantKind();
+	boolean quantKindBool1 = quantKind == FormulaBinary.ALL ? true : false;
+	boolean quantKindBool2 = quantKind == FormulaBinary.SOME ? false : true;
 	String quantVarN = methodDecl.quantVarN();
 	Expr quantList = methodDecl.quantListExpr();
 	List quantVarD = methodDecl.quantVarD();
 	ESJQuantifyClauseExpr quantExpr = methodDecl.quantClauseExpr();
 	List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 	List quantClauseStmts = new TypedList(new LinkedList(), Stmt.class, false);
-	Expr quantMainIfExpr = quantKind ? nf.Unary(null, Unary.NOT, quantExpr.expr()) : quantExpr.expr();
+	Expr quantMainIfExpr = quantKindBool1 ? nf.Unary(null, Unary.NOT, quantExpr.expr()) : quantExpr.expr();
 	Stmt quantMainStmt = nf.JL5If(null, quantMainIfExpr, 
-				      nf.JL5Return(null, nf.BooleanLit(null, !quantKind)), null);
+				      nf.JL5Return(null, nf.BooleanLit(null, !quantKindBool2)), null);
 	quantClauseStmts.add(quantMainStmt);	    
 	Stmt forLoopBody = nf.Block(null, quantClauseStmts);
 	Stmt forLoop = nf.ExtendedFor(null,quantVarD, quantList, quantMainStmt);
 	extraMtdBody.add(forLoop);
-	extraMtdBody.add(nf.JL5Return(null, nf.BooleanLit(null, quantKind)));
+	extraMtdBody.add(nf.JL5Return(null, nf.BooleanLit(null, quantKindBool2)));
 	Block extraMtdBlock = nf.Block(null, extraMtdBody);
 	methodDecl = (ESJPredMethodDecl) methodDecl.body(extraMtdBlock);
 
@@ -166,7 +164,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    Expr qListExpr = (q.quantListExpr() instanceof Special) ? 
 		nf.Call(null, null, "range_log", new TypedList(new LinkedList(), Expr.class, false)) : 
 		(Expr) toLogicExpr(q.quantListExpr());
-	    args.add(nf.BooleanLit(null, q.quantKind()));
+	    //boolean quantKindBool = q.quantKind() == FormulaBinary.ALL ? true : false;
+	    //args.add(nf.BooleanLit(null, quantKindBool));
+	    args.add(nf.StringLit(null, q.quantKind().toString()));
 	    args.add(nf.Local(null, q.quantVarN()));
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
 	    return nf.Call(null, qListExpr, "quantifyOp", args);
@@ -176,7 +176,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return nf.JL5Return(null, (Expr) toLogicExpr(((Return) r).expr()));
 	} else if (r instanceof Eval) {
 	    return r;
-	    //return nf.Eval(null, (Expr) toLogicExpr(((Eval) r).expr()));
+	} else if (r instanceof JL5Assert) {
+	    return r;
 	} else if (r instanceof Call) {
 	    Call c = (Call) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
@@ -232,11 +233,11 @@ public class ESJJavaTranslator extends ContextVisitor {
 
     // quantify expr desugars to a method call (defined above)
     public Expr DesugarQuantifyExpr (ESJQuantifyExpr a)  {
-	boolean quantKind = a.quantKind();
+	//FormulaBinary.Operator quantKind = a.quantKind();
 	String quantId = a.parentMethod().name()  + "_" + a.id();
-	String quantVarN = a.quantVarN();
-	Expr quantList = a.quantListExpr();
-	ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr();
+	//String quantVarN = a.quantVarN();
+	//Expr quantList = a.quantListExpr();
+	//ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr();
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	for(Formal f : (List<Formal>)(a.parentMethod().formals())) {
 	    args.add(new Local_c(null,f.name()));
@@ -253,9 +254,7 @@ public class ESJJavaTranslator extends ContextVisitor {
     }
 
     protected Node leaveCall(Node n) throws SemanticException {
-	if (n instanceof ESJEnsuredClassDecl) {	    
-	    return super.leaveCall(DesugarEnsuredClassDecl((ESJEnsuredClassDecl)n));
-	} else if (n instanceof ESJPredMethodDecl) {	    
+	if (n instanceof ESJPredMethodDecl) {	    
 	    return super.leaveCall(DesugarPredMethodDecl((ESJPredMethodDecl)n));
 	} else if (n instanceof ESJLogPredMethodDecl) {	    
 	    return super.leaveCall(DesugarLogPredMethodDecl((ESJLogPredMethodDecl)n));

@@ -115,7 +115,6 @@ public class LogMap {
 		}
 		return true;
 	    } else {
-		System.out.println("==> UNSAT. Recovery failed!!!");
 		return false;
 	    }
 

@@ -35,7 +35,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	      for (ESJQuantifyExpr a : (List<ESJQuantifyExpr>)predExprs) { 
 	          a.parentMethod(methodDecl);
     	      	  String quantMtdId = a.id();
-		  boolean quantKind = a.quantKind();
+		  FormulaBinary.Operator quantKind = a.quantKind();
 		  String quantVarN = a.quantVarN();
 		  Expr quantList = a.quantListExpr();
                   ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr();
@@ -57,7 +57,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
              }
 
-	     	  boolean quantKind = true;
+	     	  FormulaBinary.Operator quantKind = FormulaBinary.ALL;
 		  String quantVarN = null;
 		  List quantVarD = null;
 		  LocalInstance quantVarI = null;
@@ -128,6 +128,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    l.add(d1);
 	    l.add(d2);
 	    l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args2)));
+	    l.add(nf.JL5Assert(null, nf.Local(null,"isSatisfiable"), nf.StringLit(null, "Formula UNSAT! Recovery failed...")));
 	    l.add(nf.Return(null, nf.Local(null,"isSatisfiable")));
      	    return nf.ESJLogPredMethodDecl(null, fl,
 	                                          nf.CanonicalTypeNode(null,ts.Boolean()),
@@ -141,7 +142,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
      }
 
-     public ESJQuantifyExpr makeESJQuantifyExpr(Position pos, boolean quantKind, String quantVarN, Expr quantListExpr, Expr quantClauseExpr) throws Exception {
+     public ESJQuantifyExpr makeESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, Expr quantListExpr, Expr quantClauseExpr) throws Exception {
 	    FlagAnnotations fl = makeFlagAnnotations(); 
 	    // for now make it an Int, the type checking later will fix to right type
 	    LocalInstance quantVarI = ts.localInstance(null, fl.classicFlags(),
@@ -212,6 +213,9 @@ terminal Token ENSURES;
 terminal Token ENSURED;
 terminal Token SOME;
 terminal Token ALL;
+terminal Token NO;
+terminal Token ONE;
+terminal Token LONE;
 
 non terminal JL5MethodDecl pred_method_header;
 non terminal ESJEnsuredMethodDecl ensured_method_header;
@@ -221,6 +225,7 @@ non terminal List pred_block_statements;
 non terminal Return pred_statement;
 non terminal ESJQuantifyExpr pred_expression;
 non terminal Expr quantify_expression, quant_list_expr, ensures_opt, ensures_clause;
+non terminal FormulaBinary.Operator quant_kind;
 non terminal ESJEnsuredClassDecl ensured_class_declaration;
 non terminal Expr predicate_expr;
 non terminal Expr or_predicate_expr;
@@ -298,19 +303,12 @@ pred_statement ::=
 	   ;
 
 quantify_expression ::=
-        ALL:a name:b COLON:c quant_list_expr:d OR:e equality_predicate_expr:f
+        quant_kind:a name:b COLON:c quant_list_expr:d OR:e equality_predicate_expr:f
        	   {: 
-	   //RESULT = parser.nf.ESJQuantifyExpr(parser.pos(a),true,b.toString(),d,f); 
-	   RESULT = parser.makeESJQuantifyExpr(parser.pos(a),true,b.toString(),d,f); 
+	   RESULT = parser.makeESJQuantifyExpr(null,a,b.toString(),d,f); 
 
-	   :} 
-     |  SOME:a name:b COLON:c quant_list_expr:d OR:e equality_predicate_expr:f
-       	   {: 
-	   //RESULT = parser.nf.ESJQuantifyExpr(parser.pos(a),false,b.toString(),d,f); 
-	   RESULT = parser.makeESJQuantifyExpr(parser.pos(a),false,b.toString(),d,f); 
 	   :} 
 	   ;
-
 quant_list_expr ::=	
         primary_no_new_array:a
            {:  RESULT = a;  :}
@@ -321,6 +319,14 @@ quant_list_expr ::=
            {:  RESULT = parser.nf.ESJQuantifyTypeExpr(null,parser.nf.CanonicalTypeNode(null, parser.ts.typeForName(a.toString())));
 	   :}
 	   ;
+
+quant_kind ::=
+        ALL {: RESULT = FormulaBinary.ALL; :}
+     |  SOME {: RESULT = FormulaBinary.SOME; :}
+     |  NO {: RESULT = FormulaBinary.NO; :}
+     |  ONE {: RESULT = FormulaBinary.ONE; :}
+     |  LONE {: RESULT = FormulaBinary.LONE; :}
+	;
 
 predicate_expr ::=
 	or_predicate_expr:a

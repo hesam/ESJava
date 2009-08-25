@@ -13,7 +13,7 @@ import polyglot.ext.jl5.ast.JL5MethodDecl;
 public interface ESJPredMethodDecl extends JL5MethodDecl {
 
     public String id();	  
-    public boolean quantKind();
+    public FormulaBinary.Operator quantKind();
     public String quantVarN();    
     public List quantVarD();
     public Expr quantListExpr();

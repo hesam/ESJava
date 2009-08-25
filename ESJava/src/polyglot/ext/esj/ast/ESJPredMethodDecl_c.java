@@ -21,7 +21,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     implements ESJPredMethodDecl {
 
     protected String quantMtdId;
-    protected boolean quantKind;
+    protected FormulaBinary.Operator quantKind;
     protected String quantVarN;
     protected List quantVarD;
     protected Expr quantListExpr;
@@ -32,7 +32,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 			       TypeNode returnType, String name,
 			       List formals,
 			       List throwTypes, Block body, List paramTypes, String quantMtdId,
-			       boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, 
+			       FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, 
 			       Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
 	this.quantMtdId = quantMtdId;
@@ -49,7 +49,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	return quantMtdId;
     }
 
-    public boolean quantKind() {
+    public FormulaBinary.Operator quantKind() {
 	return quantKind;
     }
 
@@ -76,7 +76,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     /** Reconstruct the method. */
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
 				       List throwTypes, Block body,  
-				       boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
+				       FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	if (returnType != this.returnType ||
 	    ! CollectionUtil.equals(formals, this.formals) ||
 	    quantListExpr != this.quantListExpr ||

@@ -14,7 +14,7 @@ import polyglot.visit.*;
 public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 
     protected static int idCtr = 0;
-    protected boolean quantKind;
+    protected FormulaBinary.Operator quantKind;
     protected String id,quantVarN;
     protected List quantVarD;
     protected LocalInstance quantVarI;
@@ -22,9 +22,9 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
     protected ESJQuantifyClauseExpr quantClauseExpr;
     protected JL5MethodDecl parentMethod;
 
-    public ESJQuantifyExpr_c(Position pos, boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr) {
+    public ESJQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr) {
 	super(pos);
-	this.id = (quantKind ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
+	this.id = (quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
@@ -45,7 +45,7 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	return id;
     }
 
-    public boolean quantKind() {
+    public FormulaBinary.Operator quantKind() {
 	return quantKind;
     }
 
@@ -78,7 +78,7 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
     }
 
     // Reconstruct the pred expr.
-    protected ESJQuantifyExpr_c reconstruct(boolean quantKind, String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
+    protected ESJQuantifyExpr_c reconstruct(FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	
 	if (quantListExpr != this.quantListExpr || quantClauseExpr != this.quantClauseExpr) {
 	    ESJQuantifyExpr_c n = (ESJQuantifyExpr_c) copy();

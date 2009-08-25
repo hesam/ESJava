@@ -10,7 +10,7 @@ import polyglot.ext.jl5.ast.*;
 public interface ESJQuantifyExpr extends Expr {
 
     public String id();
-    public boolean quantKind();
+    public FormulaBinary.Operator quantKind();
     public String quantVarN();
     public List quantVarD();
     public LocalInstance quantVarI();

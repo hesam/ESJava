@@ -14,7 +14,7 @@ import polyglot.visit.*;
 public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 
     protected static int idCtr = 0;
-    protected boolean quantKind;
+    protected FormulaBinary.Operator quantKind;
     protected String id,quantVarN;
     protected List quantVarD;
     protected LocalInstance quantVarI;
@@ -22,9 +22,9 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
     protected ESJQuantifyClauseExpr quantClauseExpr;
     protected JL5MethodDecl parentMethod;
 
-    public ESJLogQuantifyExpr_c(Position pos, boolean quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr) {
+    public ESJLogQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr) {
 	super(pos);
-	this.id = (quantKind ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
+	this.id = (quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
@@ -45,7 +45,7 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 	return id;
     }
 
-    public boolean quantKind() {
+    public FormulaBinary.Operator quantKind() {
 	return quantKind;
     }
 
@@ -78,7 +78,7 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
     }
 
     // Reconstruct the pred expr.
-    protected ESJLogQuantifyExpr_c reconstruct(boolean quantKind, String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
+    protected ESJLogQuantifyExpr_c reconstruct(FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	
 	if (quantListExpr != this.quantListExpr || quantClauseExpr != this.quantClauseExpr) {
 	    ESJLogQuantifyExpr_c n = (ESJLogQuantifyExpr_c) copy();
