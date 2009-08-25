@@ -41,13 +41,20 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
                   ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr();
 		  List quantVarD = a.quantVarD();
 		  LocalInstance quantVarI = a.quantVarI();
-
+		  boolean quantKindIsaCount = quantKind == FormulaBinary.ONE ||
+		  	    quantKind == FormulaBinary.LONE;
+	      	  List stmts = new TypedList(new LinkedList(), Stmt.class, false);
+		  if (quantKindIsaCount) {
+	      	      LocalDecl d1 = nf.JL5LocalDecl(null, makeFlagAnnotations(), nf.CanonicalTypeNode(null, ts.Int()), "quantCount", nf.IntLit(null, IntLit.INT, 0));		    
+		      stmts.add(d1);		  
+		  }
+		  stmts.addAll(mStmts);
 	      	  ESJPredMethodDecl extraMtd = nf.ESJPredMethodDecl(null, fl,
 	                                          nf.CanonicalTypeNode(null,ts.Boolean()), 
 						  methodDecl.name() + "_" + quantMtdId, 
 						  methodDecl.formals(), 
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
-						  nf.Block(null, mStmts), methodDecl.throwTypes(),
+						  nf.Block(null, stmts), methodDecl.throwTypes(),
 						  quantMtdId, 
 						  quantKind, quantVarN, quantVarD, 
 						  quantVarI, quantList, quantExpr); 
@@ -304,9 +311,11 @@ pred_statement ::=
 
 quantify_expression ::=
         quant_kind:a name:b COLON:c quant_list_expr:d OR:e equality_predicate_expr:f
-       	   {: 
-	   RESULT = parser.makeESJQuantifyExpr(null,a,b.toString(),d,f); 
-
+       	   {: if (a == FormulaBinary.NO) {
+	          a = FormulaBinary.ALL;
+		  f = parser.nf.Unary(null, Unary.NOT, f);
+	       }
+	     RESULT = parser.makeESJQuantifyExpr(null,a,b.toString(),d,f); 
 	   :} 
 	   ;
 quant_list_expr ::=	

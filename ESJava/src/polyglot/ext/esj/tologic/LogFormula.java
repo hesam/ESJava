@@ -23,7 +23,11 @@ public class LogFormula extends LogObject {
 	return new LogFormula("(" + string + " " + o + " " + o2.string() + ")");
     }
 
-    public LogFormula notOp(LogFormula o2) {
+    public LogFormula unaryOp(String o) {
+	return new LogFormula(o + "( " + string + ")");
+    }
+
+    public LogFormula notOp() {
 	return new LogFormula("!( " + string + ")");
     }
 

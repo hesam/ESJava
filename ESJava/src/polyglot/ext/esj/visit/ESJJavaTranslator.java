@@ -77,6 +77,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	FormulaBinary.Operator quantKind = methodDecl.quantKind();
 	boolean quantKindBool1 = quantKind == FormulaBinary.ALL ? true : false;
 	boolean quantKindBool2 = quantKind == FormulaBinary.SOME ? false : true;
+	boolean quantKindIsaCount = quantKind == FormulaBinary.ONE ||
+	    quantKind == FormulaBinary.LONE;
 	String quantVarN = methodDecl.quantVarN();
 	Expr quantList = methodDecl.quantListExpr();
 	List quantVarD = methodDecl.quantVarD();
@@ -84,13 +86,25 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 	List quantClauseStmts = new TypedList(new LinkedList(), Stmt.class, false);
 	Expr quantMainIfExpr = quantKindBool1 ? nf.Unary(null, Unary.NOT, quantExpr.expr()) : quantExpr.expr();
-	Stmt quantMainStmt = nf.JL5If(null, quantMainIfExpr, 
-				      nf.JL5Return(null, nf.BooleanLit(null, !quantKindBool2)), null);
+	Local quantCount = nf.Local(null, "quantCount");
+	Stmt ifExprPart = quantKindIsaCount ? 
+	    nf.Eval(null, nf.Unary(null, Unary.POST_INC, quantCount)) : 
+	    nf.JL5Return(null, nf.BooleanLit(null, !quantKindBool2));
+	Stmt quantMainStmt = nf.JL5If(null, quantMainIfExpr, ifExprPart, null);
 	quantClauseStmts.add(quantMainStmt);	    
+	if (quantKindIsaCount) {
+	    extraMtdBody.add((Stmt) methodDecl.body().statements().get(0));
+	    Expr countViolation = nf.Binary(null, quantCount, Binary.GT, nf.IntLit(null, IntLit.INT, 1));
+	    Stmt quantMainStmt2 = nf.JL5If(null, countViolation, nf.JL5Return(null, nf.BooleanLit(null, !quantKindBool2)), null);
+	    quantClauseStmts.add(quantMainStmt2);	    
+	}
 	Stmt forLoopBody = nf.Block(null, quantClauseStmts);
-	Stmt forLoop = nf.ExtendedFor(null,quantVarD, quantList, quantMainStmt);
+	Stmt forLoop = nf.ExtendedFor(null,quantVarD, quantList, forLoopBody);
 	extraMtdBody.add(forLoop);
-	extraMtdBody.add(nf.JL5Return(null, nf.BooleanLit(null, quantKindBool2)));
+	Stmt retStmt = quantKind == FormulaBinary.ONE ? 
+	    nf.JL5Return(null, nf.Binary(null, quantCount, Binary.EQ, nf.IntLit(null, IntLit.INT, 1))) :
+	    nf.JL5Return(null, nf.BooleanLit(null, quantKindBool2));
+	extraMtdBody.add(retStmt);
 	Block extraMtdBlock = nf.Block(null, extraMtdBody);
 	methodDecl = (ESJPredMethodDecl) methodDecl.body(extraMtdBlock);
 
@@ -117,7 +131,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    Block block = (Block) toLogicExpr(methodDecl.body());
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, ""));
-	    FlagAnnotations fl = new FlagAnnotations(); 
+	    FlagAnnotations fl = makeFlagAnnotations(); 
 	    fl.classicFlags(Flags.NONE);
 	    fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 	    if (!methodDecl.isFallback()) {
@@ -157,15 +171,21 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    args.add(nf.StringLit(null, b.operator().toString()));
 	    args.add((Expr) toLogicExpr(b.right()));
 	    return nf.Call(null,(Expr) toLogicExpr(b.left()), "arithOp", args);
+	} else if (r instanceof Unary) {
+	    Unary u = (Unary) r;
+	    List args = new TypedList(new LinkedList(), Expr.class, false);
+	    args.add(nf.StringLit(null, u.operator().toString()));
+	    return nf.Call(null,(Expr) toLogicExpr(u.expr()), "unaryOp", args);
 	} else if (r instanceof ESJLogQuantifyExpr) {
 	    ESJLogQuantifyExpr q = (ESJLogQuantifyExpr) r;
+	    boolean quantKindIsaCount = q.quantKind() == FormulaBinary.ONE ||
+		q.quantKind() == FormulaBinary.LONE;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    // FIXME
 	    Expr qListExpr = (q.quantListExpr() instanceof Special) ? 
 		nf.Call(null, null, "range_log", new TypedList(new LinkedList(), Expr.class, false)) : 
 		(Expr) toLogicExpr(q.quantListExpr());
-	    //boolean quantKindBool = q.quantKind() == FormulaBinary.ALL ? true : false;
-	    //args.add(nf.BooleanLit(null, quantKindBool));
+	    args.add(nf.BooleanLit(null, quantKindIsaCount));
 	    args.add(nf.StringLit(null, q.quantKind().toString()));
 	    args.add(nf.Local(null, q.quantVarN()));
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
@@ -218,7 +238,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	} else if (r instanceof StringLit) {
 	    return r;
 	} else if (r instanceof BooleanLit) {
-	    return r;
+	    return r;       
 	} else if (r instanceof JL5CanonicalTypeNode) {
 	    return r;
 	}
@@ -233,11 +253,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 
     // quantify expr desugars to a method call (defined above)
     public Expr DesugarQuantifyExpr (ESJQuantifyExpr a)  {
-	//FormulaBinary.Operator quantKind = a.quantKind();
 	String quantId = a.parentMethod().name()  + "_" + a.id();
-	//String quantVarN = a.quantVarN();
-	//Expr quantList = a.quantListExpr();
-	//ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr();
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	for(Formal f : (List<Formal>)(a.parentMethod().formals())) {
 	    args.add(new Local_c(null,f.name()));
@@ -270,25 +286,12 @@ public class ESJJavaTranslator extends ContextVisitor {
 	}
     }
 
-
-    /*
-    public TypeNode array (TypeNode n, int dims) throws Exception
-  {
-    if (dims > 0)
-      {
-	if (n instanceof CanonicalTypeNode)
-	  {
-	    Type t = ((CanonicalTypeNode) n).type ();
-	      return nf.CanonicalTypeNode (null, ts.arrayOf (t, dims));
-	  }
-	return nf.ArrayTypeNode (null, array (n, dims - 1));
-      }
-    else
-      {
-	return n;
-      }
-  }
-*/
+     FlagAnnotations makeFlagAnnotations() {
+	      FlagAnnotations fl2 = new FlagAnnotations(); 
+              fl2.classicFlags(Flags.NONE);
+              fl2.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
+	      return fl2;
+     }	      
 
 }
 

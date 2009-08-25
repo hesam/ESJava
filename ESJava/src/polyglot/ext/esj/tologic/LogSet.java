@@ -27,8 +27,10 @@ public class LogSet extends LogObject {
 	return new LogSet("(" + string + " " + o + " " + o2.string() + ")");
     }
 
-    public LogFormula quantifyOp(String quantKind, LogObject quantVarN, LogFormula quantClauseExpr) {
-	return new LogFormula("(" + quantKind + " [" + quantVarN + ": one " + string + "] | " + quantClauseExpr.string() + ")");
+    public LogFormula quantifyOp(boolean quantKindIsaOneOrLone, String quantKind, LogObject quantVarN, LogFormula quantClauseExpr) {
+	String p =  " [" + quantVarN + ": one " + string + "] | " + quantClauseExpr.string();
+	String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
+	return new LogFormula("(" + quantKind + q + ")");
     }
 
     public LogInt count_log(LogObject itm) {
