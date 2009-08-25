@@ -21,12 +21,17 @@ public class LogMap {
     static int SolverOpt_Port = 9128;
     static String SolverOpt_Flatten = "false";
     static int SolverOpt_SymmetryBreaking = 10;
-        
+    static boolean SolverOpt_debug = false;
+
     static HashMap JtoLog = new HashMap(); // Java Objs to Solver Atoms
     static HashMap LogtoJ = new HashMap(); 
     static HashMap ProblemRels = new HashMap(); // Holds relations for given problem  
 
     static int AtomCtr = ESJInteger.BoundsSize();
+
+    public static void SolverOpt_debug(boolean b) {
+	SolverOpt_debug = b;
+    }
 
     public static void put1(Object key, int value) { 
 	JtoLog.put(key,value);
@@ -81,7 +86,8 @@ public class LogMap {
 	
 	//ch.append(csq);
 	//ch.flush();
-	//System.out.println(problem.toString());
+	if (SolverOpt_debug)
+	    System.out.println(problem.toString());
 	String solution = Kodkodi.ESJCallSolver(problem.toString());
 	SolverOutputParser parser = null;
 	try {
@@ -109,6 +115,7 @@ public class LogMap {
 		}
 		return true;
 	    } else {
+		System.out.println("==> UNSAT. Recovery failed!!!");
 		return false;
 	    }
 

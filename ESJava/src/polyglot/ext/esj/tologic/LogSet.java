@@ -35,4 +35,8 @@ public class LogSet extends LogObject {
 	return new LogInt("#(" + string + "." + itm.string() + ")");
     }
 
+    public LogInt size_log() {
+	return new LogInt("#(" + string + ")");
+    }
+
 }

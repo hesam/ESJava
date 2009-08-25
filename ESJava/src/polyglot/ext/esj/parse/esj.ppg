@@ -26,9 +26,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
 	      // find the pred_expression subexprs within the body and mark them	    
 	      List predExprs = getPredExprsWithinBody(methodDecl);
-	      FlagAnnotations fl = new FlagAnnotations(); 
-              fl.classicFlags(Flags.NONE);
-              fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
+	      FlagAnnotations fl = makeFlagAnnotations();
 	      List mStmts = new TypedList(new LinkedList(), Stmt.class, false);
 	      List logmStmts = new TypedList(new LinkedList(), Stmt.class, false);
               mStmts.add(nf.JL5Return(null, nf.BooleanLit(null,true)));
@@ -105,25 +103,22 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 				  TypeNode returnType, String name,
 				  List formals, List throwTypes, Block body, 
 				  List paramTypes, Expr ensuresExpr) throws Exception {
-	    FlagAnnotations fl = new FlagAnnotations();
-	    fl.classicFlags(Flags.NONE);
-	    fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
+	    FlagAnnotations fl = makeFlagAnnotations();
 	    TypeNode cftn = new JL5Name(this, null, "Throwable").toType();
 	    JL5Formal catchFormal = this.nf.JL5Formal(null, fl, this.array(cftn, 0), "rte");
        	    return this.nf.ESJEnsuredMethodDecl(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal); 
      }    
 
      public ESJLogPredMethodDecl makeFallbackMtd(ESJEnsuredMethodDecl methodDecl) throws SemanticException {
-
-	    FlagAnnotations fl = new FlagAnnotations(); 
-            fl.classicFlags(Flags.NONE);
-            fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
+	    FlagAnnotations fl = makeFlagAnnotations(); 
 	    //System.out.println(methodDecl.body());
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    List args2 = new TypedList(new LinkedList(), Expr.class, false);
 	    List args3 = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null,"fallback initiated..."));
-	    LocalDecl d1 = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.Boolean()/*typeForName("polyglot.ext.esj.tologic.LogFormula")*/), "problem", methodDecl.ensuresExpr());
+
+	    Expr probFormula = methodDecl.ensuresExpr();
+	    LocalDecl d1 = nf.JL5LocalDecl(null, fl, nf.CanonicalTypeNode(null, ts.Boolean()/*typeForName("polyglot.ext.esj.tologic.LogFormula")*/), "problem", probFormula);
 	    args2.add(nf.Local(null,"problem"));
 	    args3.add(nf.This(null));
 	    args3.add(nf.Local(null,"problem"));
@@ -147,10 +142,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
      }
 
      public ESJQuantifyExpr makeESJQuantifyExpr(Position pos, boolean quantKind, String quantVarN, Expr quantListExpr, Expr quantClauseExpr) throws Exception {
-	    FlagAnnotations fl = new FlagAnnotations(); 
-            fl.classicFlags(Flags.NONE);
-            fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
-
+	    FlagAnnotations fl = makeFlagAnnotations(); 
 	    // for now make it an Int, the type checking later will fix to right type
 	    LocalInstance quantVarI = ts.localInstance(null, fl.classicFlags(),
                                             ts.Int(), quantVarN);
@@ -172,10 +164,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
      public Block makeESJLogPredBlock(Expr expr, String quantVarN) throws SemanticException {
 
-	    FlagAnnotations fl = new FlagAnnotations(); 
-            fl.classicFlags(Flags.NONE);
-            fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
-
+	    FlagAnnotations fl = makeFlagAnnotations(); 
 
 	    //FIXME
 	    //System.out.println("==== " + ((Return) methodDecl.body().statements().get(0)).expr());
@@ -208,8 +197,16 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    }
      }
 
+     FlagAnnotations makeFlagAnnotations() {
+	      FlagAnnotations fl2 = new FlagAnnotations(); 
+              fl2.classicFlags(Flags.NONE);
+              fl2.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
+	      return fl2;
+     }	      
+
 :};
 
+terminal Token INVARIANTS;
 terminal Token PREDICATE;
 terminal Token ENSURES;
 terminal Token ENSURED;
@@ -218,13 +215,13 @@ terminal Token ALL;
 
 non terminal JL5MethodDecl pred_method_header;
 non terminal ESJEnsuredMethodDecl ensured_method_header;
-non terminal List pred_method_declaration, ensured_method_declaration;
+non terminal List pred_method_declaration, ensured_method_declaration, class_invariant_declaration;
 non terminal Block pred_method_body, pred_block;
 non terminal List pred_block_statements;
 non terminal Return pred_statement;
 non terminal ESJQuantifyExpr pred_expression;
 non terminal Expr quantify_expression, quant_list_expr, ensures_opt, ensures_clause;
-
+non terminal ESJEnsuredClassDecl ensured_class_declaration;
 non terminal Expr predicate_expr;
 non terminal Expr or_predicate_expr;
 non terminal Expr orPredExpr_opt;
@@ -521,3 +518,23 @@ ensures_clause ::=
            {: RESULT = a; :}
 	   ;
 
+// PART3:      ESJClassInvariantDecl
+
+extend type_declaration ::=
+    ensured_class_declaration:a 
+           {:  RESULT = a;  :}
+    	   ;
+
+ensured_class_declaration ::=
+    ENSURED modifiers_or_annotations_opt:a CLASS:b IDENTIFIER:c type_parameters_opt:d super_opt:e interfaces_opt:f ensures_opt:z LBRACE class_body_declarations_opt:y RBRACE
+           {: 
+	      List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
+	      extraMtdBody.add(parser.nf.Return(null,z));
+	      JL5MethodDecl mainMtdDecl = parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(), parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "verifyInvariants", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, extraMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
+	      TypedList l = new TypedList(new LinkedList(), ClassMember.class, false);
+	      l.add(mainMtdDecl);
+	      l.addAll(parser.defineESJExtraMethods(mainMtdDecl));	
+	      l.addAll(y);
+	      RESULT = parser.nf.ESJEnsuredClassDecl(null, a, c.getIdentifier(), e, f, parser.nf.JL5ClassBody(null, l), d); 
+           :}
+	   ;

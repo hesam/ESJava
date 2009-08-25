@@ -26,6 +26,14 @@ public class ESJList extends ArrayList<Integer> {
 	return rel_log;
     }
 
+    public LogSet this_log() {
+	return new LogSet(rel_log.id());
+    }
+
+    public LogSet range_log() {
+	return new LogSet(rel_log.id() + "[1]");
+    }
+
     public LogSet indices_log() {
 	int s = rel_log.hasFixedSize() ? rel_log.fixedSize() : size();	
 	return new LogSet(ESJInteger.zeroTo_log(s).string(), s, false); 
@@ -42,6 +50,10 @@ public class ESJList extends ArrayList<Integer> {
 
     public LogInt count_log(LogObject itm) {
 	return new LogInt("#(" + rel_log.id() + "." + itm.string() + ")");
+    }
+
+    public LogInt size_log() {
+	return new LogInt("#(" + rel_log.id() + ")");
     }
    
     // copies obj plus its relation

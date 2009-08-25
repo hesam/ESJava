@@ -20,6 +20,13 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     // TODO:  Implement factory methods for new AST nodes.
     // TODO:  Override factory methods for overriden AST nodes.
     // TODO:  Override factory methods for AST nodes with new extension nodes.
+
+    public ESJEnsuredClassDecl ESJEnsuredClassDecl(Position pos, FlagAnnotations fl, String name, 
+						   TypeNode superType, List interfaces, ClassBody body, 
+						   List<ParamTypeNode> paramTypes) {
+	return new ESJEnsuredClassDecl_c(pos, fl, name, superType, interfaces, body, paramTypes);
+    }
+
     public ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags, 
 					       TypeNode returnType, String name, List formals, 
 					       List throwTypes, Block body, List paramTypes, 

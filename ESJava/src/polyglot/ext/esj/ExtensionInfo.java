@@ -58,9 +58,6 @@ public class ExtensionInfo extends polyglot.ext.jl5.ExtensionInfo {
     public static final Pass.ID TRANSLATE_TO_JAVA =
     new Pass.ID("translate-to-java");
 
-    public static final Pass.ID TRANSLATE_TO_LOGIC =
-    new Pass.ID("translate-to-logic");
-
     public static final Pass.ID TESTING_ESJ =
     new Pass.ID("testing-esj");
 
@@ -82,14 +79,8 @@ public class ExtensionInfo extends polyglot.ext.jl5.ExtensionInfo {
 		   new VisitorPass(TRANSLATE_TO_JAVA, job,
 				   new ESJJavaTranslator(job, ts, nf)));
 
-	beforePass(passes, TRANSLATE_TO_JAVA,
-		   new VisitorPass(TRANSLATE_TO_LOGIC, job,
-				   new ESJLogicTranslator(job, ts, nf)));	
-
 	removePass(passes, Pass.REACH_CHECK); //FIXME
 	removePass(passes, Pass.EXC_CHECK); //FIXME
-
-	//removePass(passes, TRANSLATE_TO_JAVA); //FIXME
 
         return passes;
     }

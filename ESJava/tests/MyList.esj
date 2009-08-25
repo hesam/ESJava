@@ -1,13 +1,8 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
-public class MyList extends ESJList
-{
-
-    // CLASS
-    fact { 
-	size() > 1
-    }
+ensured public class MyList extends ESJList 
+	ensures (some e : this | e > 10) {
 
     // PREDICATE METHODS    
     predicate public boolean isSorted() {
@@ -20,12 +15,11 @@ public class MyList extends ESJList
 
     // ENSURED METHODS    
     ensured public void bubbleSort() 
-	ensures (this.isPermutationOf(this.prime()) && 
-		 this.isSorted()) {
+	ensures (this.isPermutationOf(this.prime()) && this.isSorted()) {
 	System.out.println();
 	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
 	for(int i=size()-1;i>0;i--) {
-	    //for(int i=size()-2;i>0;i--) { // <-- TEST: ASSERTION VIOLATION BUG INTRODUCED
+	    //for(int i=size()-2;i>0;i--) { // <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
 	    for(int j=0;j<i;j++) {
 		if (get(j).intValue() > get(i).intValue()) {
 		    Integer t = get(i);
@@ -36,10 +30,12 @@ public class MyList extends ESJList
 		}
 	    }
 	}
-	set(0,0);
+	//set(0,0); //<-- TEST: ASSERTION VIOLATION BUG#2
     }
     
     public static void main(String[] args) {
+	
+	LogMap.SolverOpt_debug(true);
 
         MyList ta = new MyList();	
         MyList tb = new MyList();
