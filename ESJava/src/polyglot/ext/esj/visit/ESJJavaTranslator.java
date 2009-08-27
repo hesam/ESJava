@@ -46,7 +46,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 						   new TypedList(new LinkedList(), Expr.class, false)), 
 					   Binary.COND_AND, 
 					   methodDecl.ensuresExpr());
-	if (methodDecl.ensuresExprHasPrime())
+	extraMtdBody.add(nf.Eval(null, 
+				     nf.Call(null, null, "relationize", 
+					     new TypedList(new LinkedList(), Expr.class, false))));
+	if (true) //methodDecl.ensuresExprHasPrime()) //FIXME
 	    extraMtdBody.add(nf.Eval(null, 
 				     nf.Call(null, null, "setPrime", 
 					     new TypedList(new LinkedList(), Expr.class, false))));
@@ -58,9 +61,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
 	catchBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,"rte"), "printStackTrace",
 					      new TypedList(new LinkedList(), Expr.class, false))));
-	catchBody.add(nf.Eval(null, 
-				     nf.Call(null, null, "relationize", 
-					     new TypedList(new LinkedList(), Expr.class, false))));
 	catchBody.add(nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback",
 					      new TypedList(new LinkedList(), Expr.class, false))));
 	Block catchBlock = nf.Block(null,catchBody);

@@ -49,4 +49,6 @@ public interface ESJNodeFactory extends JL5NodeFactory {
     FormulaBinary FormulaBinary(Position pos, Expr left, Binary.Operator op, Expr right);
     CmpBinary CmpBinary(Position pos, Expr left, Binary.Operator op, Expr right);
     ESJQuantVarLocalDecl ESJQuantVarLocalDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init);
+
+    ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isPrime);
 }

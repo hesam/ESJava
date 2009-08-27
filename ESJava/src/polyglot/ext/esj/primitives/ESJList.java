@@ -65,7 +65,7 @@ public class ESJList extends ArrayList<Integer> {
                                             for (int i = from; i <= to; i++) {
 						Integer itm = get(i);
 						res.add(itm); 
-						res.rel_log.atIntIdxPut_log(i, itm);
+						res.rel_log.put_log(i, itm);
 					    }
                                             return res; }
     

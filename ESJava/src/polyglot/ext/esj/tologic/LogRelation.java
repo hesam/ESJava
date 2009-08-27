@@ -82,21 +82,23 @@ public class LogRelation extends Hashtable {
 	return ESJInteger.zeroTo_log(fixedSize-1).string();
     }
    
-    public void put_log(int key, Object value) {
+    public void put_log(Object key, Object value) {
 	if (value instanceof ArrayList) {
 	    ArrayList l = new ArrayList();
 	    for(int v: (ArrayList<Integer>)value) {
 		l.add(LogMap.get1(v));
 	    }
-	    put(key, l);
+	    put(LogMap.get1(key), l);
 	} else {
-	    put(key, LogMap.get1(value));
+	    put(LogMap.get1(key), LogMap.get1(value));
 	}
     }
 
+    /*
     public void atIntIdxPut_log(int index, Object value) {
-	put_log(ESJInteger.log(index),value);
+	put_log(index,value);
     }
+    */
 
     public String lowerBound_log() {
 	CharArrayWriter o = new CharArrayWriter();

@@ -82,4 +82,7 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 	return new ESJQuantVarLocalDecl_c(pos, flags, type, name, init);
     }
 
+    public ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isPrime) {
+	return new ESJFieldDecl_c(pos, flags, type, name, init, isPrime);
+    }
 }

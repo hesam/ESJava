@@ -1,7 +1,7 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
-public class Test {
+public class Test ensures (this.x() < 5 && this.x() > 0) {
     
     protected int x;
     protected int y;
@@ -12,28 +12,17 @@ public class Test {
 	this.y = y;
     }
     
-    public int x() {
-	return x;
-    }
-
-    public int y() {
-	return y;
-    }
-
-    public void x(int v) { 
-	this.x = v; 
-    }
-
-    public void y(int v) { 
-	this.y = v; 
-    }
+    public int x() { return x; }
+    public int y() { return y; }
+    public void x(int v) { this.x = v; }
+    public void y(int v) { this.y = v; }
 
     predicate public boolean repOk() {
 	this.y() == 2 * this.x()
     }
 
     ensured public void m1() 
-	ensures repOk() {
+	ensures (repOk()) {
 	System.out.println();
     }
 
@@ -41,7 +30,7 @@ public class Test {
 
     public static void main(String[] args) {
 	LogMap.SolverOpt_debug(true);
-	Test t1 = new Test(1,1);
+	Test t1 = new Test(13,10);
 	System.out.println(t1);
 	t1.m1();
 	System.out.println(t1);

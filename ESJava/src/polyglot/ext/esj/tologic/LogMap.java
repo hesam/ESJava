@@ -79,13 +79,14 @@ public class LogMap {
     }
 
 
-    public static String newInstVarRel(String classStr, String instVar, String domainStr, Class range) {
+    public static String newInstVarRel(String classStr, String instVar, String domainStr, Class range, boolean isUnknown) {
 	try {
+	    String k = instVar + (isUnknown ? "" : "_prime");
 	    Class domain = Class.forName(domainStr);
-	    LogRelation r = new LogRelation(instVar, domain, range, false, true);
+	    LogRelation r = new LogRelation(instVar, domain, range, false, isUnknown);
 	    if (!InstVarRels.containsKey(classStr))
 		InstVarRels.put(classStr, new HashMap());
-	    ((HashMap) InstVarRels.get(classStr)).put(instVar,r);
+	    ((HashMap) InstVarRels.get(classStr)).put(k,r);
 	    //System.out.println(InstVarRels);
 	    return r.id();
 	} catch (ClassNotFoundException e) {
