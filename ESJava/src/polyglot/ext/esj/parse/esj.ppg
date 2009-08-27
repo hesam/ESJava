@@ -579,7 +579,7 @@ override field_declaration ::=
 
 		  relDefBodyArgs.add(parser.nf.StringLit(null,parser.currClassName));
 		  relDefBodyArgs.add(parser.nf.StringLit(null,d.name));
-		  relDefBodyArgs.add(parser.nf.NullLit(null));
+		  relDefBodyArgs.add(parser.nf.StringLit(null,parser.currClassName));	
 		  relDefBodyArgs.add(parser.nf.ClassLit(null, b));
 		  Block relDefBody = parser.nf.Block(null, parser.nf.Eval(null,parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newInstVarRel", relDefBodyArgs)));
                   l.add(parser.nf.Initializer(null, Flags.STATIC, relDefBody));

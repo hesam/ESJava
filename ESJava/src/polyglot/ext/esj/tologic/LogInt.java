@@ -23,5 +23,8 @@ public class LogInt extends LogObject {
 	return string;
     }
 
+    public LogInt arithOp(String o, LogObject o2) {
+	return new LogInt("(" + string + " " + o + " " + o2.sumValue_log() + ")");
+    }
 
 }

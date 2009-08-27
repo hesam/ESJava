@@ -69,7 +69,7 @@ public class LogMap {
     // FIXME
     public static String bounds_log(Class c) {
 	//return c.allInstances_log().string();
-	System.out.println(c);
+	//System.out.println(c);
 	if (c == int.class || c == Integer.class) 
 	    return ESJInteger.allInstances_log().string();
 	else {
@@ -79,13 +79,19 @@ public class LogMap {
     }
 
 
-    public static String newInstVarRel(String classStr, String instVar, Class domain, Class range) {
-	LogRelation r = new LogRelation(instVar, domain, range, false, true);
-	if (!InstVarRels.containsKey(classStr))
-	    InstVarRels.put(classStr, new HashMap());
-	((HashMap) InstVarRels.get(classStr)).put(instVar,r);
-	System.out.println(InstVarRels);
-	return r.id();
+    public static String newInstVarRel(String classStr, String instVar, String domainStr, Class range) {
+	try {
+	    Class domain = Class.forName(domainStr);
+	    LogRelation r = new LogRelation(instVar, domain, range, false, true);
+	    if (!InstVarRels.containsKey(classStr))
+		InstVarRels.put(classStr, new HashMap());
+	    ((HashMap) InstVarRels.get(classStr)).put(instVar,r);
+	    //System.out.println(InstVarRels);
+	    return r.id();
+	} catch (ClassNotFoundException e) {
+	    System.out.println(e);
+	    return null;
+	}       
     }
 
     public static LogRelation instVarRel_log(Object obj, String instVar) {
