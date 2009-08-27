@@ -62,9 +62,4 @@ public class LogObject  {
 	return new LogFormula("(" + sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
     }
 
-    public LogSet arithOp(String o, LogObject o2) {
-	return new LogSet("(" + sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
-    }
-
-
 }

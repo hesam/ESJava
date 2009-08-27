@@ -9,6 +9,8 @@ import java.io.CharArrayWriter;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import java.lang.reflect.Method;
+
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.Lexer;
 import org.antlr.runtime.RecognitionException;
@@ -26,11 +28,22 @@ public class LogMap {
     static HashMap JtoLog = new HashMap(); // Java Objs to Solver Atoms
     static HashMap LogtoJ = new HashMap(); 
     static HashMap ProblemRels = new HashMap(); // Holds relations for given problem  
+    static HashMap InstVarRels = new HashMap(); // Holds inst var relations for each class
+    static HashMap ClassAtoms = new HashMap(); // Holds atoms for each class
 
     static int AtomCtr = ESJInteger.BoundsSize();
 
     public static void SolverOpt_debug(boolean b) {
 	SolverOpt_debug = b;
+    }
+
+    public static void newAtom(Object key) { 
+	Class c = key.getClass();	
+	if (!ClassAtoms.containsKey(c))
+	    ClassAtoms.put(c, new ArrayList());
+	((ArrayList) ClassAtoms.get(c)).add(AtomCtr);
+	LogtoJ.put(AtomCtr,key);
+	JtoLog.put(key,AtomCtr++);
     }
 
     public static void put1(Object key, int value) { 
@@ -39,6 +52,10 @@ public class LogMap {
 
     public static int get1(Object key) { 
 	return (Integer) JtoLog.get(key);
+    }
+
+    public static String get1_log(Object key) { 
+	return "A" + get1(key);
     }
 
     public static void put2(int key, Object value) { 
@@ -51,7 +68,32 @@ public class LogMap {
 
     // FIXME
     public static String bounds_log(Class c) {
-	return  ESJInteger.allInstances_log().string();
+	//return c.allInstances_log().string();
+	System.out.println(c);
+	if (c == int.class || c == Integer.class) 
+	    return ESJInteger.allInstances_log().string();
+	else {
+	    ArrayList atoms = (ArrayList) ClassAtoms.get(c);
+	    return "u" + atoms.size() + '@' + atoms.get(0);
+	}
+    }
+
+
+    public static String newInstVarRel(String classStr, String instVar, Class domain, Class range) {
+	LogRelation r = new LogRelation(instVar, domain, range, false, true);
+	if (!InstVarRels.containsKey(classStr))
+	    InstVarRels.put(classStr, new HashMap());
+	((HashMap) InstVarRels.get(classStr)).put(instVar,r);
+	System.out.println(InstVarRels);
+	return r.id();
+    }
+
+    public static LogRelation instVarRel_log(Object obj, String instVar) {
+	return (LogRelation) ((HashMap) InstVarRels.get(obj.getClass().getName())).get(instVar);
+    }
+
+    public static LogAtom instVar_log(Object obj, String instVar) {
+	return new LogAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
     }
 
     public static boolean solve(Object obj, Object formula) {
@@ -61,18 +103,13 @@ public class LogMap {
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
 
-	ESJList o = (ESJList) obj;
-
-	ProblemRels.put(o.rel_log().id(),o.rel_log());
-	ProblemRels.put(o.prime_log().rel_log().id(),o.prime_log().rel_log());
-	//System.out.println(ProblemRels);
-
+	getProblemRels(obj);
 	
 	problem.append("solver: " + SolverOpt_Solver + spacer);
 	problem.append("symmetry_breaking: " + SolverOpt_SymmetryBreaking + spacer);
 	problem.append("flatten: " + SolverOpt_Flatten + spacer);
 	problem.append("bit_width: " + ESJInteger.bitWidth() + spacer);
-	problem.append("univ: u" + (AtomCtr+1) + spacer);
+	problem.append("univ: u" + AtomCtr + spacer);
 	for (Object k : ProblemRels.keySet() ) {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    problem.append("bounds " + k + ": " + r.log() + spacer);
@@ -105,14 +142,9 @@ public class LogMap {
 	    boolean satisfiable = (Boolean) model.get(0);
 
 	    if (satisfiable) {
-		//System.out.println(model);
-		HashMap modelRels = (HashMap) model.get(1);
-		for (LogRelation u : (ArrayList<LogRelation>) unknowns) {
-		    ArrayList val = (ArrayList) modelRels.get(u.id());
-		    for (ArrayList v : (ArrayList<ArrayList>) val) {
-			((ESJList) obj).set((Integer) get2((Integer) v.get(0)), (Integer) get2((Integer) v.get(1)));
-		    }
-		}
+		if (SolverOpt_debug)
+		    System.out.println(model);
+		commitModel(obj, unknowns, model);
 		return true;
 	    } else {
 		return false;
@@ -127,6 +159,58 @@ public class LogMap {
 	return false;
     }
 
-	
+
+    public static void getProblemRels(Object obj) {
+
+	if (obj instanceof ArrayList) {
+	    ESJList o = (ESJList) obj;
+
+	    ProblemRels.put(o.rel_log().id(),o.rel_log());
+	    ProblemRels.put(o.prime_log().rel_log().id(),o.prime_log().rel_log());
+	} else {
+	    HashMap classInstVarRels = (HashMap) InstVarRels.get(obj.getClass().getName());
+	    //System.out.println(classInstVarRels);
+	    for (Object k : classInstVarRels.keySet() ) {
+		LogRelation r =  (LogRelation) classInstVarRels.get(k);
+		ProblemRels.put(r.id(),r);
+	    }
+	}
+	//System.out.println(ProblemRels);
+
+    }
+
+    public static void commitModel(Object obj, ArrayList unknowns, ArrayList model) {
+	HashMap modelRels = (HashMap) model.get(1);
+	for (LogRelation u : (ArrayList<LogRelation>) unknowns) {
+	    ArrayList val = (ArrayList) modelRels.get(u.id());
+	    //System.out.println(val);
+	    if (obj instanceof ArrayList) {
+		for (ArrayList v : (ArrayList<ArrayList>) val) {
+		    ((ESJList) obj).set((Integer) get2((Integer) v.get(0)), (Integer) get2((Integer) v.get(1)));
+		}
+	    } else {
+		
+		Class[] paramTypes = new Class[1];
+		Object[] args = new Object[1];
+		paramTypes[0] = u.range();
+		//System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);
+		try { 
+		    Method m = obj.getClass().getDeclaredMethod(u.instVar(), paramTypes); 
+		    //System.out.println(m);
+		    for (ArrayList v : (ArrayList<ArrayList>) val) {
+			//System.out.println(get2((Integer) v.get(0)));
+			//System.out.println(get2((Integer) v.get(1)));
+			args[0] = get2((Integer) v.get(1));
+			m.invoke(get2((Integer) v.get(0)),args);
+		    }
+		} catch (Exception e) {
+		    System.out.println("duh" + e);
+		}
+		
+	    }
+	    
+	}
+    }
+    
 
 }

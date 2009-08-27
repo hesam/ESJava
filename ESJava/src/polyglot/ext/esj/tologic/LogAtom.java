@@ -19,4 +19,8 @@ public class LogAtom extends LogObject {
 	return this;
     }
 
+    public LogInt arithOp(String o, LogObject o2) {
+	return new LogInt("(" + sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
+    }
+
 }

@@ -31,6 +31,10 @@ public class LogRelation extends Hashtable {
 	this(instVar, domain, range, isaList, false, 0, false);
     }
 
+    public LogRelation(String instVar, Class domain, Class range, boolean isaList, boolean isUnknown){
+	this(instVar, domain, range, isaList, isUnknown, 0, false);
+    }
+
     public LogRelation(String instVar, Class domain, Class range, boolean isaList, boolean isUnknown, int fixedSize) {
 	this(instVar, domain, range, isaList, isUnknown, fixedSize, false);
     }
@@ -140,22 +144,6 @@ public class LogRelation extends Hashtable {
 	return lower;
     }
 
-    /*log0funDef
-
-     | d r o |
-        r := self range. 
-       ^isaListInstVar 
-            ifTrue: [ d := self listInstVarDomain.
-                          o := WriteStream with: ''.
-                          subRels associationsDo: [:assoc | | subrel |
-                             subrel := assoc key.
-                             o nextPutAll: 'FUNCTION(' ,  subrel , ', ' , d , '->one ' , r , ') && '.
-                             o nextPutAll: subrel , ' = ' , assoc value , '.' , id , ' && '].
-                          o contents ] 
-           ifFalse: [ d := self domain. 
-                          'FUNCTION(' ,  id , ', ' , d , '->one ' , r , ') && '  ].
-       
-*/
     public String funDef_log() {
 	CharArrayWriter o = new CharArrayWriter();
 	String r = range_log();

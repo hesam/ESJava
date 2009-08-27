@@ -1,43 +1,42 @@
-import java.util.ArrayList;
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
 class Test {
     
-    protected ESJList nums;
+    protected int x;
+    protected int y;
 
-    public Test(){
+    public Test(int x, int y){
 	super();
-	this.nums = new ESJList();
+	this.x = x;
+	this.y = y;
     }
     
-    public ESJList nums() {
-	return nums;
+    public int x() {
+	return x;
     }
 
-    public LogSet nums_log() {
-	return new LogSet("A?.r?");
+    public int y() {
+	return y;
     }
 
-    predicate public boolean isFoo(int j) {
-	nums.get(0) > j
-	    //all w : nums() | w > j 
-	    //&& nums.indices().allButLast().get(0) < j
+    predicate public boolean repOk() {
+	this.y() == this.x() + 1
     }
 
     ensured public void m1() 
-	ensures isFoo(3) {
-	nums.add(0);
+	ensures repOk() {
+	System.out.println();
     }
 
+    public String toString() { return "(" + x + "," + y + ")"; }
+
     public static void main(String[] args) {
-	Test t1 = new Test();
-	t1.nums.add(0);
-	t1.nums.add(3);
-	t1.nums.add(5);
-	t1.nums.add(1);
-	//System.out.println(t1.nums.indices_log().allButLast_log());
-	//System.out.println(t1.isFoo_log(new LogInt("2")));
+	LogMap.SolverOpt_debug(true);
+	Test t1 = new Test(0,0);
+	System.out.println(t1);
+	t1.m1();
+	System.out.println(t1);
     }
 
 }

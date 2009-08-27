@@ -1,8 +1,8 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
-ensured public class MyList extends ESJList 
-	ensures (some e : this | e > 5) {
+public class MyList extends ESJList 
+    ensures (no e : this | e < 0) {
 
     // PREDICATE METHODS    
     predicate public boolean isSorted() {

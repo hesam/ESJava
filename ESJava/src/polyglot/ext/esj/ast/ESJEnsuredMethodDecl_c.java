@@ -43,6 +43,25 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	return catchFormal;
     }
 
+    public boolean ensuresExprHasPrime() {
+	return ensuresExprHasPrimeH(ensuresExpr);
+    }
+
+    public boolean ensuresExprHasPrimeH(Node n) {
+	if (n instanceof Binary)
+	    return ensuresExprHasPrimeH(((Binary) n).left()) ||
+		ensuresExprHasPrimeH(((Binary) n).left());
+	else if (n instanceof Call) { 
+	    if (((Call) n).name().equals("prime"))
+		return true;
+	    for (Expr a : (List<Expr>) ((Call) n).arguments())
+		if (ensuresExprHasPrimeH(a))
+		    return true;
+	    return ensuresExprHasPrimeH(((Call) n).target()); 
+	} 
+	else return false;
+    }
+
     /** Reconstruct the method. */
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
 				       List throwTypes, Block body, Expr ensuresExpr, JL5Formal catchFormal) {

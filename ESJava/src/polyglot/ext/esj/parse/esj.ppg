@@ -12,7 +12,12 @@ import polyglot.ext.jl5.parse.*;
 parser Grm extends polyglot.ext.jl5.parse.Grm {:
     public final ESJTypeSystem ts;
     public final ESJNodeFactory nf;
+    String currClassName;
 
+    public void currClassName(String n) {
+    	   this.currClassName = n;
+    }
+	
     public Grm(Lexer l, TypeSystem t, NodeFactory n, ErrorQueue q) {
         super(l, t, n, q);
         ts = (ESJTypeSystem) t;
@@ -535,21 +540,59 @@ ensures_clause ::=
 
 // PART3:      ESJClassInvariantDecl
 
-extend type_declaration ::=
-    ensured_class_declaration:a 
-           {:  RESULT = a;  :}
-    	   ;
+override type_declaration ::=
+    ensured_class_declaration:a {:  RESULT = a;  :}
+ |  interface_declaration:a {:  RESULT = a;  :}
+ |  SEMICOLON {:  RESULT = null;  :}
+ |  enum_declaration:a {:  RESULT = a;  :};
 
 ensured_class_declaration ::=
-    ENSURED modifiers_or_annotations_opt:a CLASS:b IDENTIFIER:c type_parameters_opt:d super_opt:e interfaces_opt:f ensures_opt:z LBRACE class_body_declarations_opt:y RBRACE
-           {: 
-	      List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
-	      extraMtdBody.add(parser.nf.Return(null,z));
-	      JL5MethodDecl mainMtdDecl = parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(), parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "verifyInvariants", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, extraMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
+    modifiers_or_annotations_opt:a CLASS:b IDENTIFIER:c {: parser.currClassName(c.getIdentifier()); :} type_parameters_opt:d super_opt:e interfaces_opt:f ensures_opt:z LBRACE class_body_declarations_opt:y RBRACE
+           {: List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
+	      extraMtdBody.add(parser.nf.Return(null,z == null ? parser.nf.BooleanLit(null, true) : z));
+	      JL5MethodDecl invariantMtdDecl = parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(), parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "verifyInvariants", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, extraMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
 	      TypedList l = new TypedList(new LinkedList(), ClassMember.class, false);
-	      l.add(mainMtdDecl);
-	      l.addAll(parser.defineESJExtraMethods(mainMtdDecl));	
+	      if (!parser.currClassName.equals("MyList")) { // HACK FIXME
+	         List args = new TypedList(new LinkedList(), Expr.class, false);
+	         args.add(parser.nf.This(null));
+	      	 JL5MethodDecl relationizeMtdDecl = parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(), parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "relationize", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newAtom", args))), new TypedList(new LinkedList(), TypeNode.class, false));
+	         l.add(relationizeMtdDecl);
+	      }
+	      l.add(invariantMtdDecl);
+	      l.addAll(parser.defineESJExtraMethods(invariantMtdDecl));	
 	      l.addAll(y);
 	      RESULT = parser.nf.ESJEnsuredClassDecl(null, a, c.getIdentifier(), e, f, parser.nf.JL5ClassBody(null, l), d); 
+           :}
+	   ;
+
+// PART4:	Relationizing instance variables
+
+override field_declaration ::=
+    modifiers_or_annotations_opt:a type:b variable_declarators:c SEMICOLON:e 
+           {: List l = new TypedList(new LinkedList(), ClassMember.class, false);
+       	      for (Iterator i = c.iterator(); i.hasNext(); ) {
+              	  VarDeclarator d = (VarDeclarator) i.next();
+	 	  System.out.println("somebody adding a fieeeeeld!" + d.name);
+		  List args = new TypedList(new LinkedList(), Expr.class, false);
+		  List relDefBodyArgs = new TypedList(new LinkedList(), Expr.class, false);
+		  List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
+
+		  relDefBodyArgs.add(parser.nf.StringLit(null,parser.currClassName));
+		  relDefBodyArgs.add(parser.nf.StringLit(null,d.name));
+		  relDefBodyArgs.add(parser.nf.NullLit(null));
+		  relDefBodyArgs.add(parser.nf.ClassLit(null, b));
+		  Block relDefBody = parser.nf.Block(null, parser.nf.Eval(null,parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newInstVarRel", relDefBodyArgs)));
+                  l.add(parser.nf.Initializer(null, Flags.STATIC, relDefBody));
+
+	          args.add(parser.nf.StringLit(null, d.name));
+		  instVarGetArgs.add(parser.nf.This(null));
+		  instVarGetArgs.add(parser.nf.StringLit(null, d.name));
+		  l.add(parser.nf.JL5MethodDecl(null, a, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogAtom")), 0), d.name+"_log", new TypedList(new LinkedList(), Formal.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVar_log", instVarGetArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
+
+         	  l.add(parser.nf.JL5FieldDecl(parser.pos(b, e),
+               	  a, parser.array(b, d.dims),
+               	  d.name, d.init));
+              }
+              RESULT = l; 
            :}
 	   ;

@@ -46,9 +46,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 						   new TypedList(new LinkedList(), Expr.class, false)), 
 					   Binary.COND_AND, 
 					   methodDecl.ensuresExpr());
-	extraMtdBody.add(nf.Eval(null, 
-				 nf.Call(null, null, "setPrime", 
-					 new TypedList(new LinkedList(), Expr.class, false))));
+	if (methodDecl.ensuresExprHasPrime())
+	    extraMtdBody.add(nf.Eval(null, 
+				     nf.Call(null, null, "setPrime", 
+					     new TypedList(new LinkedList(), Expr.class, false))));
 	extraMtdBody.addAll(methodDecl.body().statements());
 	extraMtdBody.add(nf.JL5Assert(null, assertExpr, null));
 
@@ -57,7 +58,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
 	catchBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,"rte"), "printStackTrace",
 					      new TypedList(new LinkedList(), Expr.class, false))));
-
+	catchBody.add(nf.Eval(null, 
+				     nf.Call(null, null, "relationize", 
+					     new TypedList(new LinkedList(), Expr.class, false))));
 	catchBody.add(nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback",
 					      new TypedList(new LinkedList(), Expr.class, false))));
 	Block catchBlock = nf.Block(null,catchBody);
@@ -238,7 +241,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	} else if (r instanceof StringLit) {
 	    return r;
 	} else if (r instanceof BooleanLit) {
-	    return r;       
+	    List args = new TypedList(new LinkedList(), Expr.class, false);
+	    args.add(nf.StringLit(null, "" + ((BooleanLit) r).value() ));
+	    return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
 	} else if (r instanceof JL5CanonicalTypeNode) {
 	    return r;
 	}

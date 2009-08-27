@@ -11,10 +11,13 @@ public class ESJList extends ArrayList<Integer> {
 
     // Constructor
 
-    // 1. keep my pre-state copy in prime field
-    // 2. relationize both of us
+    // keep my pre-state copy in prime field and relationize it
     public void setPrime() {
 	this.prime = copy(0,size()-1);
+    }
+
+    // relationize me
+    public void relationize() {
 	this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, true, size());
     }
 
