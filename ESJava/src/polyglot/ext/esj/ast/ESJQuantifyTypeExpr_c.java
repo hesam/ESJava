@@ -13,15 +13,15 @@ import polyglot.visit.*;
 // A temporary class used for passing an ordered dispatch method declaration.
 public class ESJQuantifyTypeExpr_c extends Expr_c implements ESJQuantifyTypeExpr {
 
-    protected CanonicalTypeNode theType;
+    protected TypeNode theType;
 
-    public ESJQuantifyTypeExpr_c(Position pos, CanonicalTypeNode theType) {
+    public ESJQuantifyTypeExpr_c(Position pos, TypeNode theType) {
 	super(pos);
 	this.theType = theType;
 
     }
 
-    public CanonicalTypeNode theType() {
+    public TypeNode theType() {
 	return theType;
     }
 

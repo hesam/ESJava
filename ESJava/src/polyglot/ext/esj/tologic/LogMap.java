@@ -170,7 +170,7 @@ public class LogMap {
     public static void getProblemRels(Object obj) {
 
 	if (obj instanceof ArrayList) {
-	    ESJList o = (ESJList) obj;
+	    ESJList<Integer> o = (ESJList<Integer>) obj;
 
 	    ProblemRels.put(o.rel_log().id(),o.rel_log());
 	    ProblemRels.put(o.prime_log().rel_log().id(),o.prime_log().rel_log());
@@ -193,7 +193,7 @@ public class LogMap {
 	    //System.out.println(val);
 	    if (obj instanceof ArrayList) {
 		for (ArrayList v : (ArrayList<ArrayList>) val) {
-		    ((ESJList) obj).set((Integer) get2((Integer) v.get(0)), (Integer) get2((Integer) v.get(1)));
+		    ((ESJList<Integer>) obj).set((Integer) get2((Integer) v.get(0)), (Integer) get2((Integer) v.get(1)));
 		}
 	    } else {
 		

@@ -733,8 +733,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
       return  MAX_VALUE - MIN_VALUE + 1;
   }
   
-  public static ESJList range(int l, int u) {
-      ESJList res = new ESJList();
+  public static ESJList<Integer> range(int l, int u) {
+      ESJList<Integer> res = new ESJList<Integer>();
       for(int i=l;i<=u;i++) {
 	  res.add(new Integer(i));
       }
@@ -773,7 +773,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
 	  return res.toString();
   }
 
-  public static ESJList allInstances() {
+  public static ESJList<Integer> allInstances() {
       return range(MIN_VALUE,MAX_VALUE);
   }
 

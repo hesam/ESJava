@@ -114,19 +114,18 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	    // findout what type is quantListExpr list of (can be a subtype a generic...)
 	    TypeSystem ts = tc.typeSystem();
-	    ReferenceType t = (ReferenceType) quantListExpr().type();
+	    Type t = (Type) quantListExpr().type();
 	    while (! ((JL5ParsedClassType) t).isGeneric()) {
 		t = (ReferenceType) ts.superType((ReferenceType) t);
 	    }
-	    List newVarD = new TypedList(new LinkedList(), LocalDecl.class, false);
-	    //System.out.println(quantVarI);
-	    for (LocalDecl d : (List<LocalDecl>) quantVarD) {
-		//System.out.println(d.type());	       
-		newVarD.add(d.type(d.type().type((Type) ((ParameterizedType) t).typeArguments().get(0))));
+	    if (t instanceof ParameterizedType) {
+		List newVarD = new TypedList(new LinkedList(), LocalDecl.class, false);
+		for (LocalDecl d : (List<LocalDecl>) quantVarD) {
+		    newVarD.add(d.type(d.type().type((Type) ((ParameterizedType) t).typeArguments().get(0))));
+		}
+		this.quantVarD = newVarD;
 	    }
-	    this.quantVarD = newVarD;
-	
-	return super.typeCheck(tc);
+	    return super.typeCheck(tc);
     }
 
 

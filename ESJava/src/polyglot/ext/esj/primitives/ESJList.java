@@ -4,7 +4,7 @@ import polyglot.ext.esj.tologic.*;
 
 import java.util.ArrayList;
 
-public class ESJList extends ArrayList<Integer> {
+public class ESJList<E> extends ArrayList<E> {
 
     protected LogRelation rel_log;
     protected ESJList prime;
@@ -21,9 +21,9 @@ public class ESJList extends ArrayList<Integer> {
 	this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, true, size());
     }
 
-    public ESJList prime() { return prime; }
+    public ESJList<E> prime() { return prime; }
     
-    public ESJList prime_log() { return prime; }
+    public ESJList<E> prime_log() { return prime; }
 
     public LogRelation rel_log() {
 	return rel_log;
@@ -60,33 +60,27 @@ public class ESJList extends ArrayList<Integer> {
     }
    
     // copies obj plus its relation
-    public ESJList copy(int from, int to) { ESJList res = new ESJList();
+    public ESJList<E> copy(int from, int to) { ESJList<E> res = new ESJList<E>();
 	                                    res.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, size());
                                             for (int i = from; i <= to; i++) {
-						Integer itm = get(i);
+						E itm = get(i);
 						res.add(itm); 
 						res.rel_log.put_log(i, itm);
 					    }
                                             return res; }
     
-    public ESJList indices() { return ESJInteger.range(0, size() - 1); }
+    public ESJList<Integer> indices() { return ESJInteger.range(0, size() - 1); }
     
-    public ESJList allButLast() { return copy(0, size() - 2); }
+    public ESJList<E> allButLast() { return copy(0, size() - 2); }
     
-    public int count(Integer e) { int ct = 0;
+    public int count(E e) { int ct = 0;
                                  for (int i = 0; i < size(); i++) if (e.equals(get(i))) ct++;
                                  return ct; }
     
-    public void println() { System.out.print("[");
-                            for (int i = 0; i < size() - 1; i++) { System.out.print(get(i));
-                                                                   System.out.print(", "); }
-                            if (size() > 0) { System.out.print(get(size() - 1)); }
-                            System.out.println("]"); }
-    
-    public static void main(String[] args) { ESJList ta = new ESJList();
+    public static void main(String[] args) { ESJList<Integer> ta = new ESJList<Integer>();
                                              int[] a = { 1, 2, 3, 4, 4, 5 };
                                              for (int i = 0; i < a.length; i++) { ta.add(new Integer(a[i]));
 					     }
-                                             ta.println(); }
+                                             System.out.println(ta); }
     
 }
