@@ -66,11 +66,11 @@ public class LogRelation extends Hashtable {
     public void incrFixedSize() { fixedSize++; }
 
     public String domain_log() { 
-	return isaList ? ESJInteger.zeroTo_log(fixedSize).string() : LogMap.bounds_log(domain);
+	return isaList ? ESJInteger.zeroTo_log(fixedSize).string() : LogMap.bounds_log(domain).string();
     }
 
     public String range_log() { 
-	return LogMap.bounds_log(range);
+	return LogMap.bounds_log(range).string();
     }
 
     public String fullDomainRange() {

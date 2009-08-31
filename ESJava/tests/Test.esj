@@ -1,7 +1,7 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
-public class Test ensures (this.x() < 5 && this.x() > 0) {
+public class Test ensures (/*this.x < 5 && */this.x > 0) {
     
     protected int x;
     protected int y;
@@ -12,17 +12,16 @@ public class Test ensures (this.x() < 5 && this.x() > 0) {
 	this.y = y;
     }
     
-    public int x() { return x; }
-    public int y() { return y; }
     public void x(int v) { this.x = v; }
     public void y(int v) { this.y = v; }
 
     predicate public boolean repOk() {
-	this.y() == 2 * this.x()
+	//this.y == 2 * this.x 
+	this.x == 2 * this.x_prime
     }
 
-    ensured public void m1() 
-	ensures (repOk()) {
+    ensured public void m1()
+      ensures (repOk()) {
 	System.out.println();
     }
 

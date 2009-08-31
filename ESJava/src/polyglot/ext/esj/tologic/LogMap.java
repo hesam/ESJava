@@ -33,6 +33,11 @@ public class LogMap {
 
     static int AtomCtr = ESJInteger.BoundsSize();
 
+    static {
+	LogtoJ.put(AtomCtr,null);
+	JtoLog.put(null,AtomCtr++);
+    }
+
     public static void SolverOpt_debug(boolean b) {
 	SolverOpt_debug = b;
     }
@@ -42,6 +47,7 @@ public class LogMap {
 	if (!ClassAtoms.containsKey(c))
 	    ClassAtoms.put(c, new ArrayList());
 	((ArrayList) ClassAtoms.get(c)).add(AtomCtr);
+	System.out.println(ClassAtoms);
 	LogtoJ.put(AtomCtr,key);
 	JtoLog.put(key,AtomCtr++);
     }
@@ -50,7 +56,7 @@ public class LogMap {
 	JtoLog.put(key,value);
     }
 
-    public static int get1(Object key) { 
+    public static int get1(Object key) {
 	return (Integer) JtoLog.get(key);
     }
 
@@ -67,14 +73,14 @@ public class LogMap {
     }
 
     // FIXME
-    public static String bounds_log(Class c) {
+    public static LogSet bounds_log(Class c) {
 	//return c.allInstances_log().string();
 	//System.out.println(c);
 	if (c == int.class || c == Integer.class) 
-	    return ESJInteger.allInstances_log().string();
+	    return ESJInteger.allInstances_log();
 	else {
 	    ArrayList atoms = (ArrayList) ClassAtoms.get(c);
-	    return "u" + atoms.size() + '@' + atoms.get(0);
+	    return new LogSet("u" + atoms.size() + '@' + atoms.get(0));
 	}
     }
 
@@ -99,8 +105,18 @@ public class LogMap {
 	return (LogRelation) ((HashMap) InstVarRels.get(obj.getClass().getName())).get(instVar);
     }
 
+    // fixme? --> diff name or instanceof...
+    public static LogRelation instVarRel_log(LogVar var, String instVar) {
+	return (LogRelation) ((HashMap) InstVarRels.get(var.logType())).get(instVar);
+    }
+
     public static LogAtom instVar_log(Object obj, String instVar) {
 	return new LogAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
+    }
+
+    // fixme? --> diff name or instanceof...
+    public static LogAtom instVar_log(LogVar var, String instVar) {
+	return new LogAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
     }
 
     public static boolean solve(Object obj, Object formula) {

@@ -18,9 +18,8 @@ public class LogVar extends LogObject {
 	this.logType = logType;
     }
 
-    public LogObject intValue_log() {
-	return this;
-    }
+    public  String logType() { return logType; }
+    public LogObject intValue_log() { return this; }
 
     public String sumValue_log() {
 	return logType.equals("int") ? "sum (" + string + ")" : string;

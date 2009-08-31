@@ -11,6 +11,7 @@ public class ESJList<E> extends ArrayList<E> {
 
     // Constructor
 
+
     // keep my pre-state copy in prime field and relationize it
     public void setPrime() {
 	this.prime = copy(0,size()-1);

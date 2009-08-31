@@ -41,14 +41,11 @@ public class ESJJavaTranslator extends ContextVisitor {
     public JL5MethodDecl DesugarEnsuredMethodDecl (ESJEnsuredMethodDecl methodDecl) throws SemanticException {
 
 	List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
-	Expr assertExpr = nf.FormulaBinary(null, 
-					   nf.Call(null, null, "verifyInvariants", 
-						   new TypedList(new LinkedList(), Expr.class, false)), 
-					   Binary.COND_AND, 
-					   methodDecl.ensuresExpr());
-	extraMtdBody.add(nf.Eval(null, 
-				     nf.Call(null, null, "relationize", 
-					     new TypedList(new LinkedList(), Expr.class, false))));
+	Expr call1 = nf.Call(null, null, "verifyInvariants", 
+			     new TypedList(new LinkedList(), Expr.class, false));
+	Expr assertExpr = methodDecl.ensuresExpr() == null ? call1 : 
+	    nf.FormulaBinary(null, call1, Binary.COND_AND, methodDecl.ensuresExpr());
+	extraMtdBody.add(nf.Eval(null, nf.Call(null, null, "relationize", new TypedList(new LinkedList(), Expr.class, false))));
 	if (true) //methodDecl.ensuresExprHasPrime()) //FIXME
 	    extraMtdBody.add(nf.Eval(null, 
 				     nf.Call(null, null, "setPrime", 
@@ -209,7 +206,14 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    }
 	    return nf.Call(null, (Receiver) toLogicExpr(c.target()), c.name() + "_log" , args);
 	} else if (r instanceof Field) {
-	    return r;
+	    Field f = (Field) r;
+	    //System.out.println(f.target());		
+	    //System.out.println(f.target().getClass());		
+	    //return nf.Call(null, (Receiver) toLogicExpr(f.target()), f.name() + "_log", new TypedList(new LinkedList(), Expr.class, false));
+	    List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
+	    instVarGetArgs.add((Receiver) toLogicExpr(f.target()));
+	    instVarGetArgs.add(nf.StringLit(null, f.name()));
+	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVar_log", instVarGetArgs);
 	}  else if (r instanceof ESJQuantVarLocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
@@ -218,14 +222,16 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar"))).init(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args, null, new TypedList(new LinkedList(), TypeNode.class, false ))); //FIXME
 	} else if (r instanceof JL5LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
-
-	    List args4 = new TypedList(new LinkedList(), Expr.class, false);
-	    args4.add(nf.StringLit(null, "&&"));
-	    args4.add((Expr) toLogicExpr(l.init()));
-
 	    Expr e1 = nf.Call(null, null, "verifyInvariants_log", new TypedList(new LinkedList(), Expr.class, false));
-	    Expr probFormula = nf.Call(null, e1, "formulaOp", args4);
-
+	    Expr probFormula;
+	    if (l.init() == null) {
+		probFormula = e1;
+	    } else {
+		List args4 = new TypedList(new LinkedList(), Expr.class, false);
+		args4.add(nf.StringLit(null, "&&"));
+		args4.add((Expr) toLogicExpr(l.init()));
+		probFormula = nf.Call(null, e1, "formulaOp", args4);
+	    }
 	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula"))).init(probFormula);
 	} else if (r instanceof LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;

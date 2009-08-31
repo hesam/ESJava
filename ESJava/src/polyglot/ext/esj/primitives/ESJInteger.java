@@ -780,7 +780,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
   public static void main(String[] args) {
       ESJInteger.setBounds(0,30);
       System.out.println(ESJInteger.MIN_VALUE);
-      ESJInteger.allInstances().println();
+      System.out.println(ESJInteger.allInstances());
   }
   
 }
