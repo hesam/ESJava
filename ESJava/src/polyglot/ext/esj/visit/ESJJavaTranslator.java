@@ -31,6 +31,8 @@ public class ESJJavaTranslator extends ContextVisitor {
     
     protected ESJNodeFactory nf;
 
+    protected static List currClassFieldNs;
+
     public ESJJavaTranslator(Job job, TypeSystem ts, NodeFactory jlnf) {
 	super(job, ts, jlnf);
 	this.nf = (ESJNodeFactory) jlnf;
@@ -200,27 +202,36 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return r;
 	} else if (r instanceof Call) {
 	    Call c = (Call) r;
-	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    for (Expr e : (List<Expr>) c.arguments()) {
-		args.add((Expr) toLogicExpr(e));
+	    // FIXME:
+	    System.out.println(currClassFieldNs);
+	    /*
+	    try {
+		System.out.println("checking:"+c.name() + " " + c.target().type().toString());
+		Class c1 = Class.forName(c.target().type().toString());//.getFields());
+	    } catch (ClassNotFoundException e) {
+		System.out.println("duh");
+		return r;
+		}*/
+	    if (currClassFieldNs.contains(c.name())) {
+		System.out.println(c.name());
+		return instVarGet_log(c.target(), c.name());
+	    } else {
+		List args = new TypedList(new LinkedList(), Expr.class, false);
+		for (Expr e : (List<Expr>) c.arguments()) {
+		    args.add((Expr) toLogicExpr(e));
+		}
+		return nf.Call(null, (Receiver) toLogicExpr(c.target()), c.name() + "_log" , args);
 	    }
-	    return nf.Call(null, (Receiver) toLogicExpr(c.target()), c.name() + "_log" , args);
 	} else if (r instanceof Field) {
 	    Field f = (Field) r;
-	    //System.out.println(f.target());		
-	    //System.out.println(f.target().getClass());		
-	    //return nf.Call(null, (Receiver) toLogicExpr(f.target()), f.name() + "_log", new TypedList(new LinkedList(), Expr.class, false));
-	    List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
-	    instVarGetArgs.add((Receiver) toLogicExpr(f.target()));
-	    instVarGetArgs.add(nf.StringLit(null, f.name()));
-	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVar_log", instVarGetArgs);
-	}  else if (r instanceof ESJQuantVarLocalDecl) {
+	    return instVarGet_log(f.target(), f.name());
+	} else if (r instanceof ESJQuantVarLocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, LogObject.genVar_log())); 
 	    args.add(nf.StringLit(null, l.type().toString()));
 	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar"))).init(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args, null, new TypedList(new LinkedList(), TypeNode.class, false ))); //FIXME
-	} else if (r instanceof JL5LocalDecl) {
+    } else if (r instanceof JL5LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    Expr e1 = nf.Call(null, null, "verifyInvariants_log", new TypedList(new LinkedList(), Expr.class, false));
 	    Expr probFormula;
@@ -262,8 +273,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 				       }
 	}
 
+
     // quantify expr desugars to a method call (defined above)
-    public Expr DesugarQuantifyExpr (ESJQuantifyExpr a)  {
+    public Expr DesugarQuantifyExpr (ESJQuantifyExpr a) {
 	String quantId = a.parentMethod().name()  + "_" + a.id();
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	for(Formal f : (List<Formal>)(a.parentMethod().formals())) {
@@ -276,11 +288,25 @@ public class ESJJavaTranslator extends ContextVisitor {
 	return nf.Call(null, a.theType(), "allInstances",new TypedList(new LinkedList(), Expr.class, false));
     }
 
+    public Expr DesugarESJFieldClosure (ESJFieldClosure f) throws SemanticException  {
+	List args = new TypedList(new LinkedList(), Expr.class, false);
+	ESJFieldClosure fc = (ESJFieldClosure) f;
+	return nf.Call(null, fc.target(), fc.name()+"_closure", args);
+    }
+
     protected Node clearPureFlag(MethodDecl md) {
       return md.flags(md.flags().clear(((ESJTypeSystem)typeSystem()).Pure()));
     }
 
+    protected NodeVisitor enterCall(Node parent, Node n) throws SemanticException {
+	if (n instanceof ESJEnsuredClassDecl) {
+	    currClassFieldNs = ((ESJEnsuredClassDecl)n).fieldNames();
+	}
+	return super.enterCall(parent,n);
+    }
+
     protected Node leaveCall(Node n) throws SemanticException {
+
 	if (n instanceof ESJPredMethodDecl) {	    
 	    return super.leaveCall(DesugarPredMethodDecl((ESJPredMethodDecl)n));
 	} else if (n instanceof ESJLogPredMethodDecl) {	    
@@ -291,18 +317,28 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return super.leaveCall(DesugarQuantifyExpr((ESJQuantifyExpr)n));
 	} else if (n instanceof ESJQuantifyTypeExpr) {
 	    return super.leaveCall(DesugarQuantifyTypeExpr((ESJQuantifyTypeExpr)n));
+	} else if (n instanceof ESJFieldClosure) {
+	    return super.leaveCall(DesugarESJFieldClosure((ESJFieldClosure)n));
 	    }
-	else { 	
+	else {
 	    return super.leaveCall(n);
 	}
     }
 
-     FlagAnnotations makeFlagAnnotations() {
+    public Node instVarGet_log(Receiver target, String name) throws SemanticException {
+
+	    List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
+	    instVarGetArgs.add((Receiver) toLogicExpr(target));
+	    instVarGetArgs.add(nf.StringLit(null, name));
+	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVar_log", instVarGetArgs);
+    }
+  
+    FlagAnnotations makeFlagAnnotations() {
 	      FlagAnnotations fl2 = new FlagAnnotations(); 
               fl2.classicFlags(Flags.NONE);
               fl2.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 	      return fl2;
-     }	      
+    }	      
 
 }
 

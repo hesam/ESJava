@@ -17,18 +17,16 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
     protected FormulaBinary.Operator quantKind;
     protected String id,quantVarN;
     protected List quantVarD;
-    protected LocalInstance quantVarI;
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
     protected JL5MethodDecl parentMethod;
 
-    public ESJLogQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr) {
+    public ESJLogQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr) {
 	super(pos);
 	this.id = (quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
-	this.quantVarI = quantVarI;
 	this.quantListExpr = quantListExpr;
 	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantClauseExpr);
     }
@@ -57,10 +55,6 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 	return quantVarD;
     }
 
-    public LocalInstance quantVarI() {
-	return quantVarI;
-    }
-
     public JL5MethodDecl parentMethod() {
 	return parentMethod;
     }
@@ -85,7 +79,6 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 	    n.quantKind = quantKind;
 	    n.quantVarN = quantVarN;
 	    n.quantVarD = quantVarD; //TypedList.copyAndCheck(quantVarD, LocalDecl.class, true);
-	    n.quantVarI = quantVarI;
 	    n.quantListExpr = quantListExpr;
 	    n.quantClauseExpr = quantClauseExpr;
 	    return n;
@@ -108,19 +101,6 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 	n = (ESJLogQuantifyExpr)n.type(tc.typeSystem().Boolean()); //FIXME
 	return n;
     } 
-    /*
-    public Context enterScope(Node child, Context c) {
-	System.out.println(child);
-	System.out.println("qi2: " + quantVarI);
-	if (child instanceof ESJQuantifyClauseExpr) {
-	    c.addVariable(quantVarI);
-	    //child.addDecls(c);
-	    
-	}
-
-	return super.enterScope(child, c);
-	}
-    */
 
 }
 

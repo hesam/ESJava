@@ -26,20 +26,18 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     protected List quantVarD;
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
-    protected LocalInstance quantVarI;
     
     public ESJPredMethodDecl_c(Position pos, FlagAnnotations flags,
 			       TypeNode returnType, String name,
 			       List formals,
 			       List throwTypes, Block body, List paramTypes, String quantMtdId,
-			       FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, 
+			       FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, 
 			       Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
 	this.quantMtdId = quantMtdId;
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
-	this.quantVarI = quantVarI;
 	this.quantListExpr = quantListExpr;
 	this.quantClauseExpr = quantClauseExpr;
 	
@@ -61,10 +59,6 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	return quantVarD;
     }
 
-    public LocalInstance quantVarI() {
-	return quantVarI;
-    }
-
     public Expr quantListExpr() {
 	return quantListExpr;
     }
@@ -76,7 +70,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     /** Reconstruct the method. */
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
 				       List throwTypes, Block body,  
-				       FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
+				       FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	if (returnType != this.returnType ||
 	    ! CollectionUtil.equals(formals, this.formals) ||
 	    quantListExpr != this.quantListExpr ||
@@ -91,7 +85,6 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	    n.quantListExpr = quantListExpr;
 	    n.quantClauseExpr = quantClauseExpr;
 	    n.quantVarD = TypedList.copyAndCheck(quantVarD, LocalDecl.class, true);
-	    n.quantVarI = quantVarI;
 	    n.body = body;
 	    return n;
 	}
@@ -108,7 +101,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	//List quantVarD = visitList(this.quantVarD, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	Block body = (Block) visitChild(this.body, v);
-	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN , this.quantVarD, this.quantVarI, quantListExpr, quantClauseExpr);
+	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN , this.quantVarD, quantListExpr, quantClauseExpr);
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {
@@ -132,11 +125,11 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     public Context enterScope(Node child, Context c) {
 	
 	if (child instanceof ESJQuantifyClauseExpr) {
-	    //System.out.println(child + "(" + child.getClass() + ")");	
-	    c.addVariable(quantVarI);
-	    //child.addDecls(c);
+	    LocalDecl d = (LocalDecl) quantVarD.get(0);
+	    d = d.localInstance(c.typeSystem().localInstance(null, flags(), d.declType(), d.name()));	   
+	    c.addVariable(d.localInstance());
 	    for (Formal f : (List<Formal>) formals) {
-		c.addVariable(c.typeSystem().localInstance(null,  flags(),f.declType(), f.name()));
+		c.addVariable(c.typeSystem().localInstance(null, flags(),f.declType(), f.name()));
 	    }
 	}
 

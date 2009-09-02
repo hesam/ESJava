@@ -13,7 +13,6 @@ public interface ESJLogQuantifyExpr extends Expr {
     public FormulaBinary.Operator quantKind();
     public String quantVarN();
     public List quantVarD();
-    public LocalInstance quantVarI();
     public Expr quantListExpr();
     public ESJQuantifyClauseExpr quantClauseExpr();
     public JL5MethodDecl parentMethod();

@@ -21,20 +21,21 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     // TODO:  Override factory methods for overriden AST nodes.
     // TODO:  Override factory methods for AST nodes with new extension nodes.
 
-    public ESJEnsuredClassDecl ESJEnsuredClassDecl(Position pos, FlagAnnotations fl, String name, 
-						   TypeNode superType, List interfaces, ClassBody body, 
-						   List<ParamTypeNode> paramTypes) {
-	return new ESJEnsuredClassDecl_c(pos, fl, name, superType, interfaces, body, paramTypes);
+    public ESJEnsuredClassDecl ESJEnsuredClassDecl(Position pos, FlagAnnotations fl, 
+						   String name, TypeNode superType, 
+						   List interfaces, ClassBody body, 
+						   List<ParamTypeNode> paramTypes, 
+						   List fieldNames) {
+	return new ESJEnsuredClassDecl_c(pos, fl, name, superType, interfaces, body, paramTypes, fieldNames);
     }
 
     public ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags, 
 					       TypeNode returnType, String name, List formals, 
 					       List throwTypes, Block body, List paramTypes, 
 					       String quantMtdId, FormulaBinary.Operator quantKind, 
-					       String quantVarN, List quantVarD, 
-					       LocalInstance quantVarI,
+					       String quantVarN, List quantVarD,
 					       Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {	
-    	return new ESJPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantMtdId, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
+    	return new ESJPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantMtdId, quantKind, quantVarN, quantVarD, quantListExpr, quantClauseExpr);
     }
 
 
@@ -55,15 +56,15 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     }
 
     public ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, 
-					   List quantVarD, LocalInstance quantVarI, 
+					   List quantVarD, 
 					   Expr quantListExpr, Expr quantClauseExpr) {
-	return new ESJQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
+	return new ESJQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantListExpr, quantClauseExpr);
     }
 
-    public ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, 
-					   List quantVarD, LocalInstance quantVarI, 
-					   Expr quantListExpr, Expr quantClauseExpr) {
-	return new ESJLogQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarI, quantListExpr, quantClauseExpr);
+    public ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind,
+						 String quantVarN, List quantVarD, 
+						 Expr quantListExpr, Expr quantClauseExpr) {
+	return new ESJLogQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantListExpr, quantClauseExpr);
     }
 
     public ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, TypeNode theType) {
@@ -84,5 +85,9 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 
     public ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isPrime) {
 	return new ESJFieldDecl_c(pos, flags, type, name, init, isPrime);
+    }
+
+    public ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive) {
+	return new  ESJFieldClosure_c(pos, target, name, isReflexive);
     }
 }

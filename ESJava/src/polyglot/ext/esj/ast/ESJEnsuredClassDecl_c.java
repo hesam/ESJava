@@ -24,16 +24,22 @@ public class ESJEnsuredClassDecl_c extends JL5ClassDecl_c
     implements ESJEnsuredClassDecl {
 
     protected Expr ensuresExpr;
+    protected List fieldNames;
 
     public ESJEnsuredClassDecl_c(Position pos, FlagAnnotations fl, String name, 
 				 TypeNode superType, List interfaces, ClassBody body, 
-				 List<ParamTypeNode> paramTypes) {
+				 List<ParamTypeNode> paramTypes, List fieldNames) {
         super(pos, fl, name, superType, interfaces, body, paramTypes);
 	this.ensuresExpr = ensuresExpr;
+	this.fieldNames = fieldNames;
     }
     
     public Expr ensuresExpr() {
 	return ensuresExpr;
+    }
+
+    public List fieldNames() {
+	return fieldNames;
     }
 
     protected ClassDecl reconstruct(TypeNode superClass, List interfaces, ClassBody body,
@@ -49,6 +55,7 @@ public class ESJEnsuredClassDecl_c extends JL5ClassDecl_c
             n.annotations = TypedList.copyAndCheck(annotations, AnnotationElem.class, false);
             n.paramTypes = paramTypes;
 	    n.ensuresExpr = ensuresExpr;
+	    n.fieldNames = this.fieldNames;
             return n;
         }
         return this;

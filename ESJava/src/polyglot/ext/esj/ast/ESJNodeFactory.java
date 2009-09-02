@@ -19,14 +19,14 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 
     ESJEnsuredClassDecl ESJEnsuredClassDecl(Position pos, FlagAnnotations fl, String name, 
 					    TypeNode superType, List interfaces, ClassBody body, 
-					    List<ParamTypeNode> paramTypes);
+					    List<ParamTypeNode> paramTypes, List fieldNames);
 
     ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags,
 					TypeNode returnType, String name,
 					List formals, List throwTypes, Block body, 
 					List paramTypes, String quantMtdId, 
-					FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, 
-					LocalInstance quantVarI, Expr quantListExpr, 
+					FormulaBinary.Operator quantKind, String quantVarN, 
+					List quantVarD, Expr quantListExpr, 
 					ESJQuantifyClauseExpr quantClauseExpr);
 
     ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
@@ -40,9 +40,9 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					      List paramTypes, Expr ensuresExpr, 
 					      JL5Formal catchFormal);
 
-    ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr);
+    ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr);
 
-    ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, LocalInstance quantVarI, Expr quantListExpr, Expr quantClauseExpr);
+    ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr);
 
     ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, TypeNode theType);
 
@@ -51,4 +51,6 @@ public interface ESJNodeFactory extends JL5NodeFactory {
     ESJQuantVarLocalDecl ESJQuantVarLocalDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init);
 
     ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isPrime);
+
+    ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive);
 }

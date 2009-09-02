@@ -1,6 +1,33 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
+import java.util.ArrayList;
+
+class Node
+{
+    public Integer key;
+    public Integer value;
+    public Node left;
+    public Node right;
+    public Node parent;
+
+    public Node(Integer key, Integer value, Node left, Node right) {
+        this.key = key;
+        this.value = value;
+        this.left = left;
+        this.right = right;
+        if (left != null) left.parent = this;
+        if (right != null) right.parent = this;
+        this.parent = null;
+    }
+
+    public Node left() { return left; }
+    public String toString() {
+	return "Node(" + key + "," + value + ")";
+    }
+
+}
+
 public class Test ensures (/*this.x < 5 && */this.x > 0) {
     
     protected int x;
@@ -12,12 +39,17 @@ public class Test ensures (/*this.x < 5 && */this.x > 0) {
 	this.y = y;
     }
     
+    public int x() { return x; }
+    public int y() { return y; }
     public void x(int v) { this.x = v; }
     public void y(int v) { this.y = v; }
 
     predicate public boolean repOk() {
+	//this.y() == 2 * this.x() 
 	//this.y == 2 * this.x 
-	this.x == 2 * this.x_prime
+	//this.x == 2 * this.x_prime
+	//no Node n | n.^left.contains(n)
+	no Node n | n.left() == n
     }
 
     ensured public void m1()
