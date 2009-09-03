@@ -275,6 +275,7 @@ public class ESJJavaTranslator extends ContextVisitor {
     public Expr DesugarESJFieldClosure (ESJFieldClosure f) throws SemanticException  {
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	ESJFieldClosure fc = (ESJFieldClosure) f;
+	args.add(nf.BooleanLit(null, fc.isReflexive()));
 	return nf.ESJFieldClosureCall(null, fc.target(), fc.name()+"_closure", args);
     }
 

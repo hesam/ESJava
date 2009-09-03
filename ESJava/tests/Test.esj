@@ -21,6 +21,9 @@ class Node
         this.parent = null;
     }
 
+    public Node left() { return left; }
+    public Node left(Node l) { this.left = l; return this; }
+
     public String toString() {
 	return "Node(" + key + "," + value + ")";
     }
@@ -49,12 +52,11 @@ public class Test ensures (/*this.x < 5 && */this.x > 0) {
 	//this.x == 2 * this.x_prime
 	//no Node n | n == n.left()
 	//no int i | i <= 0    
-	no Node n | n.^left.contains(n)
+	no Node n | n.^(left+right).contains(n)
     }
 
     ensured public void m1()
       ensures (repOk()) {
-	Node n1;
 	System.out.println();
     }
 
@@ -63,6 +65,9 @@ public class Test ensures (/*this.x < 5 && */this.x > 0) {
     public static void main(String[] args) {
 	LogMap.SolverOpt_debug(true);
 	Test t1 = new Test(13,10);
+	Node n1 = new Node(0, 0, null, null);
+	Node n2 = new Node(1, 1, null, null);	
+	//n2.left(n2);
 	System.out.println(t1);
 	t1.m1();
 	System.out.println(t1);

@@ -16,6 +16,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
     // FIXME 
     String currClassName;
     List classFieldNs = new TypedList(new LinkedList(), String.class, false);
+    FlagAnnotations emptyFlags = makeFlagAnnotations();
 
     public void currClassName(String n) {
     	   this.currClassName = n;
@@ -34,7 +35,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
 	      // find the pred_expression subexprs within the body and mark them	    
 	      List predExprs = getPredExprsWithinBody(methodDecl);
-	      FlagAnnotations fl = makeFlagAnnotations();
+	      FlagAnnotations fl = emptyFlags;
 	      List mStmts = new TypedList(new LinkedList(), Stmt.class, false);
 	      List logmStmts = new TypedList(new LinkedList(), Stmt.class, false);
               mStmts.add(nf.JL5Return(null, nf.BooleanLit(null,true)));
@@ -52,7 +53,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		  	    quantKind == FormulaBinary.LONE;
 	      	  List stmts = new TypedList(new LinkedList(), Stmt.class, false);
 		  if (quantKindIsaCount) {
-	      	      LocalDecl d1 = nf.JL5LocalDecl(null, makeFlagAnnotations(), nf.CanonicalTypeNode(null, ts.Int()), "quantCount", nf.IntLit(null, IntLit.INT, 0));
+	      	      LocalDecl d1 = nf.JL5LocalDecl(null, emptyFlags, nf.CanonicalTypeNode(null, ts.Int()), "quantCount", nf.IntLit(null, IntLit.INT, 0));
 		      stmts.add(d1);		  
 		  }
 		  stmts.addAll(mStmts);
@@ -114,14 +115,14 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 				  TypeNode returnType, String name,
 				  List formals, List throwTypes, Block body, 
 				  List paramTypes, Expr ensuresExpr) throws Exception {
-	    FlagAnnotations fl = makeFlagAnnotations();
+	    FlagAnnotations fl = emptyFlags;
 	    TypeNode cftn = new JL5Name(this, null, "Throwable").toType();
 	    JL5Formal catchFormal = this.nf.JL5Formal(null, fl, this.array(cftn, 0), "rte");
        	    return this.nf.ESJEnsuredMethodDecl(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal); 
      }    
 
      public ESJLogPredMethodDecl makeFallbackMtd(ESJEnsuredMethodDecl methodDecl) throws SemanticException {
-	    FlagAnnotations fl = makeFlagAnnotations(); 
+	    FlagAnnotations fl = emptyFlags; 
 	    //System.out.println(methodDecl.body());
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    List args2 = new TypedList(new LinkedList(), Expr.class, false);
@@ -157,7 +158,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    if (tn.toString().equals("polyglot.ext.esj.primitives.ESJInteger{amb}")) {
 	       	 tn = nf.CanonicalTypeNode(null, ts.Int());
 	    }
-	    FlagAnnotations fl = makeFlagAnnotations(); 
+	    FlagAnnotations fl = emptyFlags; 
 	    List quantVarD = new TypedList(new LinkedList(), LocalDecl.class, false);
 	    JL5LocalDecl ld = nf.JL5LocalDecl(null, fl, tn, quantVarN, null);
 	    quantVarD.add(ld);
@@ -166,7 +167,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
 
      public Block makeESJLogPredBlock(Expr expr, List quantVarD, String quantVarN) throws SemanticException {
-	    FlagAnnotations fl = makeFlagAnnotations(); 
+	    FlagAnnotations fl = emptyFlags; 
 	    //FIXME
 	    Expr newExpr = makeESJLogPredBlockHelper(expr);
 	    List l = new TypedList(new LinkedList(), Stmt.class, false);
@@ -234,6 +235,7 @@ non terminal Return pred_statement;
 non terminal ESJQuantifyExpr pred_expression;
 non terminal Expr quantify_expression, quant_list_expr, ensures_opt, ensures_clause;
 non terminal FormulaBinary.Operator quant_kind;
+non terminal FormulaBinary.Operator closure_kind;
 non terminal ESJEnsuredClassDecl ensured_class_declaration;
 non terminal Expr predicate_expr;
 non terminal Expr or_predicate_expr;
@@ -499,9 +501,9 @@ field_prefix ::=
     |   field_prefix:a DOT IDENTIFIER:b
            {: RESULT = parser.nf.Field(parser.pos(b), a,
 				       b.getIdentifier()); :}
-    |   field_prefix:a DOT XOR IDENTIFIER:b    	   
+    |   field_prefix:a closure_kind:c IDENTIFIER:b    	   
            {: RESULT = parser.nf.ESJFieldClosure(null, a,
-				       b.getIdentifier(), true); :}
+				       b.getIdentifier(), c == FormulaBinary.RFLX); :}
     |   formal_or_field_access:a LBRACK predicate_expr:b RBRACK:c
            {: RESULT = parser.nf.ArrayAccess(parser.pos(a, c), a, b); :}
     ;
@@ -518,6 +520,10 @@ predicate_literal ::=
             {: RESULT = parser.nf.NullLit(parser.pos(a)); :}
     ;
 
+closure_kind ::=
+        DOT MULT {: RESULT = FormulaBinary.RFLX; :}
+    |   DOT XOR {: RESULT = FormulaBinary.NONRFLX; :}
+    ;
 
 // PART2:  method esnures clause
 
@@ -568,7 +574,7 @@ ensured_class_declaration ::=
     modifiers_or_annotations_opt:a CLASS:b IDENTIFIER:c {: parser.currClassName(c.getIdentifier()); :} type_parameters_opt:d super_opt:e interfaces_opt:f ensures_opt:z LBRACE class_body_declarations_opt:y RBRACE
            {: List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 	      extraMtdBody.add(parser.nf.Return(null,z == null ? parser.nf.BooleanLit(null, true) : z));
-	      JL5MethodDecl invariantMtdDecl = parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(), parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "verifyInvariants", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, extraMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
+	      JL5MethodDecl invariantMtdDecl = parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "verifyInvariants", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, extraMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
 	      TypedList l = new TypedList(new LinkedList(), ClassMember.class, false);
 
 	      if (!parser.currClassName.equals("MyList")) { // HACK FIXME
@@ -593,7 +599,7 @@ ensured_class_declaration ::=
 	      	 // define relationize() and setPrime()...
 	      	 List args = new TypedList(new LinkedList(), Expr.class, false);
 	      	 args.add(parser.nf.This(null));
-	      	 JL5MethodDecl relationizeMtdDecl = parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(), parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "relationize", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newAtom", args))), new TypedList(new LinkedList(), TypeNode.class, false));
+	      	 JL5MethodDecl relationizeMtdDecl = parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "relationize", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newAtom", args))), new TypedList(new LinkedList(), TypeNode.class, false));
 	      	 l.add(relationizeMtdDecl);
 	      	 List setPrimeMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 	      	 for (Node n : (List<Node>) y) {
@@ -614,7 +620,7 @@ ensured_class_declaration ::=
 			}
 	             }			    
 	       	 }
-	      	 JL5MethodDecl setPrimeMtdDecl = parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(), parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "setPrime", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, setPrimeMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
+	      	 JL5MethodDecl setPrimeMtdDecl = parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "setPrime", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, setPrimeMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
 	     	 l.add(setPrimeMtdDecl);
 	      }
 	      l.add(invariantMtdDecl);
@@ -679,16 +685,24 @@ override field_declaration ::=
 			whileLoopStmts.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Local(null, "curr"), Assign.ASSIGN, parser.nf.Field(null, parser.nf.Local(null, "curr"), d.name))));
 		     	List argsW = new TypedList(new LinkedList(), Expr.class, false);
 			argsW.add(parser.nf.Local(null, "curr"));
-			whileLoopStmts.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "res"), "add", argsW)));
+			Stmt whileLoopAdd = parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "res"), "add", argsW));
+			whileLoopStmts.add(whileLoopAdd);
 			Stmt whileLoopBody = parser.nf.Block(null, whileLoopStmts);
-		 	extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.makeFlagAnnotations(), atn, "res", parser.nf.JL5New(null, atn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
-		 	extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.makeFlagAnnotations(), cl, "curr", parser.nf.This(null)));
-			extraMtdBody.add(parser.nf.While(null, parser.nf.Binary(null, parser.nf.Field(null, parser.nf.Local(null, "curr"), d.name), Binary.NE, parser.nf.NullLit(null)), whileLoopBody));
+		 	extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, atn, "res", parser.nf.JL5New(null, atn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
+		 	extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, cl, "curr", parser.nf.This(null)));
+			Stmt ifExpr = parser.nf.JL5If(null, parser.nf.Local(null,"isReflexive"), whileLoopAdd, null); 
+			extraMtdBody.add(ifExpr);
+		     	List argsW2 = new TypedList(new LinkedList(), Expr.class, false);
+			argsW2.add(parser.nf.Field(null, parser.nf.Local(null, "curr"), d.name));
+			Expr e1 = parser.nf.Binary(null, parser.nf.Field(null, parser.nf.Local(null, "curr"), d.name), Binary.NE, parser.nf.NullLit(null));
+			Expr e2 = parser.nf.Unary(null, Unary.NOT, parser.nf.Call(null, parser.nf.Local(null, "res"), "contains", argsW2));
+			Expr whileLoopCond = parser.nf.Binary(null, e1, Binary.COND_AND, e2);
+			extraMtdBody.add(parser.nf.While(null, whileLoopCond, whileLoopBody));
 			extraMtdBody.add(parser.nf.JL5Return(null, parser.nf.Local(null,"res")));
 			Block extraMtdBlock = parser.nf.Block(null, extraMtdBody);
-
-
-		     	l.add(parser.nf.JL5MethodDecl(null, a, parser.array(atn, 0), d.name+"_closure", new TypedList(new LinkedList(), Formal.class, false), new TypedList(new LinkedList(), TypeNode.class, false), extraMtdBlock, new TypedList(new LinkedList(), TypeNode.class, false)));
+			List frms = new TypedList(new LinkedList(), Formal.class, false);
+			frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "isReflexive"));
+		     	l.add(parser.nf.JL5MethodDecl(null, a, parser.array(atn, 0), d.name+"_closure", frms, new TypedList(new LinkedList(), TypeNode.class, false), extraMtdBlock, new TypedList(new LinkedList(), TypeNode.class, false)));
 
 		     	List instVarGetArgsC = new TypedList(new LinkedList(), Expr.class, false);
 		     	instVarGetArgsC.add(parser.nf.This(null));

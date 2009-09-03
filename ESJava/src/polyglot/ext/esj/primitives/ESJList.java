@@ -60,6 +60,11 @@ public class ESJList<E> extends ArrayList<E> {
 	return new LogInt("#(" + rel_log.id() + ")");
     }
    
+    public LogFormula contains_log(LogObject itm) {
+	return new LogFormula("some (" + rel_log.id() + "." + itm.string() + ")");
+    }
+
+
     // copies obj plus its relation
     public ESJList<E> copy(int from, int to) { ESJList<E> res = new ESJList<E>();
 	                                    res.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, size());

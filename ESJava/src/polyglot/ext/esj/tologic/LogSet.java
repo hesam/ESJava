@@ -41,4 +41,8 @@ public class LogSet extends LogObject {
 	return new LogInt("#(" + string + ")");
     }
 
+    public LogFormula contains_log(LogObject itm) {
+	return new LogFormula("some (" + string + "." + itm.string() + ")");
+    }
+
 }

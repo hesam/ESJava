@@ -86,7 +86,6 @@ public class LogMap {
 
 
     public static String newInstVarRel(String classStr, String instVar, String domainStr, Class range, boolean isUnknown) {
-	    System.out.println("seeking: ");
 	try {
 	    String k = instVar + (isUnknown ? "" : "_prime");
 	    Class domain = Class.forName(domainStr);
@@ -125,10 +124,9 @@ public class LogMap {
     }
 
     // fixme? --> diff name or instanceof...
-    public static LogAtom instVarClosure_log(LogVar var, String instVar) {
-	return new LogAtom("(" + var.string() + ".^" + instVarRel_log(var, instVar).id() + ")");
+    public static LogSet instVarClosure_log(LogVar var, String instVar) {
+	return new LogSet("(" + var.string() + ".^" + instVarRel_log(var, instVar).id() + ")");
     }
-
 
     public static boolean solve(Object obj, Object formula) {
 
