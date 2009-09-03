@@ -21,7 +21,6 @@ class Node
         this.parent = null;
     }
 
-    public Node left() { return left; }
     public String toString() {
 	return "Node(" + key + "," + value + ")";
     }

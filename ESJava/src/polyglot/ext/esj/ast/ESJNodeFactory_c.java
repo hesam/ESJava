@@ -24,9 +24,8 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     public ESJEnsuredClassDecl ESJEnsuredClassDecl(Position pos, FlagAnnotations fl, 
 						   String name, TypeNode superType, 
 						   List interfaces, ClassBody body, 
-						   List<ParamTypeNode> paramTypes, 
-						   List fieldNames) {
-	return new ESJEnsuredClassDecl_c(pos, fl, name, superType, interfaces, body, paramTypes, fieldNames);
+						   List<ParamTypeNode> paramTypes) {
+	return new ESJEnsuredClassDecl_c(pos, fl, name, superType, interfaces, body, paramTypes);
     }
 
     public ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags, 
@@ -89,5 +88,13 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 
     public ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive) {
 	return new  ESJFieldClosure_c(pos, target, name, isReflexive);
+    }
+
+    public ESJFieldCall ESJFieldCall(Position pos, Receiver target, String name, List arguments) {
+	return new ESJFieldCall_c(pos, target, name, arguments);
+    }
+
+    public ESJFieldClosureCall ESJFieldClosureCall(Position pos, Receiver target, String name, List arguments) {
+	return new ESJFieldClosureCall_c(pos, target, name, arguments);
     }
 }

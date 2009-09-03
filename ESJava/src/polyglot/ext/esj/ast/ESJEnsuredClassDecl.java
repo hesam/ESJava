@@ -12,5 +12,4 @@ import polyglot.ext.jl5.ast.*;
 public interface ESJEnsuredClassDecl extends JL5ClassDecl {
 
     public Expr ensuresExpr();
-    public List fieldNames();
 }

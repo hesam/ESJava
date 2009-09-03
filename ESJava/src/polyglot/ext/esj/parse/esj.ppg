@@ -468,11 +468,15 @@ formal_or_field_access ::=
     |   THIS:a
            {: RESULT = parser.nf.This(parser.pos(a)); :}
     |   IDENTIFIER:a LPAREN argument_list_opt:b RPAREN:c
-           {: RESULT = parser.nf.Call(parser.pos(a, c), a.getIdentifier(),
-                                      b); :}
+           {: RESULT = parser.classFieldNs.contains(a.getIdentifier()) ?
+		   parser.nf.ESJFieldCall(parser.pos(a, c), null, a.getIdentifier(),b) :
+		   parser.nf.Call(parser.pos(a, c), a.getIdentifier(),b);
+	   :}
     |   field_prefix:a DOT IDENTIFIER:b LPAREN argument_list_opt:c RPAREN:d
-           {: RESULT = parser.nf.Call(parser.pos(b,d), a, b.getIdentifier(),
-                                      c); :}
+           {: RESULT = parser.classFieldNs.contains(b.getIdentifier()) ? 
+		   parser.nf.ESJFieldCall(parser.pos(b,d), a, b.getIdentifier(),c) :
+		   parser.nf.Call(parser.pos(b,d), a, b.getIdentifier(),c);
+           :}
     |   field_prefix:a DOT IDENTIFIER:b
            {: RESULT = parser.nf.Field(parser.pos(b), a,
 				       b.getIdentifier()); :}
@@ -488,8 +492,10 @@ field_prefix ::=
     |	simple_name:a
 	   {: RESULT = a.toReceiver(); :}
     |   field_prefix:a DOT IDENTIFIER:b LPAREN argument_list_opt:c RPAREN:d
-           {: RESULT = parser.nf.Call(parser.pos(b,d), a, b.getIdentifier(),
-                                      c); :}
+           {: RESULT = parser.classFieldNs.contains(b.getIdentifier()) ? 
+	           parser.nf.ESJFieldCall(parser.pos(b,d), a, b.getIdentifier(),c) :
+	           parser.nf.Call(parser.pos(b,d), a, b.getIdentifier(),c);
+           :}
     |   field_prefix:a DOT IDENTIFIER:b
            {: RESULT = parser.nf.Field(parser.pos(b), a,
 				       b.getIdentifier()); :}
@@ -614,7 +620,7 @@ ensured_class_declaration ::=
 	      l.add(invariantMtdDecl);
 	      l.addAll(parser.defineESJExtraMethods(invariantMtdDecl));	
 	      l.addAll(y);
-	      RESULT = parser.nf.ESJEnsuredClassDecl(null, a, c.getIdentifier(), e, f, parser.nf.JL5ClassBody(null, l), d, parser.classFieldNs); 
+	      RESULT = parser.nf.ESJEnsuredClassDecl(null, a, c.getIdentifier(), e, f, parser.nf.JL5ClassBody(null, l), d); 
            :}
 	   ;
 
@@ -662,7 +668,6 @@ override field_declaration ::=
                      l.add(parser.nf.Initializer(null, Flags.STATIC, relDefBodyP));
 		     // also define field closure access for recursive fields
 		     if (b.toString().equals(parser.currClassName+"{amb}")) { //FIXME
-			parser.classFieldNs.add(d.name+"_closure");
 	      		List gt = new TypedList(new LinkedList(), TypeNode.class, false);
 	      		AmbTypeNode cl = parser.nf.AmbTypeNode(null, parser.currClassName);
 	      		gt.add(cl);
