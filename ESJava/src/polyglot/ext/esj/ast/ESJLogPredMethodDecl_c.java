@@ -61,5 +61,4 @@ public class ESJLogPredMethodDecl_c extends JL5MethodDecl_c
 	return reconstruct(returnType, formals, throwTypes, body);
     }
 
-
 }

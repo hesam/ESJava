@@ -12,7 +12,7 @@ import polyglot.ext.jl5.parse.JL5Name;
 // (which implies all instances of that type)
 public interface ESJQuantifyTypeExpr extends Expr {
 
-    public TypeNode theType();
+    public String theType();
 
 }
 

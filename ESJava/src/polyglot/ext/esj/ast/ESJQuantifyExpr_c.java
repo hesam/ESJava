@@ -28,7 +28,7 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
 	this.quantListExpr = quantListExpr;
-	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantClauseExpr);
+	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantVarD, quantClauseExpr);
     }
 
     public Expr quantListExpr() {
@@ -95,10 +95,10 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	return reconstruct(this.quantKind, this.quantVarN, quantVarD, quantListExpr, quantClauseExpr);
     }
 
-    
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	ESJQuantifyExpr n = (ESJQuantifyExpr) super.typeCheck(tc);
 	n = (ESJQuantifyExpr)n.type(tc.typeSystem().Boolean()); //FIXME
+
 	return n;
     } 
 

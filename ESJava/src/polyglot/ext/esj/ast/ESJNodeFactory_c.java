@@ -67,7 +67,7 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 	return new ESJLogQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantListExpr, quantClauseExpr);
     }
 
-    public ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, TypeNode theType) {
+    public ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, String theType) {
 	return new ESJQuantifyTypeExpr_c(pos, theType);
     }
 

@@ -120,9 +120,7 @@ public class ESJJavaTranslator extends ContextVisitor {
     }
 
     public Node toLogicExpr(Node r) throws SemanticException {
-
-	//System.out.println("Hi. We've got a: " + r.getClass());
-	//System.out.println(r);
+	//System.out.println("tologic have: " + r.getClass() + " " + r);
 	if (r instanceof ESJLogPredMethodDecl) {	 
 	    ESJLogPredMethodDecl methodDecl = (ESJLogPredMethodDecl) r;
 	    List formals = methodDecl.formals(); /*new TypedList(new LinkedList(), Formal.class, false);
@@ -193,7 +191,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
 	    return nf.Call(null, qListExpr, "quantifyOp", args);
 	} else if (r instanceof ESJQuantifyTypeExpr) {
-	    return nf.Call(null, ((ESJQuantifyTypeExpr) r).theType(), "allInstances_log",new TypedList(new LinkedList(), Expr.class, false));
+	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName(((ESJQuantifyTypeExpr) r).theType())), "allInstances_log",new TypedList(new LinkedList(), Expr.class, false));
 	} else if (r instanceof Return) {
 	    return nf.JL5Return(null, (Expr) toLogicExpr(((Return) r).expr()));
 	} else if (r instanceof Eval) {
@@ -203,15 +201,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	} else if (r instanceof Call) {
 	    Call c = (Call) r;
 	    // FIXME:
-	    System.out.println(currClassFieldNs);
-	    /*
-	    try {
-		System.out.println("checking:"+c.name() + " " + c.target().type().toString());
-		Class c1 = Class.forName(c.target().type().toString());//.getFields());
-	    } catch (ClassNotFoundException e) {
-		System.out.println("duh");
-		return r;
-		}*/
+	    //System.out.println(currClassFieldNs);
 	    if (currClassFieldNs.contains(c.name())) {
 		System.out.println(c.name());
 		return instVarGet_log(c.target(), c.name());
@@ -261,12 +251,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, "" + ((BooleanLit) r).value() ));
 	    return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
-	} else if (r instanceof JL5CanonicalTypeNode) {
+	} else if (r instanceof CanonicalTypeNode) {
 	    return r;
 	}
-	/*else if (r instanceof Expr) {
-	    return r;
-	    }*/
 	else {
 	    throw new RuntimeException("Don't know how to convert " + r.getClass() +
 				       " to a Logic expression.");
@@ -284,8 +271,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	return nf.Call(null,null,quantId, args);
     }
 
-    public Expr DesugarQuantifyTypeExpr (ESJQuantifyTypeExpr a)  {
-	return nf.Call(null, a.theType(), "allInstances",new TypedList(new LinkedList(), Expr.class, false));
+    public Expr DesugarQuantifyTypeExpr (ESJQuantifyTypeExpr a) throws SemanticException  {
+	return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName(a.theType())), "allInstances",new TypedList(new LinkedList(), Expr.class, false));
     }
 
     public Expr DesugarESJFieldClosure (ESJFieldClosure f) throws SemanticException  {
@@ -306,7 +293,7 @@ public class ESJJavaTranslator extends ContextVisitor {
     }
 
     protected Node leaveCall(Node n) throws SemanticException {
-
+	//System.out.println("have: " + n.getClass() + " " + n);
 	if (n instanceof ESJPredMethodDecl) {	    
 	    return super.leaveCall(DesugarPredMethodDecl((ESJPredMethodDecl)n));
 	} else if (n instanceof ESJLogPredMethodDecl) {	    

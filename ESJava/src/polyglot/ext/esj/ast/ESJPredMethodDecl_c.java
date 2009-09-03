@@ -67,10 +67,18 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	return quantClauseExpr;
     }
 
+    public ESJPredMethodDecl quantVarD(List l) {
+	this.quantVarD = l;
+	return this;
+    }
+
+
     /** Reconstruct the method. */
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
 				       List throwTypes, Block body,  
-				       FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
+				       FormulaBinary.Operator quantKind, String quantVarN, 
+				       List quantVarD, Expr quantListExpr, 
+				       ESJQuantifyClauseExpr quantClauseExpr) {
 	if (returnType != this.returnType ||
 	    ! CollectionUtil.equals(formals, this.formals) ||
 	    quantListExpr != this.quantListExpr ||
@@ -96,18 +104,20 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     public Node visitChildren(NodeVisitor v) {
 	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 	List formals = visitList(this.formals, v);
+	List quantVarD = visitList(this.quantVarD, v);
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
+
 	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
-	//List quantVarD = visitList(this.quantVarD, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	Block body = (Block) visitChild(this.body, v);
-	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN , this.quantVarD, quantListExpr, quantClauseExpr);
+	return reconstruct(returnType, formals, throwTypes, body, this.quantKind, this.quantVarN , quantVarD, quantListExpr, quantClauseExpr);
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	    // findout what type is quantListExpr list of (can be a subtype a generic...)
 	    TypeSystem ts = tc.typeSystem();
 	    Type t = (Type) quantListExpr().type();
+
 	    while (! ((JL5ParsedClassType) t).isGeneric()) {
 		t = (ReferenceType) ts.superType((ReferenceType) t);
 	    }
@@ -118,6 +128,8 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 		}
 		this.quantVarD = newVarD;
 	    }
+
+
 	    return super.typeCheck(tc);
     }
 
