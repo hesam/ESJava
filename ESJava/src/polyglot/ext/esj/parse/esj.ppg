@@ -689,10 +689,8 @@ override field_declaration ::=
 			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Class()), "c", parser.nf.ClassLit(null, cl)));
 			List frms = new TypedList(new LinkedList(), Formal.class, false);
 			frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "isReflexive"));
-	      		List strgt = new TypedList(new LinkedList(), TypeNode.class, false);
-	      		strgt.add(parser.nf.CanonicalTypeNode(null, parser.ts.String()));
-	      		AmbTypeNode astrtn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)tn).qual(), ((AmbTypeNode)tn).name(), strgt);
-			frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, astrtn, "fieldNs"));
+			TypeNode strtn = parser.nf.ArrayTypeNode(null, parser.nf.CanonicalTypeNode(null, parser.ts.String()));
+			frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, strtn, "fieldNs", true));
 			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, asettn, "res", parser.nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
 			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, asettn, "unExpanded", parser.nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
 			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, cl, "n", parser.nf.This(null)));

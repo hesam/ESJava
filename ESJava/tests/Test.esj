@@ -67,12 +67,16 @@ public class Test ensures (/*this.x < 5 && */this.x > 0) {
     public static void main(String[] args) {
 	LogMap.SolverOpt_debug(true);
 	Test t1 = new Test(13,10);
-	Node n1 = new Node(0, 0, null, null);
-	Node n2 = new Node(1, 1, null, null);	
+	Node n4 = new Node(4, 4, null, null);	
+	Node n5 = new Node(5, 5, null, null);	
+	Node n2 = new Node(2, 2, n4, n5);	
+	Node n3 = new Node(3, 3, null, null);	
+	Node n1 = new Node(1, 1, n2, n3);
+
 	//n2.left(n2);
 	System.out.println(t1);
 	t1.m1();
-	System.out.println(t1);
+	System.out.println(n1.fieldsClosure(true, "left", "right"));
     }
 
 }
