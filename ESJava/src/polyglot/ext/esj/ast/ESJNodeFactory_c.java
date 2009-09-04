@@ -86,8 +86,8 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 	return new ESJFieldDecl_c(pos, flags, type, name, init, isPrime);
     }
 
-    public ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive) {
-	return new  ESJFieldClosure_c(pos, target, name, isReflexive);
+    public ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive, List multiNames) {
+	return new  ESJFieldClosure_c(pos, target, name, isReflexive, multiNames);
     }
 
     public ESJFieldCall ESJFieldCall(Position pos, Receiver target, String name, List arguments) {

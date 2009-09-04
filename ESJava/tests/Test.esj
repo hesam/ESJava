@@ -1,7 +1,9 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
+import java.util.HashSet;
 import java.util.ArrayList;
+import java.lang.reflect.Field;
 
 class Node
 {

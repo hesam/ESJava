@@ -276,7 +276,14 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	ESJFieldClosure fc = (ESJFieldClosure) f;
 	args.add(nf.BooleanLit(null, fc.isReflexive()));
-	return nf.ESJFieldClosureCall(null, fc.target(), fc.name()+"_closure", args);
+	List<String> fNames = (List<String>) fc.multiNames();
+	Expr res = nf.ESJFieldClosureCall(null, fc.target(), fNames.get(0)+"_closure", args);
+	for (int i = 1; i < fNames.size(); i++) {
+	    List args2 = new TypedList(new LinkedList(), Expr.class, false);
+	    args2.add(nf.ESJFieldClosureCall(null, fc.target(), fNames.get(i)+"_closure", args));
+	    res = nf.Call(null,res,"union", args2);
+	}
+	return res;
     }
 
     protected Node clearPureFlag(MethodDecl md) {

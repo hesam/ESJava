@@ -52,7 +52,7 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 
     ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isPrime);
 
-    ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive);
+    ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive, List multiNames);
 
     ESJFieldCall ESJFieldCall(Position pos, Receiver target, String name, List arguments);
 

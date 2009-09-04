@@ -4,12 +4,15 @@ import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ArrayList;
+
 import java.io.CharArrayWriter;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.Lexer;
