@@ -46,9 +46,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	Expr assertExpr = methodDecl.ensuresExpr() == null ? call1 : 
 	    nf.FormulaBinary(null, call1, Binary.COND_AND, methodDecl.ensuresExpr());
 	extraMtdBody.add(nf.Eval(null, nf.Call(null, null, "relationize", new TypedList(new LinkedList(), Expr.class, false))));
-	if (true) //methodDecl.ensuresExprHasPrime()) //FIXME
+	if (true) //methodDecl.ensuresExprHasOld()) //FIXME
 	    extraMtdBody.add(nf.Eval(null, 
-				     nf.Call(null, null, "setPrime", 
+				     nf.Call(null, null, "setOld", 
 					     new TypedList(new LinkedList(), Expr.class, false))));
 	extraMtdBody.addAll(methodDecl.body().statements());
 	extraMtdBody.add(nf.JL5Assert(null, assertExpr, null));
@@ -133,7 +133,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    fl.classicFlags(Flags.NONE);
 	    fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 	    if (!methodDecl.isFallback()) {
-		methodDecl = (ESJLogPredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")));
+		methodDecl = (ESJLogPredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName(methodDecl.isPredicate() ? "polyglot.ext.esj.tologic.LogFormula" : "polyglot.ext.esj.tologic.LogSet")));
 	    }
 	    //System.out.println(block.statements());		
 	    return methodDecl.formals(formals).body(block);

@@ -16,4 +16,5 @@ public interface ESJFieldClosure extends Field {
     public List multiNames();
     public String id();
     public void parentMethod(JL5MethodDecl m);
+    public String theType();
 }

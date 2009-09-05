@@ -43,21 +43,21 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	return catchFormal;
     }
 
-    public boolean ensuresExprHasPrime() {
-	return ensuresExprHasPrimeH(ensuresExpr);
+    public boolean ensuresExprHasOld() {
+	return ensuresExprHasOldH(ensuresExpr);
     }
 
-    public boolean ensuresExprHasPrimeH(Node n) {
+    public boolean ensuresExprHasOldH(Node n) {
 	if (n instanceof Binary)
-	    return ensuresExprHasPrimeH(((Binary) n).left()) ||
-		ensuresExprHasPrimeH(((Binary) n).left());
+	    return ensuresExprHasOldH(((Binary) n).left()) ||
+		ensuresExprHasOldH(((Binary) n).left());
 	else if (n instanceof Call) { 
-	    if (((Call) n).name().equals("prime"))
+	    if (((Call) n).name().equals("old"))
 		return true;
 	    for (Expr a : (List<Expr>) ((Call) n).arguments())
-		if (ensuresExprHasPrimeH(a))
+		if (ensuresExprHasOldH(a))
 		    return true;
-	    return ensuresExprHasPrimeH(((Call) n).target()); 
+	    return ensuresExprHasOldH(((Call) n).target()); 
 	} 
 	else return false;
     }

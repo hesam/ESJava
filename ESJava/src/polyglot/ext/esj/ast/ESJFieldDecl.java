@@ -8,8 +8,8 @@ import java.util.*;
 
 import polyglot.ext.jl5.ast.*;
 
-/** a field decl that is or isnt a prime (pre-state-value)  **/
+/** a field decl that is or isnt a old (pre-state-value)  **/
 public interface ESJFieldDecl extends JL5FieldDecl {
 
-    public boolean isPrime();
+    public boolean isOld();
 }

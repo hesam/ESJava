@@ -90,7 +90,7 @@ public class LogMap {
 
     public static String newInstVarRel(String classStr, String instVar, String domainStr, Class range, boolean isUnknown) {
 	try {
-	    String k = instVar + (isUnknown ? "" : "_prime");
+	    String k = instVar + (isUnknown ? "" : "_old");
 	    Class domain = Class.forName(domainStr);
 	    LogRelation r = new LogRelation(instVar, domain, range, false, isUnknown);
 	    if (!InstVarRels.containsKey(classStr))
@@ -201,7 +201,7 @@ public class LogMap {
 	    ESJList<Integer> o = (ESJList<Integer>) obj;
 
 	    ProblemRels.put(o.rel_log().id(),o.rel_log());
-	    ProblemRels.put(o.prime_log().rel_log().id(),o.prime_log().rel_log());
+	    ProblemRels.put(o.old_log().rel_log().id(),o.old_log().rel_log());
 	} else {
 	    HashMap classInstVarRels = (HashMap) InstVarRels.get(obj.getClass().getName());
 	    //System.out.println(classInstVarRels);

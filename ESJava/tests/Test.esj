@@ -26,6 +26,10 @@ class Node
     public Node left() { return left; }
     public Node left(Node l) { this.left = l; return this; }
 
+    predicate public HashSet<Node> children() {
+	this.^(left+right)
+    }
+
     public String toString() {
 	return "Node(" + key + "," + value + ")";
     }
@@ -51,14 +55,14 @@ public class Test ensures (/*this.x < 5 && */this.x > 0) {
     predicate public boolean repOk() {
 	//this.y() == 2 * this.x() 
 	//this.y == 2 * this.x 
-	//this.x == 2 * this.x_prime
+	this.x == 2 * this.x_old
 	//no Node n | n == n.left()
 	//no int i | i <= 0    
-	no Node n | n.^(left+right).contains(n)
-    }
+	//no Node n | n.^(left+right).contains(n)
+	}
 
     ensured public void m1()
-      ensures (repOk()) {
+      ensures repOk() {
 	System.out.println();
     }
 
@@ -76,7 +80,9 @@ public class Test ensures (/*this.x < 5 && */this.x > 0) {
 	//n2.left(n2);
 	System.out.println(t1);
 	t1.m1();
-	System.out.println(n1.fieldsClosure(true, "left", "right"));
+	System.out.println(t1);
+	//System.out.println(n1.fieldsClosure(true, "left", "right"));
+	System.out.println(n1.children());
     }
 
 }

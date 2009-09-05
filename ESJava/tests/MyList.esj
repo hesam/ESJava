@@ -15,7 +15,7 @@ public class MyList extends ESJList<Integer> {
 
     // ENSURED METHODS    
     ensured public void bubbleSort() 
-	ensures (this.isPermutationOf(this.prime()) && this.isSorted()) {
+	ensures (this.isPermutationOf(this.old()) && this.isSorted()) {
 	System.out.println();
 
 	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED

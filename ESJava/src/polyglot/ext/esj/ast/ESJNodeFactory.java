@@ -21,6 +21,12 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					    TypeNode superType, List interfaces, ClassBody body, 
 					    List<ParamTypeNode> paramTypes);
 
+    ESJMethodDecl ESJMethodDecl(Position pos, FlagAnnotations flags,
+				TypeNode returnType, String name,
+				List formals,
+				List throwTypes, Block body, List paramTypes, 
+				boolean isPredicate);
+
     ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags,
 					TypeNode returnType, String name,
 					List formals, List throwTypes, Block body, 
@@ -32,7 +38,8 @@ public interface ESJNodeFactory extends JL5NodeFactory {
     ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,
 					      List formals, List throwTypes, Block body, 
-					      List paramTypes, boolean isFallBack); 
+					      List paramTypes, boolean isPredicate, 
+					      boolean isFallBack); 
     
     ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,
@@ -50,9 +57,9 @@ public interface ESJNodeFactory extends JL5NodeFactory {
     CmpBinary CmpBinary(Position pos, Expr left, Binary.Operator op, Expr right);
     ESJQuantVarLocalDecl ESJQuantVarLocalDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init);
 
-    ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isPrime);
+    ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isOld);
 
-    ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive, List multiNames);
+    ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive, List multiNames, String theType);
 
     ESJFieldCall ESJFieldCall(Position pos, Receiver target, String name, List arguments);
 

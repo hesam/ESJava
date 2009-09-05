@@ -7,14 +7,14 @@ import java.util.ArrayList;
 public class ESJList<E> extends ArrayList<E> {
 
     protected LogRelation rel_log;
-    protected ESJList prime;
+    protected ESJList old;
 
     // Constructor
 
 
-    // keep my pre-state copy in prime field and relationize it
-    public void setPrime() {
-	this.prime = copy(0,size()-1);
+    // keep my pre-state copy in old field and relationize it
+    public void setOld() {
+	this.old = copy(0,size()-1);
     }
 
     // relationize me
@@ -22,9 +22,9 @@ public class ESJList<E> extends ArrayList<E> {
 	this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, true, size());
     }
 
-    public ESJList<E> prime() { return prime; }
+    public ESJList<E> old() { return old; }
     
-    public ESJList<E> prime_log() { return prime; }
+    public ESJList<E> old_log() { return old; }
 
     public LogRelation rel_log() {
 	return rel_log;

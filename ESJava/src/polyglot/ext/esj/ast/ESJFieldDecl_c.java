@@ -23,15 +23,15 @@ import java.util.*;
 public class ESJFieldDecl_c extends JL5FieldDecl_c
     implements ESJFieldDecl {
 
-    protected boolean isPrime;
+    protected boolean isOld;
 
-    public ESJFieldDecl_c(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isPrime) {
+    public ESJFieldDecl_c(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isOld) {
 	super(pos, flags, type, name, init);
-	this.isPrime = isPrime;
+	this.isOld = isOld;
     }
     
-    public boolean isPrime() {
-	return isPrime;
+    public boolean isOld() {
+	return isOld;
     }
 
 

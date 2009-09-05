@@ -28,6 +28,14 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 	return new ESJEnsuredClassDecl_c(pos, fl, name, superType, interfaces, body, paramTypes);
     }
 
+    public ESJMethodDecl ESJMethodDecl(Position pos, FlagAnnotations flags,
+				       TypeNode returnType, String name,
+				       List formals,
+				       List throwTypes, Block body, List paramTypes, 
+				       boolean isPredicate) {
+	return new ESJMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, isPredicate);
+    }
+
     public ESJPredMethodDecl ESJPredMethodDecl(Position pos, FlagAnnotations flags, 
 					       TypeNode returnType, String name, List formals, 
 					       List throwTypes, Block body, List paramTypes, 
@@ -41,8 +49,9 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     public ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags, 
 						     TypeNode returnType, String name, 
 						     List formals, List throwTypes, Block body, 
-						     List paramTypes, boolean isFallBack) {	
-    	return new ESJLogPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, isFallBack);
+						     List paramTypes, boolean isPredicate, 
+						     boolean isFallBack) {	
+    	return new ESJLogPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, isPredicate, isFallBack);
     }
 
     public ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
@@ -82,12 +91,12 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 	return new ESJQuantVarLocalDecl_c(pos, flags, type, name, init);
     }
 
-    public ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isPrime) {
-	return new ESJFieldDecl_c(pos, flags, type, name, init, isPrime);
+    public ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isOld) {
+	return new ESJFieldDecl_c(pos, flags, type, name, init, isOld);
     }
 
-    public ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive, List multiNames) {
-	return new  ESJFieldClosure_c(pos, target, name, isReflexive, multiNames);
+    public ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive, List multiNames, String theType) {
+	return new  ESJFieldClosure_c(pos, target, name, isReflexive, multiNames, theType);
     }
 
     public ESJFieldCall ESJFieldCall(Position pos, Receiver target, String name, List arguments) {

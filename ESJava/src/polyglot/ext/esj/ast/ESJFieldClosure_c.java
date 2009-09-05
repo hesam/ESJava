@@ -13,15 +13,11 @@ import polyglot.ext.jl5.ast.*;
 import polyglot.util.*;
 import polyglot.types.*;
 import polyglot.ext.esj.types.ESJTypeSystem;
+import polyglot.ext.jl5.types.*;
 import polyglot.visit.*;
-
-import polyglot.ext.jl5.types.FlagAnnotations;
 import polyglot.ext.jl5.visit.JL5AmbiguityRemover;
 
-import polyglot.ext.jl5.types.JL5Context;
-import polyglot.ext.jl5.types.TypeVariable;
 
-import polyglot.ext.jl5.ast.*;
 
 import java.util.*;
 
@@ -36,13 +32,15 @@ public class ESJFieldClosure_c extends Field_c
     protected List multiNames;
     protected String id;
     protected JL5MethodDecl parentMethod;
+    protected String theType;
 
-    public ESJFieldClosure_c(Position pos, Receiver target, String name, boolean isReflexive, List multiNames) {
+    public ESJFieldClosure_c(Position pos, Receiver target, String name, boolean isReflexive, List multiNames, String theType) {
 	super(pos, target, name);
 	this.id = Integer.toString(idCtr++);
 	this.isReflexive = isReflexive;
 	this.isMulti = multiNames.size() > 1;
 	this.multiNames = multiNames;
+	this.theType = theType;
     }
     
     public boolean isReflexive() {
@@ -65,13 +63,24 @@ public class ESJFieldClosure_c extends Field_c
 	return multiNames;
     }
 
+    public String theType() {
+	return theType;
+    }
+
     public void parentMethod(JL5MethodDecl m) {
 	this.parentMethod = m;
     }
 
+
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	ESJFieldClosure n = (ESJFieldClosure) super.typeCheck(tc);
-	n = (ESJFieldClosure)n.type(tc.typeSystem().typeForName("java.util.ArrayList")); 
+	JL5TypeSystem ts = (JL5TypeSystem) tc.typeSystem();
+	Type t = ts.typeForName("java.util.HashSet");
+	ParameterizedType pt = ts.parameterizedType((JL5ParsedClassType) t);
+	ArrayList<Type> at = new ArrayList<Type>();
+	at.add(ts.typeForName(theType)); //FIXME
+	pt.typeArguments(at);
+	n = (ESJFieldClosure)n.type(pt);
 	return n;
     }
 
