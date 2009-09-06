@@ -27,7 +27,8 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
     }
 
     FlagAnnotations emptyFlags = makeFlagAnnotations();
-	
+    List emptyArgs = new TypedList(new LinkedList(), Expr.class, false);
+
     public Grm(Lexer l, TypeSystem t, NodeFactory n, ErrorQueue q) {
         super(l, t, n, q);
         ts = (ESJTypeSystem) t;
@@ -222,7 +223,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 :};
 
 terminal Token INVARIANTS;
-terminal Token PREDICATE;
+terminal Token FUNCTION;
 terminal Token ENSURES;
 terminal Token ENSURED;
 terminal Token SOME;
@@ -231,13 +232,13 @@ terminal Token NO;
 terminal Token ONE;
 terminal Token LONE;
 
-non terminal JL5MethodDecl pred_method_header;
+non terminal JL5MethodDecl fn_method_header;
 non terminal ESJEnsuredMethodDecl ensured_method_header;
-non terminal List pred_method_declaration, ensured_method_declaration, class_invariant_declaration;
-non terminal Block pred_method_body, pred_block;
-non terminal List pred_block_statements;
-non terminal Return pred_statement;
-non terminal ESJQuantifyExpr pred_expression;
+non terminal List fn_method_declaration, ensured_method_declaration, class_invariant_declaration;
+non terminal Block fn_method_body, fn_block;
+non terminal List fn_block_statements;
+non terminal Return fn_statement;
+non terminal ESJQuantifyExpr fn_expression;
 non terminal Expr quantify_expression, quant_list_expr, ensures_opt, ensures_clause;
 non terminal FormulaBinary.Operator quant_kind;
 non terminal FormulaBinary.Operator closure_kind;
@@ -260,25 +261,23 @@ non terminal Expr atomic_predicate_expr;
 non terminal Expr formal_or_field_access;
 non terminal Receiver field_prefix;
 non terminal Expr predicate_literal;
-non terminal TypeNode esj_type;
-
-
+non terminal TypeNode esj_type, esj_reference_type, esj_primitive_type, esj_int_type;
 
 start with goal;
 
 // Here begins the ESJ grammar extensions and modifications
 
 extend class_member_declaration ::=
-        pred_method_declaration:a 
-	   {: RESULT = a; :}
+        fn_method_declaration:a 
+	   {: RESULT = a; :}         
      |  ensured_method_declaration:a 
 	   {: RESULT = a; :}
 	   ;
 
 // PART1:      ESJPredMethod
 
-pred_method_declaration ::=
-        pred_method_header:a pred_method_body:b 
+fn_method_declaration ::=
+        fn_method_header:a fn_method_body:b 
 	   {: ESJMethodDecl mainMtdDecl = (ESJMethodDecl) a.body(b);
               List l = new TypedList(new LinkedList(), ClassMember.class, false);
               l.add(mainMtdDecl);
@@ -287,32 +286,32 @@ pred_method_declaration ::=
 	   :}
 	   ;
 
-pred_method_header ::=
-        PREDICATE:z modifiers_or_annotations_opt:a type:b IDENTIFIER:c LPAREN 
+fn_method_header ::=
+        FUNCTION:z modifiers_or_annotations_opt:a type:b IDENTIFIER:c LPAREN 
     formal_parameter_list_opt:d RPAREN:g dims_opt:e throws_opt:f
             {: RESULT = parser.nf.ESJMethodDecl(null, a, b, c.getIdentifier(), d, f, null, new TypedList(new LinkedList(), TypeNode.class, false), b.toString().equals("boolean"));
             :}
     	    ;
 
-pred_method_body ::=
-        pred_block:a 
+fn_method_body ::=
+        fn_block:a 
 	   {:  RESULT = a;  :}
 	   ;
 
-pred_block ::=
-        LBRACE:n pred_block_statements:a RBRACE:d 
+fn_block ::=
+        LBRACE:n fn_block_statements:a RBRACE:d 
            {: RESULT = parser.nf.Block(parser.pos(n, d), a); :}
 	   ;
 
-pred_block_statements ::= 
-        pred_statement:a
+fn_block_statements ::= 
+        fn_statement:a
            {: List l = new TypedList(new LinkedList(), Stmt.class, false);
               l.add(a);
               RESULT = l; 
 	   :}
 	   ;
 
-pred_statement ::=
+fn_statement ::=
         predicate_expr:a 
 	   {: RESULT = parser.nf.JL5Return(parser.pos(a), a); :}
 	   ;
@@ -332,21 +331,35 @@ quantify_expression ::=
 
 quant_list_expr ::=	
         COLON primary_no_new_array:a
-           {:  
-	      RESULT = a;  
-	   :}
-     |    {:  RESULT = null;  :};
+           {: RESULT = a; :}
+     |     {:  RESULT = null;  :}
+           ;
 
 esj_type ::=
 
+        esj_primitive_type:a
+	    {: RESULT = a; :}
+     |  esj_reference_type:a
+	    {: RESULT = a; :}
+            ;
+
+esj_primitive_type ::=
+	esj_int_type:a
+            {: RESULT = a; :}
+            ;
+	    
+esj_int_type ::=
         INT:a
            {:  
-	    RESULT = parser.nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJInteger");
+	     RESULT = parser.nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJInteger");
 	   :}
-     |  name:a
+           ;
+
+esj_reference_type ::=
+        name:a
            {:  
-	       //RESULT = parser.nf.CanonicalTypeNode(null, parser.ts.typeForName(a.toString()));
-	       RESULT = parser.nf.AmbTypeNode(null, a.toString());
+	     //RESULT = parser.nf.CanonicalTypeNode(null, parser.ts.typeForName(a.toString()));
+	     RESULT = parser.nf.AmbTypeNode(null, a.toString());
 	   :}
 	   ;
 
@@ -532,26 +545,26 @@ predicate_literal ::=
 // PART2:  method esnures clause
 
 ensured_method_declaration ::=
-        ENSURED ensured_method_header:a method_body:b 
+        ensured_method_header:a method_body:b 
 	   {: ESJEnsuredMethodDecl mainMtdDecl = (ESJEnsuredMethodDecl) a.body(b);
               List l = new TypedList(new LinkedList(), ClassMember.class, false);
-              l.add(mainMtdDecl);
+	      l.add(mainMtdDecl);
 	      l.add(parser.makeFallbackMtd(mainMtdDecl));
               RESULT = l; 
 	   :}
 	   ;
 
 ensured_method_header ::=
-    modifiers_or_annotations_opt:a type:b method_declarator:c throws_opt:d ensures_opt:z {:
+    modifiers_or_annotations_opt:a type:b method_declarator:c throws_opt:d ensures_clause:z {:
        RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, parser.array(b, c.dims().intValue()), c.name(), c.formals(), d, null, new TypedList(new LinkedList(), TypeNode.class, false), z); 
         :}
- |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c type:d method_declarator:e throws_opt:f ensures_opt:z {:
+ |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c type:d method_declarator:e throws_opt:f ensures_clause:z {:
                                                                                                         RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, parser.array(d, e.dims().intValue()), e.name(), e.formals(), f, null, c, z); 
                                                                                                         :}
- |  modifiers_or_annotations_opt:a VOID:b method_declarator:c throws_opt:e ensures_opt:z {:
+ |  modifiers_or_annotations_opt:a VOID:b method_declarator:c throws_opt:e ensures_clause:z {:
                                                                            RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, parser.nf.CanonicalTypeNode(parser.pos(b), parser.ts.Void()), c.name(), c.formals(), e, null, new TypedList(new LinkedList(), TypeNode.class, false), z); 
                                                                            :}
- |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c VOID:d method_declarator:e throws_opt:f ensures_opt:z {:
+ |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c VOID:d method_declarator:e throws_opt:f ensures_clause:z {:
                                                                                                         RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, parser.nf.CanonicalTypeNode(parser.pos(d), parser.ts.Void()), e.name(), e.formals(), f, null, c, z); 
                                                                                                         :};
 
@@ -603,8 +616,8 @@ ensured_class_declaration ::=
 	      	 // define relationize() and setOld()...
 	      	 List args = new TypedList(new LinkedList(), Expr.class, false);
 	      	 args.add(parser.nf.This(null));
-	      	 JL5MethodDecl relationizeMtdDecl = parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "relationize", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newAtom", args))), new TypedList(new LinkedList(), TypeNode.class, false));
-	      	 l.add(relationizeMtdDecl);
+	      	 List relationizeMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
+		 relationizeMtdBody.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newAtom", args)));
 	      	 List setOldMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 	      	 for (Node n : (List<Node>) y) {
 		     if (n instanceof ESJFieldDecl) {
@@ -621,10 +634,19 @@ ensured_class_declaration ::=
 			    Expr e1 = parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarRel_log", instVarGetArgs2);
 			    Expr e2 = parser.nf.Call(null, e1, "put_log", instVarGetArgs3);
 			    setOldMtdBody.add(parser.nf.Eval(null, e2));
+			    // have to do deep relationizing for reference types... 
+			    if (fi.isReferenceType()) {
+				Expr fieldExpr = parser.nf.Field(null, parser.nf.This(null), fi.name());
+				Expr ifC = parser.nf.Binary(null, fieldExpr, Binary.NE, parser.nf.NullLit(null));
+				Stmt ifT = parser.nf.Eval(null, parser.nf.Call(null, fieldExpr,  "relationize", parser.emptyArgs));
+				relationizeMtdBody.add(parser.nf.JL5If(null, ifC, ifT, null));
+			    }
 			}
 	             }			    
 	       	 }
+	      	 JL5MethodDecl relationizeMtdDecl = parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "relationize", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, relationizeMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
 	      	 JL5MethodDecl setOldMtdDecl = parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "setOld", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, setOldMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
+	      	 l.add(relationizeMtdDecl);
 	     	 l.add(setOldMtdDecl);
 	      }
 	      l.add(invariantMtdDecl);

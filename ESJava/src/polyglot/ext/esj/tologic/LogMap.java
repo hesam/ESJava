@@ -77,8 +77,9 @@ public class LogMap {
 
     // FIXME
     public static LogSet bounds_log(Class c) {
-	//return c.allInstances_log().string();
-	//System.out.println(c);
+	//System.out.println(c.allInstances_log().string());
+	System.out.println(c);
+	System.out.println(ClassAtoms);
 	if (c == int.class || c == Integer.class) 
 	    return ESJInteger.allInstances_log();
 	else {
@@ -122,13 +123,27 @@ public class LogMap {
 	return new LogAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
     }
 
-    public static LogSet instVarClosure_log(Object obj, String instVar) {
-	return new LogSet("(" + get1_log(obj) + ".^" + instVarRel_log(obj, instVar).id() + ")");
+    public static LogSet instVarClosure_log(Object obj, boolean isReflexive, String... instVars) {
+	String fNs = instVarRel_log(obj, instVars[0]).id();
+	if (instVars.length > 1) {
+	    fNs = "(" + fNs;
+	    for(int i=1;i<instVars.length;i++)
+		fNs += (" + " + instVarRel_log(obj, instVars[i]).id());
+	    fNs += ")";
+	}
+	return new LogSet("(" + get1_log(obj) + "." + (isReflexive ? "*" : "^") + fNs + ")");
     }
 
     // fixme? --> diff name or instanceof...
-    public static LogSet instVarClosure_log(LogVar var, String instVar) {
-	return new LogSet("(" + var.string() + ".^" + instVarRel_log(var, instVar).id() + ")");
+    public static LogSet instVarClosure_log(LogVar obj, boolean isReflexive, String... instVars) {
+	String fNs = instVarRel_log(obj, instVars[0]).id();
+	if (instVars.length > 1) {
+	    fNs = "(" + fNs;
+	    for(int i=1;i<instVars.length;i++)
+		fNs += (" + " + instVarRel_log(obj, instVars[i]).id());
+	    fNs += ")";
+	}
+	return new LogSet("(" + get1_log(obj) + "." + (isReflexive ? "*" : "^") + fNs + ")");
     }
 
     public static boolean solve(Object obj, Object formula) {

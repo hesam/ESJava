@@ -78,7 +78,7 @@ public class ESJFieldClosure_c extends Field_c
 	Type t = ts.typeForName("java.util.HashSet");
 	ParameterizedType pt = ts.parameterizedType((JL5ParsedClassType) t);
 	ArrayList<Type> at = new ArrayList<Type>();
-	at.add(ts.typeForName(theType)); //FIXME
+	at.add(n.type());
 	pt.typeArguments(at);
 	n = (ESJFieldClosure)n.type(pt);
 	return n;

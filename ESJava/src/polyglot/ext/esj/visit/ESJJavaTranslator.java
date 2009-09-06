@@ -198,10 +198,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return r;
 	} else if (r instanceof ESJFieldClosureCall) {
 	    ESJFieldClosureCall c = (ESJFieldClosureCall) r;
-	    return instVarGet_log(c.target(), c.name(), true);
+	    return instVarClosureGet_log(c.target(), c.arguments());
 	} else if (r instanceof ESJFieldCall) {
-	    ESJFieldClosureCall c = (ESJFieldClosureCall) r;
-	    return instVarGet_log(c.target(), c.name(), false);
+	    ESJFieldCall c = (ESJFieldCall) r;
+	    return instVarGet_log(c.target(), c.name());
 	} else if (r instanceof Call) {
 	    Call c = (Call) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
@@ -211,7 +211,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return nf.Call(null, (Receiver) toLogicExpr(c.target()), c.name() + "_log" , args);
 	} else if (r instanceof Field) {
 	    Field f = (Field) r;
-	    return instVarGet_log(f.target(), f.name(), false);
+	    return instVarGet_log(f.target(), f.name());
 	} else if (r instanceof ESJQuantVarLocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
@@ -312,12 +312,20 @@ public class ESJJavaTranslator extends ContextVisitor {
 	}
     }
 
-    public Node instVarGet_log(Receiver target, String name, boolean isClosure) throws SemanticException {
+    public Node instVarGet_log(Receiver target, String name) throws SemanticException {
 
 	    List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
 	    instVarGetArgs.add((Receiver) toLogicExpr(target));
 	    instVarGetArgs.add(nf.StringLit(null, name));
-	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), isClosure ? "instVarClosure_log" : "instVar_log", instVarGetArgs);
+	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")),"instVar_log", instVarGetArgs);
+    }
+
+    public Node instVarClosureGet_log(Receiver target, List origArgs) throws SemanticException {
+
+	    List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
+	    instVarGetArgs.add((Receiver) toLogicExpr(target));
+	    instVarGetArgs.addAll(origArgs);
+	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarClosure_log", instVarGetArgs);
     }
   
     FlagAnnotations makeFlagAnnotations() {

@@ -12,4 +12,5 @@ import polyglot.ext.jl5.ast.*;
 public interface ESJFieldDecl extends JL5FieldDecl {
 
     public boolean isOld();
+    public boolean isReferenceType();
 }

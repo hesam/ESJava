@@ -245,9 +245,8 @@ SingleCharacter = [^\r\n\'\\]
   "volatile"                     { return key(sym.VOLATILE); }
   "strictfp"                     { return key(sym.STRICTFP); }
   "assert"                       { return key(sym.ASSERT); }
-  "predicate"                    { return key(sym.PREDICATE); }
+  "function"                     { return key(sym.FUNCTION); }
   "ensures"                      { return key(sym.ENSURES); }
-  "ensured"                      { return key(sym.ENSURED); }
   "all"                          { return key(sym.ALL); }
   "some"                         { return key(sym.SOME); }
   "no"                           { return key(sym.NO); }

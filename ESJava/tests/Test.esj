@@ -3,7 +3,7 @@ import polyglot.ext.esj.tologic.*;
 
 import java.util.HashSet;
 import java.util.ArrayList;
-import java.lang.reflect.Field;
+//import java.lang.reflect.Field;
 
 class Node
 {
@@ -26,7 +26,7 @@ class Node
     public Node left() { return left; }
     public Node left(Node l) { this.left = l; return this; }
 
-    predicate public HashSet<Node> children() {
+    function public HashSet<Node> children() {
 	this.^(left+right)
     }
 
@@ -36,10 +36,11 @@ class Node
 
 }
 
-public class Test ensures (/*this.x < 5 && */this.x > 0) {
+public class Test ensures (x > 0) {
     
     protected int x;
     protected int y;
+    protected Node root;
 
     public Test(int x, int y){
 	super();
@@ -52,17 +53,24 @@ public class Test ensures (/*this.x < 5 && */this.x > 0) {
     public void x(int v) { this.x = v; }
     public void y(int v) { this.y = v; }
 
-    predicate public boolean repOk() {
+
+    function public HashSet<Node> nodes() {
+	root.*(left+right)
+    }
+
+    function public boolean repOk() {
+	//y == x
 	//this.y() == 2 * this.x() 
 	//this.y == 2 * this.x 
-	this.x == 2 * this.x_old
+	//this.x == 2 * this.x_old
 	//no Node n | n == n.left()
 	//no int i | i <= 0    
-	//no Node n | n.^(left+right).contains(n)
+	no Node n | n.*(left+right).contains(n)
 	}
 
-    ensured public void m1()
-      ensures repOk() {
+    public void m1()
+	ensures repOk() {
+	
 	System.out.println();
     }
 
@@ -82,7 +90,7 @@ public class Test ensures (/*this.x < 5 && */this.x > 0) {
 	t1.m1();
 	System.out.println(t1);
 	//System.out.println(n1.fieldsClosure(true, "left", "right"));
-	System.out.println(n1.children());
+	//System.out.println(n1.children());
     }
 
 }

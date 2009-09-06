@@ -82,6 +82,7 @@ public class ExtensionInfo extends polyglot.ext.jl5.ExtensionInfo {
 	removePass(passes, Pass.REACH_CHECK); //FIXME
 	removePass(passes, Pass.EXC_CHECK); //FIXME
 
+
         return passes;
     }
 

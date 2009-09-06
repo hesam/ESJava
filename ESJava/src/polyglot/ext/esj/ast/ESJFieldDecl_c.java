@@ -34,5 +34,10 @@ public class ESJFieldDecl_c extends JL5FieldDecl_c
 	return isOld;
     }
 
+    public boolean isReferenceType() {
+	//return type.type().isReference();
+	return type instanceof JL5AmbTypeNode && !type.toString().equals("Integer{amb}"); //FIXME
+    }
+
 
 }

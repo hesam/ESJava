@@ -4,17 +4,17 @@ import polyglot.ext.esj.tologic.*;
 public class MyList extends ESJList<Integer> {
 			    //ensures (no int e : this | e < 0) {
 
-    // PREDICATE METHODS    
-    predicate public boolean isSorted() {
+    // FUNCTION METHODS    
+    function public boolean isSorted() {
 	all int i : indices().allButLast() | get(i) <= get(i+1)
     }
     
-    predicate public boolean isPermutationOf(ESJList<Integer> l) {
+    function public boolean isPermutationOf(ESJList<Integer> l) {
 	all int i | count(i) == l.count(i)
     }
 
     // ENSURED METHODS    
-    ensured public void bubbleSort() 
+    public void bubbleSort() 
 	ensures (this.isPermutationOf(this.old()) && this.isSorted()) {
 	System.out.println();
 
