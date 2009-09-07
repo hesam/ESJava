@@ -5,13 +5,13 @@ import polyglot.ext.esj.primitives.*;
 import java.util.Hashtable;
 import java.util.ArrayList;
 
-public class LogSet extends LogObject {
+public class LogList extends LogObject {
 
-    public LogSet(String string) {
+    public LogList(String string) {
 	this(string, 0, false);
     }
 
-    public LogSet(String string, int listSize, boolean isaListInstVar) {
+    public LogList(String string, int listSize, boolean isaListInstVar) {
 	super(string, listSize, isaListInstVar);
     }
 
@@ -42,7 +42,7 @@ public class LogSet extends LogObject {
     }
 
     public LogFormula contains_log(LogObject itm) {
-	return new LogFormula("some (" + string + " & " + itm.string() + ")");
+	return new LogFormula("some (" + string + "." + itm.string() + ")");
     }
 
 }

@@ -45,6 +45,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 			     new TypedList(new LinkedList(), Expr.class, false));
 	Expr assertExpr = methodDecl.ensuresExpr() == null ? call1 : 
 	    nf.FormulaBinary(null, call1, Binary.COND_AND, methodDecl.ensuresExpr());
+	extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "incrRelationizerStep", new TypedList(new LinkedList(), Expr.class, false))));
 	extraMtdBody.add(nf.Eval(null, nf.Call(null, null, "relationize", new TypedList(new LinkedList(), Expr.class, false))));
 	if (true) //methodDecl.ensuresExprHasOld()) //FIXME
 	    extraMtdBody.add(nf.Eval(null, 
@@ -58,8 +59,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
 	catchBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,"rte"), "printStackTrace",
 					      new TypedList(new LinkedList(), Expr.class, false))));
-	catchBody.add(nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback",
-					      new TypedList(new LinkedList(), Expr.class, false))));
+	List args = new TypedList(new LinkedList(), Expr.class, false);
+	for (Formal f : (List<Formal>) methodDecl.formals())
+	    args.add( nf.Local(null,f.name()));
+	catchBody.add(nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback", args)));
 	Block catchBlock = nf.Block(null,catchBody);
 	catches.add(nf.JL5Catch(null, methodDecl.catchFormal(), catchBlock));
 	List tryBody = new TypedList(new LinkedList(), Stmt.class, false);
@@ -207,8 +210,12 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    for (Expr e : (List<Expr>) c.arguments()) {
 		 args.add((Expr) toLogicExpr(e));
-	    }
-	    return nf.Call(null, (Receiver) toLogicExpr(c.target()), c.name() + "_log" , args);
+	    }	    
+	    return nf.Call(null, 
+			   c.target() instanceof Field ? 
+			   c.target() : 
+			   (Receiver) toLogicExpr(c.target()), 
+			   c.name() + "_log" , args);
 	} else if (r instanceof Field) {
 	    Field f = (Field) r;
 	    return instVarGet_log(f.target(), f.name());
@@ -323,7 +330,7 @@ public class ESJJavaTranslator extends ContextVisitor {
     public Node instVarClosureGet_log(Receiver target, List origArgs) throws SemanticException {
 
 	    List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
-	    instVarGetArgs.add((Receiver) toLogicExpr(target));
+	    instVarGetArgs.add(target); //(Receiver) toLogicExpr(target));
 	    instVarGetArgs.addAll(origArgs);
 	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarClosure_log", instVarGetArgs);
     }

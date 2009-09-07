@@ -595,8 +595,10 @@ ensured_class_declaration ::=
 	      TypedList l = new TypedList(new LinkedList(), ClassMember.class, false);
 
 	      if (!parser.currClassName.equals("MyList")) { // HACK FIXME
+		  // define a isRelationized mtd
+		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Int()), 0),"relationizerStep", parser.nf.IntLit(null, IntLit.INT, 0)));
+		  l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "isRelationized", new TypedList(new LinkedList(), Formal.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "relationizerStep"), Binary.EQ, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "relationizerStep", parser.emptyArgs)))), new TypedList(new LinkedList(), TypeNode.class, false)));
  	      	 // define a static list to keep instance list
-
 	      	 List gt = new TypedList(new LinkedList(), TypeNode.class, false);
 	      	 AmbTypeNode cl = parser.nf.AmbTypeNode(null, c.getIdentifier());
 	      	 gt.add(cl);
@@ -616,8 +618,9 @@ ensured_class_declaration ::=
 	      	 // define relationize() and setOld()...
 	      	 List args = new TypedList(new LinkedList(), Expr.class, false);
 	      	 args.add(parser.nf.This(null));
-	      	 List relationizeMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
-		 relationizeMtdBody.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newAtom", args)));
+	      	 List relationizeMtdSubBody = new TypedList(new LinkedList(), Stmt.class, false);
+		 relationizeMtdSubBody.add(parser.nf.Eval(null, parser.nf.Unary(null, Unary.POST_INC, parser.nf.Field(null, parser.nf.This(null), "relationizerStep"))));
+		 relationizeMtdSubBody.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newAtom", args)));
 	      	 List setOldMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 	      	 for (Node n : (List<Node>) y) {
 		     if (n instanceof ESJFieldDecl) {
@@ -639,12 +642,14 @@ ensured_class_declaration ::=
 				Expr fieldExpr = parser.nf.Field(null, parser.nf.This(null), fi.name());
 				Expr ifC = parser.nf.Binary(null, fieldExpr, Binary.NE, parser.nf.NullLit(null));
 				Stmt ifT = parser.nf.Eval(null, parser.nf.Call(null, fieldExpr,  "relationize", parser.emptyArgs));
-				relationizeMtdBody.add(parser.nf.JL5If(null, ifC, ifT, null));
+				relationizeMtdSubBody.add(parser.nf.JL5If(null, ifC, ifT, null));
 			    }
 			}
 	             }			    
 	       	 }
-	      	 JL5MethodDecl relationizeMtdDecl = parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "relationize", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, relationizeMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
+		 List relationizeMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
+		 relationizeMtdBody.add(parser.nf.JL5If(null, parser.nf.Unary(null, Unary.NOT, parser.nf.Call(null, null, "isRelationized", parser.emptyArgs)), parser.nf.Block(null, relationizeMtdSubBody), null));
+		 JL5MethodDecl relationizeMtdDecl = parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "relationize", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, relationizeMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
 	      	 JL5MethodDecl setOldMtdDecl = parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "setOld", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, setOldMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
 	      	 l.add(relationizeMtdDecl);
 	     	 l.add(setOldMtdDecl);
@@ -668,7 +673,7 @@ override field_declaration ::=
 		  } else {
          	     l.add(parser.nf.ESJFieldDecl(parser.pos(b, e),a, parser.array(b, d.dims),d.name, d.init, false));
 
-	 	     System.out.println("somebody adding a fieeeeeld!" + d.name);
+	 	     //System.out.println("somebody adding a fieeeeeld!" + d.name);
 		     List args = new TypedList(new LinkedList(), Expr.class, false);
 		     List relDefBodyArgs = new TypedList(new LinkedList(), Expr.class, false);
 

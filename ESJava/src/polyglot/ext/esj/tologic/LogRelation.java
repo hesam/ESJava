@@ -50,10 +50,12 @@ public class LogRelation extends Hashtable {
 	this.isaList = isaList;
 	this.isaListInstVar = isaListInstVar;
 	this.id = "r" + this.RelCtr++;
+	if (LogMap.SolverOpt_debug())
+	    System.out.println("new relation " + this.id + " " + instVar + " unknown: " + isUnknown);
     }
 
     public String instVar() { return instVar; }
-    public String id() { return id; }
+    public String id() { LogMap.addAsProblemRel(this,id); return id; }
     public Class domain() { return domain; }
     public Class range() { return range; }
     public ArrayList subRels() { return subRels; }
@@ -83,6 +85,7 @@ public class LogRelation extends Hashtable {
     }
    
     public void put_log(Object key, Object value) {
+	//System.out.println("trying put key " + key + " value " + value + "\n");
 	if (value instanceof ArrayList) {
 	    ArrayList l = new ArrayList();
 	    for(int v: (ArrayList<Integer>)value) {

@@ -33,26 +33,38 @@ public class LogMap {
     static HashMap ProblemRels = new HashMap(); // Holds relations for given problem  
     static HashMap InstVarRels = new HashMap(); // Holds inst var relations for each class
     static HashMap ClassAtoms = new HashMap(); // Holds atoms for each class
-
-    static int AtomCtr = ESJInteger.BoundsSize();
+    
+    static int AtomCtr = ESJInteger.BoundsSize(); // mapping of objs to number ids
+    static int relationizerStep = 0; // time steps get incremented when ensured mtd is run
+                                            // used to keep track which objs need to be 
+                                            // re-relationized at current time (since may've been
+                                            // updated.
+    
 
     static {
 	LogtoJ.put(AtomCtr,null);
 	JtoLog.put(null,AtomCtr++);
     }
 
+    public static boolean SolverOpt_debug() { return SolverOpt_debug; }
     public static void SolverOpt_debug(boolean b) {
 	SolverOpt_debug = b;
     }
 
-    public static void newAtom(Object key) { 
-	Class c = key.getClass();	
-	if (!ClassAtoms.containsKey(c))
-	    ClassAtoms.put(c, new ArrayList());
-	((ArrayList) ClassAtoms.get(c)).add(AtomCtr);
-	System.out.println(ClassAtoms);
-	LogtoJ.put(AtomCtr,key);
-	JtoLog.put(key,AtomCtr++);
+    public static int relationizerStep() { return relationizerStep; }
+    public static void incrRelationizerStep() { relationizerStep++; }
+
+    public static void newAtom(Object key) { // FIXME?
+	if (!JtoLog.containsKey(key)) {
+	    System.out.println("newAtom: " + key);
+	    Class c = key.getClass();	
+	    if (!ClassAtoms.containsKey(c))
+		ClassAtoms.put(c, new ArrayList());
+	    ((ArrayList) ClassAtoms.get(c)).add(AtomCtr);
+	    System.out.println(ClassAtoms);
+	    LogtoJ.put(AtomCtr,key);
+	    JtoLog.put(key,AtomCtr++);
+	}
     }
 
     public static void put1(Object key, int value) { 
@@ -60,6 +72,8 @@ public class LogMap {
     }
 
     public static int get1(Object key) {
+	//System.out.println("get1: " + key);
+	//System.out.println(JtoLog);
 	return (Integer) JtoLog.get(key);
     }
 
@@ -98,7 +112,7 @@ public class LogMap {
 		InstVarRels.put(classStr, new HashMap());
 	    ((HashMap) InstVarRels.get(classStr)).put(k,r);
 	    //System.out.println(InstVarRels);
-	    return r.id();
+	    return r.id;
 	} catch (ClassNotFoundException e) {
 	    System.out.println(e + "\nnot found: " + domainStr);
 	    return null;
@@ -153,8 +167,10 @@ public class LogMap {
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
 
-	getProblemRels(obj);
-	
+	//getProblemRels(obj);
+	if (SolverOpt_debug)
+	    System.out.println("problem involves rels: " + ProblemRels);
+
 	problem.append("solver: " + SolverOpt_Solver + spacer);
 	problem.append("symmetry_breaking: " + SolverOpt_SymmetryBreaking + spacer);
 	problem.append("flatten: " + SolverOpt_Flatten + spacer);
@@ -209,7 +225,9 @@ public class LogMap {
 	return false;
     }
 
+    public static void addAsProblemRel(LogRelation r, String id) { ProblemRels.put(id,r); }
 
+    /*
     public static void getProblemRels(Object obj) {
 
 	if (obj instanceof ArrayList) {
@@ -219,15 +237,15 @@ public class LogMap {
 	    ProblemRels.put(o.old_log().rel_log().id(),o.old_log().rel_log());
 	} else {
 	    HashMap classInstVarRels = (HashMap) InstVarRels.get(obj.getClass().getName());
-	    //System.out.println(classInstVarRels);
+	    System.out.println(classInstVarRels);
 	    for (Object k : classInstVarRels.keySet() ) {
 		LogRelation r =  (LogRelation) classInstVarRels.get(k);
 		ProblemRels.put(r.id(),r);
 	    }
 	}
-	//System.out.println(ProblemRels);
+	System.out.println(ProblemRels);
 
-    }
+	}*/
 
     public static void commitModel(Object obj, ArrayList unknowns, ArrayList model) {
 	HashMap modelRels = (HashMap) model.get(1);
