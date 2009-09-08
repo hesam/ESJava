@@ -6,6 +6,7 @@ import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.Set;
 
 import java.io.CharArrayWriter;
 import java.io.ByteArrayInputStream;
@@ -54,26 +55,47 @@ public class LogMap {
     public static int relationizerStep() { return relationizerStep; }
     public static void incrRelationizerStep() { relationizerStep++; }
 
+    public static void initRelationize() {
+	relationizerStep++;
+	for (Class c : (Set<Class>) ClassAtoms.keySet())
+	    newAtoms(c);
+
+    }
+
+    public static void newAtoms(Class c) { // FIXME?
+	//System.out.println("initing class: " + c);
+	ArrayList classAs = (ArrayList) ClassAtoms.get(c);
+	try {
+	    for (Object obj : ((ESJClass) c.newInstance()).allInstances2()) {
+		classAs.add(AtomCtr);
+		LogtoJ.put(AtomCtr,obj);
+		JtoLog.put(obj,AtomCtr++);
+	    }
+	} catch (Exception e) { System.out.println("oops " + e); }
+    }
+
+    /*
     public static void newAtom(Object key) { // FIXME?
 	if (!JtoLog.containsKey(key)) {
 	    System.out.println("newAtom: " + key);
 	    Class c = key.getClass();	
-	    if (!ClassAtoms.containsKey(c))
-		ClassAtoms.put(c, new ArrayList());
+	    //if (!ClassAtoms.containsKey(c))
+	        //ClassAtoms.put(c, new ArrayList());
 	    ((ArrayList) ClassAtoms.get(c)).add(AtomCtr);
 	    System.out.println(ClassAtoms);
 	    LogtoJ.put(AtomCtr,key);
 	    JtoLog.put(key,AtomCtr++);
 	}
     }
+    */
 
     public static void put1(Object key, int value) { 
 	JtoLog.put(key,value);
     }
 
     public static int get1(Object key) {
-	//System.out.println("get1: " + key);
-	//System.out.println(JtoLog);
+	System.out.println("get1: " + key);
+	System.out.println(JtoLog);
 	return (Integer) JtoLog.get(key);
     }
 
@@ -102,25 +124,20 @@ public class LogMap {
 	}
     }
 
-
-    public static String newInstVarRel(String classStr, String instVar, String domainStr, Class range, boolean isUnknown) {
-	try {
-	    String k = instVar + (isUnknown ? "" : "_old");
-	    Class domain = Class.forName(domainStr);
-	    LogRelation r = new LogRelation(instVar, domain, range, false, isUnknown);
-	    if (!InstVarRels.containsKey(classStr))
-		InstVarRels.put(classStr, new HashMap());
-	    ((HashMap) InstVarRels.get(classStr)).put(k,r);
-	    //System.out.println(InstVarRels);
-	    return r.id;
-	} catch (ClassNotFoundException e) {
-	    System.out.println(e + "\nnot found: " + domainStr);
-	    return null;
-	}       
-    }
-
-    public static LogRelation instVarRel_log(Object obj, String instVar) {
-	return (LogRelation) ((HashMap) InstVarRels.get(obj.getClass().getName())).get(instVar);
+    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, boolean isUnknown) {
+	String k = instVar;
+	if (!isUnknown) {
+	    k += "_old";
+	    // mark the class
+	    if (!ClassAtoms.containsKey(c))
+		ClassAtoms.put(c, new ArrayList());
+	}
+	LogRelation r = new LogRelation(instVar, domain, range, false, isUnknown);
+	if (!InstVarRels.containsKey(c))
+	    InstVarRels.put(c, new HashMap());
+	((HashMap) InstVarRels.get(c)).put(k,r);
+	//System.out.println(InstVarRels);
+	return r.id;
     }
 
     // fixme? --> diff name or instanceof...
@@ -128,28 +145,36 @@ public class LogMap {
 	return (LogRelation) ((HashMap) InstVarRels.get(var.logType())).get(instVar);
     }
 
-    public static LogAtom instVar_log(Object obj, String instVar) {
-	return new LogAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
+    public static LogRelation instVarRel_log(Object obj, String instVar) {
+	return (LogRelation) ((HashMap) InstVarRels.get(obj.getClass())).get(instVar);
     }
 
     // fixme? --> diff name or instanceof...
     public static LogAtom instVar_log(LogVar var, String instVar) {
+	System.out.println("instVar_log LogVar");
 	return new LogAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
     }
 
-    public static LogSet instVarClosure_log(Object obj, boolean isReflexive, String... instVars) {
-	String fNs = instVarRel_log(obj, instVars[0]).id();
-	if (instVars.length > 1) {
-	    fNs = "(" + fNs;
-	    for(int i=1;i<instVars.length;i++)
-		fNs += (" + " + instVarRel_log(obj, instVars[i]).id());
-	    fNs += ")";
-	}
-	return new LogSet("(" + get1_log(obj) + "." + (isReflexive ? "*" : "^") + fNs + ")");
+    public static LogAtom instVar_log(Object obj, String instVar) {
+	System.out.println("instVar_log Object");
+	return new LogAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
     }
 
     // fixme? --> diff name or instanceof...
     public static LogSet instVarClosure_log(LogVar obj, boolean isReflexive, String... instVars) {
+	System.out.println("instVarClosure_log LogVar");
+	String fNs = instVarRel_log(obj, instVars[0]).id();
+	if (instVars.length > 1) {
+	    fNs = "(" + fNs;
+	    for(int i=1;i<instVars.length;i++)
+		fNs += (" + " + instVarRel_log(obj, instVars[i]).id());
+	    fNs += ")";
+	}
+	return new LogSet("(" + obj.string + "." + (isReflexive ? "*" : "^") + fNs + ")");
+    }
+
+    public static LogSet instVarClosure_log(Object obj, boolean isReflexive, String... instVars) {
+	System.out.println("instVarClosure_log Object");
 	String fNs = instVarRel_log(obj, instVars[0]).id();
 	if (instVars.length > 1) {
 	    fNs = "(" + fNs;
@@ -159,6 +184,7 @@ public class LogMap {
 	}
 	return new LogSet("(" + get1_log(obj) + "." + (isReflexive ? "*" : "^") + fNs + ")");
     }
+
 
     public static boolean solve(Object obj, Object formula) {
 

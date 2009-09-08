@@ -3,38 +3,6 @@ import polyglot.ext.esj.tologic.*;
 
 import java.util.HashSet;
 import java.util.ArrayList;
-//import java.lang.reflect.Field;
-
-class Node
-{
-    public Integer key;
-    public Integer value;
-    public Node left;
-    public Node right;
-    public Node parent;
-
-    public Node(Integer key, Integer value, Node left, Node right) {
-        this.key = key;
-        this.value = value;
-        this.left = left;
-        this.right = right;
-        if (left != null) left.parent = this;
-        if (right != null) right.parent = this;
-        this.parent = null;
-    }
-
-    public Node left() { return left; }
-    public Node left(Node l) { this.left = l; return this; }
-
-    function public HashSet<Node> children() {
-	this.^(left+right)
-    }
-
-    public String toString() {
-	return "Node(" + key + "," + value + ")";
-    }
-
-}
 
 public class Test ensures (x > 0) {
     
@@ -68,7 +36,8 @@ public class Test ensures (x > 0) {
 	//no int i | i <= 0    
 	//root.^(left+right).contains(root)
 	//!root.children().contains(root)
-	no Node n | n.^(left+right).contains(n)
+	//no Node n | n.^(left+right).contains(n)
+	no Node n | n.children().contains(n)
 	}
 
     public void m1()

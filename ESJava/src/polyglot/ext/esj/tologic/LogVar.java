@@ -7,22 +7,22 @@ import java.util.ArrayList;
 
 public class LogVar extends LogObject {
 
-    protected String logType;
+    protected Class logType;
 
-    public LogVar(String string, String logType) {
+    public LogVar(String string, Class logType) {
 	this(string, logType, 0, false);
     }
 
-    public LogVar(String string, String logType, int listSize, boolean isaListInstVar) {
+    public LogVar(String string, Class logType, int listSize, boolean isaListInstVar) {
 	super(string, listSize, isaListInstVar);
 	this.logType = logType;
     }
 
-    public  String logType() { return logType; }
+    public Class logType() { return logType; }
     public LogObject intValue_log() { return this; }
 
     public String sumValue_log() {
-	return logType.equals("int") ? "sum (" + string + ")" : string;
+	return logType.getName().equals("int") ? "sum (" + string + ")" : string;
     }
 
     public LogSet arithOp(String o, LogObject o2) {

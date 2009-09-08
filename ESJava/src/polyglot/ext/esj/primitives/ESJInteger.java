@@ -4,7 +4,7 @@ import polyglot.ext.esj.tologic.*;
 
 import java.io.CharArrayWriter;
 
-public final class ESJInteger extends Number implements Comparable<ESJInteger>
+public final class ESJInteger extends Number implements Comparable<ESJInteger>, ESJClass
 {
   /**
    * Compatible with JDK 1.0.2+.
@@ -775,6 +775,10 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>
 
   public static ESJList<Integer> allInstances() {
       return range(MIN_VALUE,MAX_VALUE);
+  }
+
+  public ESJList<Integer> allInstances2() {
+      return ESJInteger.allInstances();
   }
 
   public static void main(String[] args) {

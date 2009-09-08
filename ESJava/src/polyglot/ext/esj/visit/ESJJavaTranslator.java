@@ -45,7 +45,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 			     new TypedList(new LinkedList(), Expr.class, false));
 	Expr assertExpr = methodDecl.ensuresExpr() == null ? call1 : 
 	    nf.FormulaBinary(null, call1, Binary.COND_AND, methodDecl.ensuresExpr());
-	extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "incrRelationizerStep", new TypedList(new LinkedList(), Expr.class, false))));
+	extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "initRelationize", new TypedList(new LinkedList(), Expr.class, false))));
 	extraMtdBody.add(nf.Eval(null, nf.Call(null, null, "relationize", new TypedList(new LinkedList(), Expr.class, false))));
 	if (true) //methodDecl.ensuresExprHasOld()) //FIXME
 	    extraMtdBody.add(nf.Eval(null, 
@@ -223,7 +223,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    LocalDecl l = (LocalDecl) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, LogObject.genVar_log())); 
-	    args.add(nf.StringLit(null, l.type().toString()));
+	    args.add(nf.ClassLit(null, l.type()));
 	    return l.type(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar"))).init(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args, null, new TypedList(new LinkedList(), TypeNode.class, false ))); //FIXME
     } else if (r instanceof JL5LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
