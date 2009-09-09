@@ -29,7 +29,7 @@ public class ESJEnsuredClassDecl_c extends JL5ClassDecl_c
 				 TypeNode superType, List interfaces, ClassBody body, 
 				 List<ParamTypeNode> paramTypes) {
         super(pos, fl, name, superType, interfaces, body, paramTypes);
-	this.ensuresExpr = ensuresExpr;
+	//this.ensuresExpr = ensuresExpr;
     }
     
     public Expr ensuresExpr() {

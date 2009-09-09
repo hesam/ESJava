@@ -21,6 +21,10 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					    TypeNode superType, List interfaces, ClassBody body, 
 					    List<ParamTypeNode> paramTypes);
 
+    ESJLogVarClassDecl ESJLogVarClassDecl(Position pos, FlagAnnotations fl, String name, 
+					  TypeNode superType, List interfaces, ClassBody body, 
+					  List<ParamTypeNode> paramTypes);
+
     ESJMethodDecl ESJMethodDecl(Position pos, FlagAnnotations flags,
 				TypeNode returnType, String name,
 				List formals,

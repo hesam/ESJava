@@ -32,4 +32,5 @@ public class ESJLogPredMethodDecl_c extends ESJMethodDecl_c
     public boolean isFallback() {
 	return isFallback;
     }
+
 }

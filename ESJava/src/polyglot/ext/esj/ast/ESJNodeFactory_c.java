@@ -28,6 +28,13 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 	return new ESJEnsuredClassDecl_c(pos, fl, name, superType, interfaces, body, paramTypes);
     }
 
+    public ESJLogVarClassDecl ESJLogVarClassDecl(Position pos, FlagAnnotations fl, 
+						 String name, TypeNode superType, 
+						 List interfaces, ClassBody body, 
+						 List<ParamTypeNode> paramTypes) {
+	return new ESJLogVarClassDecl_c(pos, fl, name, superType, interfaces, body, paramTypes);
+    }
+
     public ESJMethodDecl ESJMethodDecl(Position pos, FlagAnnotations flags,
 				       TypeNode returnType, String name,
 				       List formals,

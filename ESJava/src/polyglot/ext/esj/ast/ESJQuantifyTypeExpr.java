@@ -13,6 +13,5 @@ import polyglot.ext.jl5.parse.JL5Name;
 public interface ESJQuantifyTypeExpr extends Expr {
 
     public String theType();
-
 }
 

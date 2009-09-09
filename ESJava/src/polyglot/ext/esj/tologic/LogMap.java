@@ -14,6 +14,7 @@ import java.io.InputStream;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.lang.reflect.Constructor;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.Lexer;
@@ -34,6 +35,7 @@ public class LogMap {
     static HashMap ProblemRels = new HashMap(); // Holds relations for given problem  
     static HashMap InstVarRels = new HashMap(); // Holds inst var relations for each class
     static HashMap ClassAtoms = new HashMap(); // Holds atoms for each class
+    static HashMap ClassConstrs = new HashMap(); // Holds class constr for each class
     
     static int AtomCtr = ESJInteger.BoundsSize(); // mapping of objs to number ids
     static int relationizerStep = 0; // time steps get incremented when ensured mtd is run
@@ -56,6 +58,7 @@ public class LogMap {
     public static void incrRelationizerStep() { relationizerStep++; }
 
     public static void initRelationize() {
+	AtomCtr = ESJInteger.BoundsSize();
 	relationizerStep++;
 	for (Class c : (Set<Class>) ClassAtoms.keySet())
 	    newAtoms(c);
@@ -63,10 +66,13 @@ public class LogMap {
     }
 
     public static void newAtoms(Class c) { // FIXME?
-	//System.out.println("initing class: " + c);
+	System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")");
 	ArrayList classAs = (ArrayList) ClassAtoms.get(c);
 	try {
-	    for (Object obj : ((ESJClass) c.newInstance()).allInstances2()) {
+	    Object [] args = new Object[1];
+	    args[0] = null;
+	    System.out.println(((ESJClass) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2());
+	    for (Object obj : ((ESJClass) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2()) {
 		classAs.add(AtomCtr);
 		LogtoJ.put(AtomCtr,obj);
 		JtoLog.put(obj,AtomCtr++);
@@ -129,8 +135,14 @@ public class LogMap {
 	if (!isUnknown) {
 	    k += "_old";
 	    // mark the class
-	    if (!ClassAtoms.containsKey(c))
+	    if (!ClassAtoms.containsKey(c)) {
 		ClassAtoms.put(c, new ArrayList());
+		Class[] parameterTypes = new Class[1];
+		parameterTypes[0] = LogMap.class;
+		try {
+		    ClassConstrs.put(c, c.getConstructor(parameterTypes));
+		} catch (NoSuchMethodException e) { System.out.println(e); }
+	    }
 	}
 	LogRelation r = new LogRelation(instVar, domain, range, false, isUnknown);
 	if (!InstVarRels.containsKey(c))

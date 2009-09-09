@@ -3,10 +3,12 @@ package polyglot.ext.esj.ast;
 import java.util.*;
 import polyglot.ast.*;
 import polyglot.ext.jl.ast.*;
+import polyglot.ext.jl5.ast.*;
 import polyglot.ext.jl5.parse.JL5Name;
 import polyglot.util.*;
 import polyglot.types.*;
 import polyglot.ext.esj.types.ESJTypeSystem;
+import polyglot.ext.jl5.types.*;
 import polyglot.visit.*;
 
 
@@ -43,12 +45,13 @@ public class ESJQuantifyTypeExpr_c extends Expr_c implements ESJQuantifyTypeExpr
     }
     */
     
+
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	//System.out.println("ESJQuantifyTypeExpr tc...");
 	//System.out.println("ESJQuantifyTypeExpr tc done");
 	ESJQuantifyTypeExpr n = (ESJQuantifyTypeExpr) super.typeCheck(tc);
-	n = (ESJQuantifyTypeExpr)n.type(tc.typeSystem().typeForName("polyglot.ext.esj.primitives.ESJList")); //"java.util.ArrayList")); FIXME
 
+	n = (ESJQuantifyTypeExpr)n.type(tc.typeSystem().typeForName("polyglot.ext.esj.primitives.ESJList")); //"java.util.ArrayList")); FIXME
 	return n;
     } 
 
