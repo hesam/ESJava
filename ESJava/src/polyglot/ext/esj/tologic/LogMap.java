@@ -58,10 +58,12 @@ public class LogMap {
     public static void incrRelationizerStep() { relationizerStep++; }
 
     public static void initRelationize() {
-	AtomCtr = ESJInteger.BoundsSize();
+	AtomCtr = ESJInteger.BoundsSize()+1;
 	relationizerStep++;
-	for (Class c : (Set<Class>) ClassAtoms.keySet())
+	for (Class c : (Set<Class>) ClassAtoms.keySet()) {
+	    ClassAtoms.put(c, new ArrayList());
 	    newAtoms(c);
+	}
 
     }
 

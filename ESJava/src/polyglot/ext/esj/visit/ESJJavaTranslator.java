@@ -42,7 +42,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 
     // FIXME
     public JL5ClassDecl DesugarLogVarClassDecl(ESJLogVarClassDecl classDecl) throws SemanticException {
-	System.out.println("logvar class:" + classDecl.logPredMtdDecls());
+	//System.out.println("logvar class:" + classDecl.logPredMtdDecls());
 	List classMs = new TypedList(new LinkedList(), ClassMember.class, false);
 	for (ClassMember m : (List<ClassMember>) classDecl.body().members()) {
 	    if (m instanceof JL5MethodDecl) {
@@ -143,7 +143,7 @@ public class ESJJavaTranslator extends ContextVisitor {
     }
 
     public Node toLogicExpr(Node r) throws SemanticException {
-	//System.out.println("tologic have: " + r.getClass() + " " + r);
+	//System.out.println("have:" + r.getClass() + " " + r);
 	if (r instanceof ESJLogPredMethodDecl) {	 
 	    ESJLogPredMethodDecl methodDecl = (ESJLogPredMethodDecl) r;
 	    List formals = methodDecl.formals(); /*new TypedList(new LinkedList(), Formal.class, false);
@@ -211,6 +211,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    args.add(nf.BooleanLit(null, quantKindIsaCount));
 	    args.add(nf.StringLit(null, q.quantKind().toString()));
 	    args.add(nf.Local(null, q.quantVarN()));
+	    System.out.println(q.quantClauseExpr().expr());
+	    System.out.println(q.quantClauseExpr().expr().getClass());
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
 	    return nf.Call(null, qListExpr, "quantifyOp", args);
 	} else if (r instanceof ESJQuantifyTypeExpr) {
@@ -233,9 +235,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    for (Expr e : (List<Expr>) c.arguments()) {
 		 args.add((Expr) toLogicExpr(e));
-	    }	    
+	    }
 	    return nf.Call(null, 
-			   c.target() instanceof Field ? 
+			   (c.target() == null || c.target() instanceof Field) ? 
 			   c.target() : 
 			   (Receiver) toLogicExpr(c.target()), 
 			   c.name() + "_log" , args);
@@ -289,14 +291,17 @@ public class ESJJavaTranslator extends ContextVisitor {
 				       }
 	}
 
-
     // quantify expr desugars to a method call (defined above)
     public Expr DesugarQuantifyExpr (ESJQuantifyExpr a) {
+
 	String quantId = a.parentMethod().name()  + "_" + a.id();
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	for(Formal f : (List<Formal>)(a.parentMethod().formals())) {
 	    args.add(new Local_c(null,f.name()));
 	}
+	for(LocalDecl d : (List<LocalDecl>)(a.quantVarD2())) {
+	    args.add(new Local_c(null,d.name()));
+	}	
 	return nf.Call(null,null,quantId, args);
     }
 

@@ -13,10 +13,11 @@ public interface ESJQuantifyExpr extends Expr {
     public FormulaBinary.Operator quantKind();
     public String quantVarN();
     public List quantVarD();
+    public List quantVarD2();
     public Expr quantListExpr();
     public ESJQuantifyClauseExpr quantClauseExpr();
     public JL5MethodDecl parentMethod();
     public void parentMethod(JL5MethodDecl m);
-
+    public void addVars(List quantVarD2);
 }
 

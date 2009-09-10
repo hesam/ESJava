@@ -87,6 +87,12 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		  Expr quantList = a.quantListExpr();
                   ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr();
 		  List quantVarD = a.quantVarD();
+		  List quantVarD2 = a.quantVarD2();
+		  List frms = new TypedList(new LinkedList(), Formal.class, false);
+		  frms.addAll(methodDecl.formals());
+		  for(LocalDecl d : (List<LocalDecl>)quantVarD2)
+		      frms.add(nf.JL5Formal(null, emptyFlags, d.type(), d.name()));
+
 		  boolean quantKindIsaCount = quantKind == FormulaBinary.ONE ||
 		  	    quantKind == FormulaBinary.LONE;
 	      	  List stmts = new TypedList(new LinkedList(), Stmt.class, false);
@@ -98,12 +104,11 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	      	  ESJPredMethodDecl extraMtd = nf.ESJPredMethodDecl(null, fl,
 	                                          nf.CanonicalTypeNode(null,ts.Boolean()), 
 						  methodDecl.name() + "_" + quantMtdId, 
-						  methodDecl.formals(), 
+						  frms, 
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
 						  nf.Block(null, stmts), methodDecl.throwTypes(),
-						  quantMtdId, 
-						  quantKind, quantVarN, quantVarD, 
-						  quantList, quantExpr); 
+						  quantMtdId, quantKind, quantVarN, 
+						  quantVarD, quantList, quantExpr); 
                   extraMtds.add(extraMtd);
 
              }
@@ -124,7 +129,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 						  methodDecl.formals(), 
 						  new TypedList(new LinkedList(), TypeNode.class, false), 
 						  this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(),quantVarD,quantVarN), 
-									methodDecl.throwTypes(), methodDecl.isPredicate(), false); 
+						  methodDecl.throwTypes(), methodDecl.isPredicate(), false); 
              extraMtds.add(extraLogMtd);
 	     currClassLogPredMtdDecls.add(extraLogMtd);
 	     return extraMtds;
@@ -144,6 +149,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	          getPredExprsWithinBodyHelper(((Binary)n).right(),predSubExprs);
 	    } else if (n instanceof ESJQuantifyExpr) {
 	          predSubExprs.add(n);
+		  getPredExprsWithinBodyHelper(((ESJQuantifyExpr)n).quantClauseExpr().expr(),predSubExprs);
 	    }
      }
 
@@ -194,11 +200,19 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    if (tn.toString().equals("polyglot.ext.esj.primitives.ESJInteger{amb}")) {
 	       	 tn = nf.CanonicalTypeNode(null, ts.Int());
 	    }
+
 	    FlagAnnotations fl = emptyFlags; 
 	    List quantVarD = new TypedList(new LinkedList(), LocalDecl.class, false);
+	    List quantVarD2 = new TypedList(new LinkedList(), LocalDecl.class, false);
 	    JL5LocalDecl ld = nf.JL5LocalDecl(null, fl, tn, quantVarN, null);
 	    quantVarD.add(ld);
-	    return this.nf.ESJQuantifyExpr(pos,quantKind,quantVarN, quantVarD, quantListExpr,quantClauseExpr);
+	    if (quantClauseExpr instanceof ESJQuantifyExpr) {
+		((ESJQuantifyExpr) quantClauseExpr).addVars(quantVarD);
+		//quantVarD.addAll(((ESJQuantifyExpr) quantClauseExpr).quantVarD());
+
+	    }
+
+	    return this.nf.ESJQuantifyExpr(pos,quantKind,quantVarN, quantVarD, quantVarD2, quantListExpr,quantClauseExpr);
 }
 
 
@@ -475,12 +489,11 @@ andPredExpr_opt ::=
 equality_predicate_expr ::=
         quantify_expression:a
 	    {: RESULT = a; :}
-    |
-	relational_predicate_expr:a
+    |   relational_predicate_expr:a
             {: RESULT = a; :}
     |   relational_predicate_expr:a  equality_predicate_op:b
-        equality_predicate_expr:c
-	    {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, b, c); :} 
+            equality_predicate_expr:c
+	        {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, b, c); :} 
     ;
 
 equality_predicate_op ::=
@@ -707,22 +720,32 @@ ensured_class_declaration ::=
 		        ESJFieldDecl fi = (ESJFieldDecl) n;
 		     	if (!fi.isOld()) {
 			    parser.classFieldNs.add(fi.name());
-			    setOldMtdBody.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), fi.name()+"_old"), Assign.ASSIGN, parser.nf.Field(null, parser.nf.This(null), fi.name()))));
-		  	    List instVarGetArgs2 = new TypedList(new LinkedList(), Expr.class, false);
-		  	    List instVarGetArgs3 = new TypedList(new LinkedList(), Expr.class, false);
-		  	    instVarGetArgs2.add(parser.nf.This(null));
-		  	    instVarGetArgs2.add(parser.nf.StringLit(null, fi.name()+"_old"));
-		  	    instVarGetArgs3.add(parser.nf.This(null));
-		  	    instVarGetArgs3.add(parser.nf.Field(null, parser.nf.This(null), fi.name()));
+			    List setOldMtdIfBody = new TypedList(new LinkedList(), Stmt.class, false);
+			    setOldMtdIfBody.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), fi.name()+"_old"), Assign.ASSIGN, parser.nf.Field(null, parser.nf.This(null), fi.name()))));
+			    List instVarGetArgs2 = new TypedList(new LinkedList(), Expr.class, false);
+			    List instVarGetArgs3 = new TypedList(new LinkedList(), Expr.class, false);
+			    instVarGetArgs2.add(parser.nf.This(null));
+			    instVarGetArgs2.add(parser.nf.StringLit(null, fi.name()+"_old"));
+			    instVarGetArgs3.add(parser.nf.This(null));
+			    instVarGetArgs3.add(parser.nf.Field(null, parser.nf.This(null), fi.name()));
 			    Expr e1 = parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarRel_log", instVarGetArgs2);
 			    Expr e2 = parser.nf.Call(null, e1, "put_log", instVarGetArgs3);
-			    setOldMtdBody.add(parser.nf.Eval(null, e2));
+			    setOldMtdIfBody.add(parser.nf.Eval(null, e2));
+			    
 			    // have to do deep relationizing for reference types... 
 			    if (fi.isReferenceType()) {
+				Expr fieldExpr1 = parser.nf.Field(null, parser.nf.This(null), fi.name());
+				Expr ifC1 = parser.nf.Binary(null, fieldExpr1, Binary.NE, parser.nf.NullLit(null));
+				Stmt ifT1 = parser.nf.Block(null, setOldMtdIfBody);
+				setOldMtdBody.add(parser.nf.JL5If(null, ifC1, ifT1, null));
+				
+				
 				Expr fieldExpr = parser.nf.Field(null, parser.nf.This(null), fi.name());
 				Expr ifC = parser.nf.Binary(null, fieldExpr, Binary.NE, parser.nf.NullLit(null));
 				Stmt ifT = parser.nf.Eval(null, parser.nf.Call(null, fieldExpr,  "relationize", parser.emptyArgs));
 				relationizeMtdSubBody.add(parser.nf.JL5If(null, ifC, ifT, null));
+			    } else {
+				setOldMtdBody.addAll(setOldMtdIfBody);
 			    }
 			}
 	             }			    

@@ -16,17 +16,18 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
     protected static int idCtr = 0;
     protected FormulaBinary.Operator quantKind;
     protected String id,quantVarN;
-    protected List quantVarD;
+    protected List quantVarD, quantVarD2;
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
     protected JL5MethodDecl parentMethod;
 
-    public ESJQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr) {
+    public ESJQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr) {
 	super(pos);
 	this.id = (quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
+	this.quantVarD2 = quantVarD2;
 	this.quantListExpr = quantListExpr;
 	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantVarD, quantClauseExpr);
     }
@@ -55,12 +56,20 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	return quantVarD;
     }
 
+    public List quantVarD2() {
+	return quantVarD2;
+    }
+
     public JL5MethodDecl parentMethod() {
 	return parentMethod;
     }
 
     public void parentMethod(JL5MethodDecl m) {
 	this.parentMethod = m;
+    }
+
+    public void addVars(List quantVarD2) {
+	this.quantVarD2 = quantVarD2;
     }
 
     public List acceptCFG(CFGBuilder v, List succs) {
@@ -101,6 +110,8 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 
 	return n;
     } 
+
+
 
 }
 

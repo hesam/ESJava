@@ -66,6 +66,7 @@ public class ESJQuantifyClauseExpr_c extends Expr_c implements ESJQuantifyClause
       // Visit the children of the method.
     public Node visitChildren(NodeVisitor v) {
 	//List quantVarD = (List) visitList(this.quantVarD, v);
+	
 	Expr expr = (Expr) visitChild(this.expr, v);
 	return reconstruct(this.quantVarD, expr);
     }

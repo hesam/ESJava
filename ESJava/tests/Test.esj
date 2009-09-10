@@ -37,7 +37,7 @@ public class Test ensures (x > 0) {
 	//root.^(left+right).contains(root)
 	//!root.children().contains(root)
 	//no Node n | n.^(left+right).contains(n)
-	no Node n | n.children().contains(n)
+	all Node n | all Node x | x.children().contains(n)
 	}
 
     public void m1()
@@ -65,7 +65,7 @@ public class Test ensures (x > 0) {
 	System.out.println(t1.root.children());
 	System.out.println(t1.nodes());
 	//System.out.println(t1.nodes_log());
-	System.out.println(t1.repOk_log());
+	//System.out.println(t1.repOk_log());
     }
 
 }
