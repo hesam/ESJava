@@ -8,13 +8,13 @@ public class Test ensures (x > 0) {
     
     protected int x;
     protected int y;
-    protected Node root;
+    //protected Node root;
 
-    public Test(int x, int y, Node root){
+    public Test(int x, int y) { //, Node root){
 	super();
 	this.x = x;
 	this.y = y;
-	this.root = root;
+	//this.root = root;
     }
     
     public int x() { return x; }
@@ -22,10 +22,10 @@ public class Test ensures (x > 0) {
     public void x(int v) { this.x = v; }
     public void y(int v) { this.y = v; }
 
-
+    /*
     function public HashSet<Node> nodes() {
 	root.*(left+right)
-    }
+	}*/
 
     function public boolean repOk() {
 	//x == 2 * x_old
@@ -37,7 +37,10 @@ public class Test ensures (x > 0) {
 	//root.^(left+right).contains(root)
 	//!root.children().contains(root)
 	//no Node n | n.^(left+right).contains(n)
-	all Node n | all Node x | x.children().contains(n)
+	//all Node n | all Node x | x.children().contains(n)
+	//all int i | i < 0
+	    all int i | all int j | j < i
+	    //all Node n | n.children().contains(n)
 	}
 
     public void m1()
@@ -50,22 +53,23 @@ public class Test ensures (x > 0) {
 
     public static void main(String[] args) {
 	LogMap.SolverOpt_debug(true);
+	/*
 	Node n4 = new Node(4, 4, null, null);	
 	Node n5 = new Node(5, 5, null, null);	
 	Node n2 = new Node(2, 2, n4, n5);	
 	Node n3 = new Node(3, 3, null, null);	
-	Node n1 = new Node(1, 1, n2, n3);
-	Test t1 = new Test(13,10,n1);
+	Node n1 = new Node(1, 1, n2, n3);*/
+	Test t1 = new Test(13,10); //,n1);
 	//n2.left(n2);
 	System.out.println(t1);
-	t1.m1();
+	//t1.m1();
 	System.out.println(t1);
 	//System.out.println(n1.fieldsClosure(true, "left", "right"));
 	//System.out.println(n1.children());
-	System.out.println(t1.root.children());
-	System.out.println(t1.nodes());
+	//System.out.println(t1.root.children());
+	//System.out.println(t1.nodes());
 	//System.out.println(t1.nodes_log());
-	//System.out.println(t1.repOk_log());
+	System.out.println(t1.repOk_log());
     }
 
 }

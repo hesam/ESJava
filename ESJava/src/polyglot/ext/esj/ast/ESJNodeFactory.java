@@ -42,8 +42,8 @@ public interface ESJNodeFactory extends JL5NodeFactory {
     ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,
 					      List formals, List throwTypes, Block body, 
-					      List paramTypes, boolean isPredicate, 
-					      boolean isFallBack); 
+					      List paramTypes, List quantVarD, 
+					      boolean isPredicate, boolean isFallBack); 
     
     ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,
@@ -53,7 +53,7 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 
     ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr);
 
-    ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr);
+    ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr);
 
     ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, String theType);
 

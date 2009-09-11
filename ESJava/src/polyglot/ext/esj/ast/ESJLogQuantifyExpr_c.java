@@ -16,17 +16,18 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
     protected static int idCtr = 0;
     protected FormulaBinary.Operator quantKind;
     protected String id,quantVarN;
-    protected List quantVarD;
+    protected List quantVarD, quantVarD2;
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
     protected JL5MethodDecl parentMethod;
 
-    public ESJLogQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, Expr quantClauseExpr) {
+    public ESJLogQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr) {
 	super(pos);
 	this.id = (quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
+	this.quantVarD2 = quantVarD2;
 	this.quantListExpr = quantListExpr;
 	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantVarD, quantClauseExpr);
     }
@@ -55,12 +56,20 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 	return quantVarD;
     }
 
+    public List quantVarD2() {
+	return quantVarD2;
+    }
+
     public JL5MethodDecl parentMethod() {
 	return parentMethod;
     }
 
     public void parentMethod(JL5MethodDecl m) {
 	this.parentMethod = m;
+    }
+
+    public void addVars(List quantVarD2) {
+	this.quantVarD2 = quantVarD2;
     }
 
     public List acceptCFG(CFGBuilder v, List succs) {
@@ -89,10 +98,10 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
     // Visit the children of the method. 
 
     public Node visitChildren(NodeVisitor v) {
-	//List quantVarD = (List) visitList(this.quantVarD, v);
+	List quantVarD = (List) visitList(this.quantVarD, v);
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
 	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
-	return reconstruct(this.quantKind, this.quantVarN, this.quantVarD, quantListExpr, quantClauseExpr);
+	return reconstruct(this.quantKind, this.quantVarN, quantVarD, quantListExpr, quantClauseExpr);
     }
 
     
