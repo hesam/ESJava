@@ -123,13 +123,14 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 	quantVarN = a.quantVarN();
 		quantVarD = a.quantVarD();
 	     }
-	     ESJLogPredMethodDecl extraLogMtd = nf.ESJLogPredMethodDecl(null, fl,
-									methodDecl.returnType(),
-						  methodDecl.name() + "_log", 
-						  methodDecl.formals(), 
-						  new TypedList(new LinkedList(), TypeNode.class, false), 
-						  this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(),quantVarD,quantVarN), 
-									methodDecl.throwTypes(), quantVarD, methodDecl.isPredicate(), false); 
+	     ESJLogPredMethodDecl extraLogMtd = 
+		 nf.ESJLogPredMethodDecl(null, fl,
+					 methodDecl.returnType(),
+					 methodDecl.name() + "_log", 
+					 methodDecl.formals(), 
+					 new TypedList(new LinkedList(), TypeNode.class, false), 
+					 this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(),quantVarD,quantVarN), 
+					 methodDecl.throwTypes(), quantVarD, methodDecl.isPredicate(), false); 
              extraMtds.add(extraLogMtd);
 	     currClassLogPredMtdDecls.add(extraLogMtd);
 
