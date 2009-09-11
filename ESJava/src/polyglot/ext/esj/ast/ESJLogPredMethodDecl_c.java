@@ -69,44 +69,7 @@ public class ESJLogPredMethodDecl_c extends ESJMethodDecl_c
 	Block body = (Block) visitChild(this.body, v);
 	return reconstruct(returnType, formals, throwTypes, body, quantVarD, this.isPredicate, this.isFallback);
     }
-    /*
-    public Node typeCheck(TypeChecker tc) throws SemanticException {
-	    // findout what type is quantListExpr list of (can be a subtype a generic...)
-	    TypeSystem ts = tc.typeSystem();
-	    Type t = (Type) quantListExpr().type();
 
-	    while (! ((JL5ParsedClassType) t).isGeneric()) {
-		t = (ReferenceType) ts.superType((ReferenceType) t);
-	    }
-	    if (t instanceof ParameterizedType) {
-		List newVarD = new TypedList(new LinkedList(), LocalDecl.class, false);
-		for (LocalDecl d : (List<LocalDecl>) quantVarD) {
-		    newVarD.add(d.type(d.type().type((Type) ((ParameterizedType) t).typeArguments().get(0))));
-		}
-		this.quantVarD = newVarD;
-	    }
-
-
-	    return super.typeCheck(tc);
-    }
-    */
-
-    public Context enterScope(Node child, Context c) {
-	/*
-	if (!isFallback && child instanceof Block) {	    
-	    Expr e = ((Return) ((Block) child).statements().get(0)).expr();
-	    if (e instanceof ESJLogQuantifyExpr) {
-		ESJLogQuantifyExpr ch = (ESJLogQuantifyExpr) e;
-		System.out.println("ehhmmmm" + ch.quantClauseExpr().expr() + " " + ch.quantVarD() + " " + ch.quantVarD2());
-		for (LocalDecl d : (List<LocalDecl>) ch.quantVarD2())
-		    c.addVariable(c.typeSystem().localInstance(null, flags(),d.declType(), d.name()));
-		
-	    }
-	    }*/
-
-
-	return super.enterScope(child, c);
-	}
 
 
 }

@@ -81,13 +81,14 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
     }
 
     // Reconstruct the pred expr.
-    protected ESJQuantifyExpr_c reconstruct(FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
+    protected ESJQuantifyExpr_c reconstruct(FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
 	
 	if (quantListExpr != this.quantListExpr || quantClauseExpr != this.quantClauseExpr) {
 	    ESJQuantifyExpr_c n = (ESJQuantifyExpr_c) copy();
 	    n.quantKind = quantKind;
 	    n.quantVarN = quantVarN;
 	    n.quantVarD = quantVarD; //TypedList.copyAndCheck(quantVarD, LocalDecl.class, true);
+	    n.quantVarD2 = quantVarD2;
 	    n.quantListExpr = quantListExpr;
 	    n.quantClauseExpr = quantClauseExpr;
 	    return n;
@@ -101,13 +102,12 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	List quantVarD = (List) visitList(this.quantVarD, v);
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
 	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
-	return reconstruct(this.quantKind, this.quantVarN, quantVarD, quantListExpr, quantClauseExpr);
+	return reconstruct(this.quantKind, this.quantVarN, quantVarD, this.quantVarD2, quantListExpr, quantClauseExpr);
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	ESJQuantifyExpr n = (ESJQuantifyExpr) super.typeCheck(tc);
 	n = (ESJQuantifyExpr)n.type(tc.typeSystem().Boolean()); //FIXME
-
 	return n;
     } 
 

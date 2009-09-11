@@ -110,23 +110,6 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 	n = (ESJLogQuantifyExpr)n.type(tc.typeSystem().Boolean()); //FIXME
 	return n;
     } 
-    /*
-    public Context enterScope(Node child, Context c) {
-	
-	if (child instanceof ESJQuantifyClauseExpr) {
-
-	    LocalDecl d = (LocalDecl) quantVarD.get(0);
-	    System.out.println("hi1: " + d + " " + d.type() + " " + d.declType());
-	    //d = d.localInstance(c.typeSystem().localInstance(null,null, d.declType(), d.name()));	   
-	    //c.addVariable(d.localInstance());
-	    System.out.println("hi1: " + d.localInstance());
-	    if (d.declType() != null) {
-		this.quantClauseExpr = this.quantClauseExpr().quantVarD(quantVarD);
-	    }
-	}
-
-	return super.enterScope(child, c);
-	}*/
 
 
 }

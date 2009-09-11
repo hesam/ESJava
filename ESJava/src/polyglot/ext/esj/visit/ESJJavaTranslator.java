@@ -152,16 +152,15 @@ public class ESJJavaTranslator extends ContextVisitor {
 		formals.add(f.type((TypeNode) JTypeToLog.get(f.type().toString())));
 		}*/ //FIXME?
 	    List inits = new TypedList(new LinkedList(), Stmt.class, false);
-	    System.out.println(methodDecl.body().statements());
+	    //System.out.println(methodDecl.body().statements());
 	    if (!methodDecl.isFallback()) {
 		Expr e = ((Return) methodDecl.body().statements().get(0)).expr();
 		if (e instanceof ESJLogQuantifyExpr) {
 		    ESJLogQuantifyExpr e2 = (ESJLogQuantifyExpr) e;
-		    System.out.println("we got " + e2.quantVarD() + " " + e2.quantVarD2()); 
 		    List quantVarD = new TypedList(new LinkedList(), LocalDecl.class, false); 
 		    quantVarD.addAll(e2.quantVarD());
-		    //quantVarD.addAll(e2.quantVarD2());
-		    for (LocalDecl l : (List<LocalDecl>) quantVarD) { 
+		    quantVarD.addAll(e2.quantVarD2());
+		    for (LocalDecl l : (List<LocalDecl>) quantVarD) {
 			List args = new TypedList(new LinkedList(), Expr.class, false);
 			args.add(nf.StringLit(null, LogObject.genVar_log())); 
 			args.add(nf.ClassLit(null, l.type()));
@@ -232,8 +231,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    args.add(nf.BooleanLit(null, quantKindIsaCount));
 	    args.add(nf.StringLit(null, q.quantKind().toString()));
 	    args.add(nf.Local(null, q.quantVarN()));
-	    System.out.println(q.quantClauseExpr().expr());
-	    System.out.println(q.quantClauseExpr().expr().getClass());
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
 	    return nf.Call(null, qListExpr, "quantifyOp", args);
 	} else if (r instanceof ESJQuantifyTypeExpr) {
