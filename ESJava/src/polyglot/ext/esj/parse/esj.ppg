@@ -116,12 +116,14 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	     FormulaBinary.Operator quantKind = FormulaBinary.ALL;
 	     String quantVarN = null;
 	     List quantVarD = new TypedList(new LinkedList(), LocalDecl.class, false);
+	     List quantVarD2 = new TypedList(new LinkedList(), LocalDecl.class, false);
 		  
 	     if (predExprs.size() > 0) {
 	     	ESJQuantifyExpr a = (ESJQuantifyExpr) predExprs.get(0);
 	 	quantKind = a.quantKind();
 	 	quantVarN = a.quantVarN();
 		quantVarD = a.quantVarD();
+		quantVarD2 = a.quantVarD2();
 	     }
 	     ESJLogPredMethodDecl extraLogMtd = 
 		 nf.ESJLogPredMethodDecl(null, fl,
@@ -130,7 +132,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 					 methodDecl.formals(), 
 					 new TypedList(new LinkedList(), TypeNode.class, false), 
 					 this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(),quantVarD,quantVarN), 
-					 methodDecl.throwTypes(), quantVarD, methodDecl.isPredicate(), false); 
+					 methodDecl.throwTypes(), quantVarD, quantVarD2, methodDecl.isPredicate(), false); 
              extraMtds.add(extraLogMtd);
 	     currClassLogPredMtdDecls.add(extraLogMtd);
 
@@ -192,7 +194,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 						  methodDecl.formals(), 
 						  new TypedList(new LinkedList(), TypeNode.class, false), 						  
 						  nf.Block(null,l),
-					   methodDecl.throwTypes(), new TypedList(new LinkedList(), LocalDecl.class, false), false,true); 
+					   methodDecl.throwTypes(), new TypedList(new LinkedList(), LocalDecl.class, false), new TypedList(new LinkedList(), LocalDecl.class, false), false,true); 
 
      }
 
@@ -209,10 +211,9 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    JL5LocalDecl ld = nf.JL5LocalDecl(null, fl, tn, quantVarN, null);
 	    quantVarD.add(ld);
 	    if (quantClauseExpr instanceof ESJQuantifyExpr)
-		((ESJQuantifyExpr) quantClauseExpr).addVars(quantVarD);
+		((ESJQuantifyExpr) quantClauseExpr).quantVarD2(quantVarD);
 	    return this.nf.ESJQuantifyExpr(pos,quantKind,quantVarN, quantVarD, quantVarD2, quantListExpr,quantClauseExpr);
 }
-
 
 	    //FIXME
      public Block makeESJLogPredBlock(Expr expr, List quantVarD, String quantVarN) throws SemanticException {

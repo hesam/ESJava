@@ -18,6 +18,6 @@ public interface ESJLogQuantifyExpr extends Expr {
     public ESJQuantifyClauseExpr quantClauseExpr();
     public JL5MethodDecl parentMethod();
     public void parentMethod(JL5MethodDecl m);
-    public void addVars(List quantVarD2);
+    public void quantVarD2(List quantVarD2);
 }
 

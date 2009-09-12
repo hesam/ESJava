@@ -68,7 +68,7 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 	this.parentMethod = m;
     }
 
-    public void addVars(List quantVarD2) {
+    public void quantVarD2(List quantVarD2) {
 	this.quantVarD2 = quantVarD2;
     }
 
@@ -99,16 +99,29 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 
     public Node visitChildren(NodeVisitor v) {
 	List quantVarD = (List) visitList(this.quantVarD, v);
+	//List quantVarD2 = (List) visitList(this.quantVarD2, v);
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
 	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
 	return reconstruct(this.quantKind, this.quantVarN, quantVarD, quantListExpr, quantClauseExpr);
     }
 
     
-    public Node typeCheck(TypeChecker tc) throws SemanticException {
+    public Node typeCheck(TypeChecker tc) throws SemanticException { //FIXME
+
+	TypeSystem ts = tc.typeSystem();
+	NodeFactory nf = tc.nodeFactory();
 	ESJLogQuantifyExpr n = (ESJLogQuantifyExpr) super.typeCheck(tc);
-	n = (ESJLogQuantifyExpr)n.type(tc.typeSystem().Boolean()); //FIXME
+	n = (ESJLogQuantifyExpr)n.type(ts.Boolean()); 
+	List newQuantVarD2 = new TypedList(new LinkedList(), LocalDecl.class, false);	
+	for (LocalDecl d : (List<LocalDecl>) quantVarD2) {
+	    if (d.type() instanceof AmbTypeNode)
+		newQuantVarD2.add((d.type() instanceof AmbTypeNode) ? 
+				  d.type(nf.CanonicalTypeNode(null,ts.typeForName(((AmbTypeNode) d.type()).name()))) :
+				  d);
+	}
+	n.quantVarD2(newQuantVarD2);
 	return n;
+
     } 
 
 

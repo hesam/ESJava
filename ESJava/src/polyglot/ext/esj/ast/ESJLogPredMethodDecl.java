@@ -12,5 +12,4 @@ import polyglot.ext.jl5.ast.JL5MethodDecl;
 public interface ESJLogPredMethodDecl extends ESJMethodDecl {
 
     public boolean isFallback();
-
 }

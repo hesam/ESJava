@@ -158,6 +158,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		if (e instanceof ESJLogQuantifyExpr) {
 		    ESJLogQuantifyExpr e2 = (ESJLogQuantifyExpr) e;
 		    List quantVarD = new TypedList(new LinkedList(), LocalDecl.class, false); 
+		    //System.out.println(e2.quantVarD()+ " " + e2.quantVarD2());
 		    quantVarD.addAll(e2.quantVarD());
 		    quantVarD.addAll(e2.quantVarD2());
 		    for (LocalDecl l : (List<LocalDecl>) quantVarD) {

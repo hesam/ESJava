@@ -68,7 +68,7 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	this.parentMethod = m;
     }
 
-    public void addVars(List quantVarD2) {
+    public void quantVarD2(List quantVarD2) {
 	this.quantVarD2 = quantVarD2;
     }
 
