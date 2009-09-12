@@ -48,8 +48,8 @@ public class ESJList<E> extends ArrayList<E> {
 	return ESJInteger.atom_log(s);
     }
 
-    public LogAtom get_log(LogObject index) {
-	return new LogAtom(LogObject.join_log(index.intValue_log().string(),rel_log.id()));
+    public LogIntAtom get_log(LogObject index) {
+	return new LogIntAtom(LogObject.join_log(index.intValue_log().string(),rel_log.id()));
     }                              
 
     public LogInt count_log(LogObject itm) {

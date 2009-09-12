@@ -56,9 +56,10 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
     public ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags, 
 						     TypeNode returnType, String name, 
 						     List formals, List throwTypes, Block body, 
-						     List paramTypes, List quantVarD, List quantVarD2, 
-						     boolean isPredicate, boolean isFallBack) {	
-    	return new ESJLogPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantVarD, quantVarD2, isPredicate, isFallBack);
+						     List paramTypes, List quantVarD, 
+						     List quantVarD2, boolean isPredicate, 
+						     boolean isFallBack, boolean isLogVar) {	
+    	return new ESJLogPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantVarD, quantVarD2, isPredicate, isFallBack, isLogVar);
     }
 
     public ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,

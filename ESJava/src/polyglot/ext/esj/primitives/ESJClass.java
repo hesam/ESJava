@@ -8,5 +8,6 @@ public interface ESJClass {
 
     public ESJList allInstances2();
     //public LogSet allInstances2_log(); 
+    //public LogVar var_log();
 
 }

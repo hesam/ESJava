@@ -32,15 +32,17 @@ public class Test ensures (x > 0) {
 	//this.y == 2 * this.x 
 	//this.x == 2 * this.x_old
 	//no Node n | n == n.left()
-	//no int i | i <= 0    
+	//no int i | i <= 0     
 	//root.^(left+right).contains(root)
 	//!root.children().contains(root)
 	//no Node n | n.^(left+right).contains(n)
+	no Node n | n.children().contains(n)
 	//all Node n | all Node x | x.children().contains(n)
-	//all int i | i < 0
+	//all int i | i > this.x
 	//all int i | all int j | j < i
 	//lone Node p | p.parent == p
-	all Node n | lone Node p | n.parent == p
+	//all Node n | lone Node p | n.parent == p
+	//all Node n : this.root.children() | one Node p | n.parent == p
 	}
 
     public void m1()
@@ -61,13 +63,14 @@ public class Test ensures (x > 0) {
 	Node n1 = new Node(1, 1, n2, n3);
 	Test t1 = new Test(13,10,n1);
 	System.out.println(t1);
+	System.out.println(t1.repOk());
 	t1.m1();
 	System.out.println(t1);
 	System.out.println(n1.children());
 	System.out.println(t1.root.children());
 	System.out.println(t1.nodes());
 	//System.out.println(t1.nodes_log());
-	//System.out.println(t1.repOk_log());
+	System.out.println(t1.repOk_log());
     }
 
 }

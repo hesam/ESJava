@@ -19,18 +19,21 @@ public class ESJLogPredMethodDecl_c extends ESJMethodDecl_c
     implements ESJLogPredMethodDecl {
 
     protected boolean isFallback;
+    protected boolean isLogVar;
     protected List quantVarD;
     protected List quantVarD2;
 
     public ESJLogPredMethodDecl_c(Position pos, FlagAnnotations flags,
 				  TypeNode returnType, String name,
 				  List formals, List throwTypes, Block body, 
-				  List paramTypes, List quantVarD, List quantVarD2, boolean isPredicate, boolean isFallback) {
+				  List paramTypes, List quantVarD, List quantVarD2, 
+				  boolean isPredicate, boolean isFallback, boolean isLogVar) {
 
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, isPredicate);
 	this.quantVarD = quantVarD;
 	this.quantVarD2 = quantVarD2;
 	this.isFallback = isFallback;
+	this.isLogVar = isLogVar;
     }
 
     public List quantVarD() {
@@ -44,6 +47,11 @@ public class ESJLogPredMethodDecl_c extends ESJMethodDecl_c
     public boolean isFallback() {
 	return isFallback;
     }
+
+    public boolean isLogVar() {
+	return isLogVar;
+    }
+	
     /*
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
 				       List throwTypes, Block body,  

@@ -19,8 +19,8 @@ public class LogSet extends LogObject {
 	return arithOp("-", ESJInteger.atom_log(listSize-1));
     }
 
-    public LogAtom get_log(LogInt index) {
-	return new LogAtom(LogObject.join_log(index.intValue_log().string(),string));
+    public LogIntAtom get_log(LogInt index) {
+	return new LogIntAtom(LogObject.join_log(index.intValue_log().string(),string));
     }                              
 
     public LogSet arithOp(String o, LogSet o2) {

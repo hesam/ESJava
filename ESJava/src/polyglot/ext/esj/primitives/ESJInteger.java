@@ -725,9 +725,19 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   }
 
   // ESJInteger class init
+
+  public LogVar var_log;
+
   static {
       setBounds(0,30); // FIXME
   }
+
+  public ESJInteger(LogVar dontcare) {
+      super();
+      this.value = 0;
+      this.var_log =
+          dontcare;
+    }
 
   public static int BoundsSize() {
       return  MAX_VALUE - MIN_VALUE + 1;

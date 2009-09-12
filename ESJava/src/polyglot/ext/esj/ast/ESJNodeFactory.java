@@ -43,7 +43,8 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					      TypeNode returnType, String name,
 					      List formals, List throwTypes, Block body, 
 					      List paramTypes, List quantVarD, List quantVarD2, 
-					      boolean isPredicate, boolean isFallBack); 
+					      boolean isPredicate, boolean isFallBack, 
+					      boolean isLogVar); 
     
     ESJEnsuredMethodDecl ESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,

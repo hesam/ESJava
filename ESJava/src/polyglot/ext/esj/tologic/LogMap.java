@@ -68,7 +68,7 @@ public class LogMap {
     }
 
     public static void newAtoms(Class c) { // FIXME?
-	System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")");
+	System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")" + "\n" + ClassConstrs);
 	ArrayList classAs = (ArrayList) ClassAtoms.get(c);
 	try {
 	    Object [] args = new Object[1];
@@ -140,7 +140,7 @@ public class LogMap {
 	    if (!ClassAtoms.containsKey(c)) {
 		ClassAtoms.put(c, new ArrayList());
 		Class[] parameterTypes = new Class[1];
-		parameterTypes[0] = LogMap.class;
+		parameterTypes[0] = LogVar.class;
 		try {
 		    ClassConstrs.put(c, c.getConstructor(parameterTypes));
 		} catch (NoSuchMethodException e) { System.out.println(e); }
@@ -164,14 +164,24 @@ public class LogMap {
     }
 
     // fixme? --> diff name or instanceof...
-    public static LogAtom instVar_log(LogVar var, String instVar) {
+    public static LogIntAtom intInstVar_log(LogVar var, String instVar) {
 	System.out.println("instVar_log LogVar");
-	return new LogAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
+	return new LogIntAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
     }
 
-    public static LogAtom instVar_log(Object obj, String instVar) {
+    public static LogIntAtom intInstVar_log(Object obj, String instVar) {
 	System.out.println("instVar_log Object");
-	return new LogAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
+	return new LogIntAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
+    }
+
+    public static LogObjAtom objInstVar_log(LogVar var, String instVar) {
+	System.out.println("instVar_log LogVar");
+	return new LogObjAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
+    }
+
+    public static LogObjAtom objInstVar_log(Object obj, String instVar) {
+	System.out.println("instVar_log Object");
+	return new LogObjAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
     }
 
     // fixme? --> diff name or instanceof...
