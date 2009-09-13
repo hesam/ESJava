@@ -36,6 +36,7 @@ public class Test ensures (x > 0) {
 	//root.^(left+right).contains(root)
 	//!root.children().contains(root)
 	//no Node n | n.^(left+right).contains(n)
+	root == null ||
 	no Node n | n.children().contains(n)
 	//all Node n | all Node x | x.children().contains(n)
 	//all int i | i > this.x

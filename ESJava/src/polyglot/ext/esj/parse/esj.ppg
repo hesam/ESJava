@@ -132,7 +132,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 					 methodDecl.name() + "_log", 
 					 methodDecl.formals(), 
 					 new TypedList(new LinkedList(), TypeNode.class, false), 
-					 this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(),quantVarD,quantVarN), 
+					 null, 
 					 methodDecl.throwTypes(), quantVarD, quantVarD2, methodDecl.isPredicate(), false, false); 
 	     ESJLogPredMethodDecl extraLogMtd2 =  //FIXME
 		 nf.ESJLogPredMethodDecl(null, fl,
@@ -140,8 +140,11 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 					 methodDecl.name() + "_log2", 
 					 methodDecl.formals(), 
 					 new TypedList(new LinkedList(), TypeNode.class, false), 
-					 this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(),quantVarD,quantVarN), 
-					 methodDecl.throwTypes(), quantVarD, quantVarD2, methodDecl.isPredicate(), false, true); 
+					 null, 
+					 methodDecl.throwTypes(), quantVarD, quantVarD2, methodDecl.isPredicate(), false, true);
+	     Block logPredBlock = this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(), quantVarD, quantVarN, extraLogMtd);
+	     extraLogMtd = (ESJLogPredMethodDecl) extraLogMtd.body(logPredBlock);
+	     extraLogMtd2 = (ESJLogPredMethodDecl) extraLogMtd2.body(logPredBlock);
              extraMtds.add(extraLogMtd);
              extraMtds.add(extraLogMtd2);
 	     currClassLogPredMtdDecls.add(extraLogMtd);
@@ -226,18 +229,18 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 }
 
 	    //FIXME
-     public Block makeESJLogPredBlock(Expr expr, List quantVarD, String quantVarN) throws SemanticException {
+     public Block makeESJLogPredBlock(Expr expr, List quantVarD, String quantVarN, ESJLogPredMethodDecl m) throws SemanticException {
 	    FlagAnnotations fl = emptyFlags; 
-	    Expr newExpr = makeESJLogPredBlockHelper(expr, new TypedList(new LinkedList(), LocalDecl.class, false));
+	    Expr newExpr = makeESJLogPredBlockHelper(expr, new TypedList(new LinkedList(), LocalDecl.class, false), m);
 	    List l = new TypedList(new LinkedList(), Stmt.class, false);
 	    l.add(nf.Return(null, newExpr));
 	    return nf.Block(null, l); 
      }    
 
-     public Expr makeESJLogPredBlockHelper(Expr e, List quantVarD) {
+     public Expr makeESJLogPredBlockHelper(Expr e, List quantVarD, ESJLogPredMethodDecl m) {
      	    if (e instanceof FormulaBinary) {
 	       	  Binary b = (Binary) e;
-	       	  return nf.FormulaBinary(null, b.left(), b.operator(), b.right());
+	       	  return nf.FormulaBinary(null,  makeESJLogPredBlockHelper(b.left(),quantVarD, m), b.operator(), makeESJLogPredBlockHelper(b.right(), quantVarD, m));
 	    } else if (e instanceof CmpBinary) {
 	       	  Binary b = (Binary) e;
 	       	  return nf.CmpBinary(null, b.left(), b.operator(), b.right());
@@ -255,7 +258,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 			  quantVarD2.add(dn);
 		      }
 		  }
-		  return nf.ESJLogQuantifyExpr(null, q.quantKind(), q.quantVarN(), q.quantVarD(), quantVarD2, q.quantListExpr(), makeESJLogPredBlockHelper(q.quantClauseExpr().expr(), quantVarD));
+		  return nf.ESJLogQuantifyExpr(null, q.quantKind(), q.quantVarN(), q.quantVarD(), quantVarD2, q.quantListExpr(), makeESJLogPredBlockHelper(q.quantClauseExpr().expr(), quantVarD, m), m);
 	    } else {
 	      	   return e;
 	    }
@@ -665,7 +668,7 @@ ensured_class_declaration ::=
 	      extraMtdBody.add(parser.nf.Return(null,z == null ? parser.nf.BooleanLit(null, true) : z));
 	      ESJMethodDecl invariantMtdDecl = parser.nf.ESJMethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "verifyInvariants", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, extraMtdBody), new TypedList(new LinkedList(), TypeNode.class, false), true);
 	      TypedList l = new TypedList(new LinkedList(), ClassMember.class, false);
-
+	      
 	      if (!parser.currClassName.equals("MyList")) { // HACK FIXME
 	          //f.add(parser.nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJClass"));
 		  f.add(parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.primitives.ESJClass")));
@@ -685,6 +688,7 @@ ensured_class_declaration ::=
 		  // define a isRelationized mtd
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Int()), 0),"relationizerStep", parser.nf.IntLit(null, IntLit.INT, 0)));
 		  l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "isRelationized", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "relationizerStep"), Binary.EQ, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "relationizerStep", parser.emptyArgs)))), new TypedList(new LinkedList(), TypeNode.class, false)));
+
  	      	 // define a static list to keep instance list
 	      	 List gt = new TypedList(new LinkedList(), TypeNode.class, false);
 	      	 AmbTypeNode cl = parser.nf.AmbTypeNode(null, c.getIdentifier());
@@ -755,6 +759,14 @@ ensured_class_declaration ::=
 	     	 l.add(setOldMtdDecl);
 	      }
 	      l.add(invariantMtdDecl);
+
+	      // define an initEnsuredMethod mtd
+	      List initEM = new TypedList(new LinkedList(), Stmt.class, false);
+	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "initRelationize", new TypedList(new LinkedList(), Expr.class, false))));
+	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "relationize", new TypedList(new LinkedList(), Expr.class, false))));
+	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "setOld", new TypedList(new LinkedList(), Expr.class, false))));
+	      l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "initEnsuredMethod", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, initEM), new TypedList(new LinkedList(), TypeNode.class, false)));
+
 	      l.addAll(parser.defineESJExtraMethods(invariantMtdDecl));	
 	      l.addAll(y);
 

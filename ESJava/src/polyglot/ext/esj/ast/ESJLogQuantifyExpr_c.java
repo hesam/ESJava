@@ -19,15 +19,16 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
     protected List quantVarD, quantVarD2;
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
-    protected JL5MethodDecl parentMethod;
+    protected ESJLogPredMethodDecl parentMethod;
 
-    public ESJLogQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr) {
+    public ESJLogQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr, ESJLogPredMethodDecl parentMethod) {
 	super(pos);
 	this.id = (quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
 	this.quantVarD2 = quantVarD2;
+	this.parentMethod = parentMethod;
 	this.quantListExpr = quantListExpr;
 	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantVarD, quantClauseExpr);
     }
@@ -60,11 +61,11 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 	return quantVarD2;
     }
 
-    public JL5MethodDecl parentMethod() {
+    public ESJLogPredMethodDecl parentMethod() {
 	return parentMethod;
     }
 
-    public void parentMethod(JL5MethodDecl m) {
+    public void parentMethod(ESJLogPredMethodDecl m) {
 	this.parentMethod = m;
     }
 
@@ -118,8 +119,13 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 		newQuantVarD2.add((d.type() instanceof AmbTypeNode) ? 
 				  d.type(nf.CanonicalTypeNode(null,ts.typeForName(((AmbTypeNode) d.type()).name()))) :
 				  d);
+	    else
+		newQuantVarD2.add(d);  
 	}
 	n.quantVarD2(newQuantVarD2);
+	//System.out.println("now adding " + n.parentMethod().name() + " -> " + n.quantVarD() + " " + n.quantVarD2());
+	//n.parentMethod().addQuantVarD(n.quantVarD());
+	//n.parentMethod().addQuantVarD2(n.quantVarD2());
 	return n;
 
     } 

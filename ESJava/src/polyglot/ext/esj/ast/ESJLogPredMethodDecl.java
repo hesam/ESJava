@@ -13,4 +13,10 @@ public interface ESJLogPredMethodDecl extends ESJMethodDecl {
 
     public boolean isFallback();
     public boolean isLogVar();
+    public List quantVarD();
+    public List quantVarD2();
+    public void quantVarD(List quantVarD);
+    public void quantVarD2(List quantVarD2);
+    public void addQuantVarD(List quantVarD);
+    public void addQuantVarD2(List quantVarD2);
 }

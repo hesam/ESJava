@@ -52,6 +52,22 @@ public class ESJLogPredMethodDecl_c extends ESJMethodDecl_c
 	return isLogVar;
     }
 	
+    public void quantVarD(List quantVarD) {
+	this.quantVarD = quantVarD;
+    }
+
+    public void quantVarD2(List quantVarD2) {
+	this.quantVarD2 = quantVarD2;
+    }
+
+    public void addQuantVarD(List quantVarD) {
+	quantVarD.addAll(quantVarD);
+    }
+
+    public void addQuantVarD2(List quantVarD2) {
+	quantVarD2.addAll(quantVarD2);
+    }
+
     /*
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
 				       List throwTypes, Block body,  
@@ -69,21 +85,51 @@ public class ESJLogPredMethodDecl_c extends ESJMethodDecl_c
 	}
 
 	return this;
-    }*/
+	}
 
-    /*
     // Visit the children of the method. 
     public Node visitChildren(NodeVisitor v) {
-	//TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
-	//List formals = visitList(this.formals, v);
-	//List quantVarD = visitList(this.quantVarD, v);
-	List quantVarD2 = visitList(this.quantVarD2, v);
-	//List throwTypes = visitList(this.throwTypes, v);
-	//Block body = (Block) visitChild(this.body, v);
-	//return reconstruct(returnType, formals, throwTypes, body, quantVarD);
-	System.out.println("---> " + quantVarD2);
-	return super.visitChildren(v);
+	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
+	List formals = visitList(this.formals, v);
+	List quantVarD = visitList(this.quantVarD, v);
+	//List quantVarD2 = visitList(this.quantVarD2, v);
+	List throwTypes = visitList(this.throwTypes, v);
+	Block body = (Block) visitChild(this.body, v);
+	return reconstruct(returnType, formals, throwTypes, body, quantVarD);
+	//return super.visitChildren(v);
 	}*/
 
+    /*
+    public Node typeCheck(TypeChecker tc) throws SemanticException {
+	    // findout what type is quantListExpr list of (can be a subtype a generic...)
+	    TypeSystem ts = tc.typeSystem();
+	    NodeFactory nf = tc.nodeFactory();
+	    ESJLogPredMethodDecl n = (ESJLogPredMethodDecl) super.typeCheck(tc);
+	     //n = (ESJLogQuantifyExpr)n.type(ts.Boolean()); 
+	    System.out.println("now: " + quantVarD + " " + quantVarD2);
+	    List newQuantVarD = new TypedList(new LinkedList(), LocalDecl.class, false);	
+
+	    for (LocalDecl d : (List<LocalDecl>) quantVarD) {
+		if (d.type() instanceof AmbTypeNode)
+		    newQuantVarD.add((d.type() instanceof AmbTypeNode) ? 
+				     d.type(nf.CanonicalTypeNode(null,ts.typeForName(((AmbTypeNode) d.type()).name()))) :
+				     d);
+		else 
+		    newQuantVarD.add(d);
+	    }
+	    n.quantVarD(newQuantVarD);
+
+	    return n;
+    }
+
+    public Context enterScope(Node child, Context c) {
+	if (child instanceof ESJLogQuantifyExpr) {
+	    for (LocalDecl l : (List<LocalDecl>) quantVarD)
+		c.addVariable(c.typeSystem().localInstance(null, l.flags(),l.declType(), l.name()));
+	}
+
+	return super.enterScope(child, c);
+	}
+    */
 
 }

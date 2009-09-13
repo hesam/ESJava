@@ -103,6 +103,7 @@ public class LogMap {
 
     public static int get1(Object key) {
 	System.out.println("get1: " + key);
+	System.out.println(" --> " + JtoLog.get(key));
 	System.out.println(JtoLog);
 	return (Integer) JtoLog.get(key);
     }
@@ -182,6 +183,10 @@ public class LogMap {
     public static LogObjAtom objInstVar_log(Object obj, String instVar) {
 	System.out.println("instVar_log Object");
 	return new LogObjAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
+    }
+
+    public static LogObjAtom null_log() {
+	return new LogObjAtom(get1_log(null));
     }
 
     // fixme? --> diff name or instanceof...
