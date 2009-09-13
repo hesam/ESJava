@@ -164,6 +164,9 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
      	    if (n instanceof Binary) {
 	          getPredExprsWithinBodyHelper(((Binary)n).left(),predSubExprs);
 	          getPredExprsWithinBodyHelper(((Binary)n).right(),predSubExprs);
+	    } else if (n instanceof Conditional) {
+		 getPredExprsWithinBodyHelper(((Conditional)n).consequent(),predSubExprs);
+		 getPredExprsWithinBodyHelper(((Conditional)n).alternative(),predSubExprs);
 	    } else if (n instanceof ESJQuantifyExpr) {
 	          predSubExprs.add(n);
 		  getPredExprsWithinBodyHelper(((ESJQuantifyExpr)n).quantClauseExpr().expr(),predSubExprs);
@@ -247,6 +250,9 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    } else if (e instanceof Binary) {
 	       	  Binary b = (Binary) e;
 	       	  return nf.Binary(null, b.left(), b.operator(), b.right());
+	    } else if (e instanceof Conditional) {
+		  Conditional c = (Conditional) e;
+		  return nf.JL5Conditional(null, c.cond(), makeESJLogPredBlockHelper(c.consequent(),quantVarD, m), makeESJLogPredBlockHelper(c.alternative(),quantVarD, m));
 	    } else if (e instanceof ESJQuantifyExpr) {
 	       	  ESJQuantifyExpr q = (ESJQuantifyExpr) e;
 		  List quantVarD2 = new TypedList(new LinkedList(), JL5LocalDecl.class, false);
@@ -302,7 +308,7 @@ non terminal FormulaBinary.Operator quant_kind;
 non terminal FormulaBinary.Operator closure_kind;
 non terminal List fields_closure, identifiers_union;
 non terminal ESJEnsuredClassDecl ensured_class_declaration;
-non terminal Expr predicate_expr;
+non terminal Expr predicate_expr, conditional_predicate_expr;
 non terminal Expr or_predicate_expr;
 non terminal Expr orPredExpr_opt;
 non terminal Expr and_predicate_expr;
@@ -448,7 +454,7 @@ quant_kind ::=
 predicate_expr ::=
 	or_predicate_expr:a
 	    {: RESULT = a; :}   
-    ;
+            ;
 
 or_predicate_expr ::=
 	and_predicate_expr:a orPredExpr_opt:b
@@ -456,15 +462,16 @@ or_predicate_expr ::=
 		  RESULT = a;
 	       else
 		  RESULT = parser.nf.FormulaBinary(parser.pos(a), a,
-		                            Binary.COND_OR, b); :}
-    ;
+		                            Binary.COND_OR, b); 
+	    :}
+            ;
 
 orPredExpr_opt ::=
     	    {: RESULT = null; :}
     |
         OROR or_predicate_expr:a
 	    {: RESULT = a; :}
-    ;    
+            ;    
 
 and_predicate_expr ::=
 	equality_predicate_expr:a andPredExpr_opt:b
@@ -472,32 +479,43 @@ and_predicate_expr ::=
 		  RESULT = a;
 	       else
 		  RESULT = parser.nf.FormulaBinary(parser.pos(a), a,
-				            Binary.COND_AND, b); :}
-    ;
+				            Binary.COND_AND, b); 
+	    :}
+            ;
 
 andPredExpr_opt ::=
     	    {: RESULT = null; :}
     |
         ANDAND and_predicate_expr:a
 	    {: RESULT = a; :}
-    ;    
+            ;    
 
 
 equality_predicate_expr ::=
-        quantify_expression:a
+        conditional_predicate_expr:a
+	    {: RESULT = a; :}
+    |   quantify_expression:a
 	    {: RESULT = a; :}
     |   relational_predicate_expr:a
             {: RESULT = a; :}
     |   relational_predicate_expr:a  equality_predicate_op:b
             equality_predicate_expr:c
 	        {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, b, c); :} 
-    ;
+            ;
 
 equality_predicate_op ::=
-        EQEQ {: RESULT = Binary.EQ; :}
-   |    NOTEQ {: RESULT = Binary.NE; :}
-   ;
+        EQEQ 
+            {: RESULT = Binary.EQ; :}
+    |   NOTEQ 
+            {: RESULT = Binary.NE; :}
+            ;
 
+conditional_predicate_expr ::=
+        relational_predicate_expr:a QUESTION equality_predicate_expr:b COLON equality_predicate_expr:c 
+	     {:
+	        RESULT = parser.nf.JL5Conditional(parser.pos(a, c), a, b, c); 
+	     :}
+             ; 
 
 relational_predicate_expr ::=
 	additive_predicate_expr:a

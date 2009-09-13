@@ -223,6 +223,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, u.operator().toString()));
 	    return nf.Call(null,(Expr) toLogicExpr(u.expr()), "unaryOp", args);
+	} else if (r instanceof JL5Conditional) {
+	    JL5Conditional c = (JL5Conditional) r;
+	    return nf.JL5Conditional(null, c.cond(), (Expr) toLogicExpr(c.consequent()), (Expr) toLogicExpr(c.alternative()));
 	} else if (r instanceof ESJLogQuantifyExpr) {
 	    ESJLogQuantifyExpr q = (ESJLogQuantifyExpr) r;
 	    boolean quantKindIsaCount = q.quantKind() == FormulaBinary.ONE ||
@@ -387,6 +390,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    FormulaBinary b = (FormulaBinary) e;
 	    getQuantVarDsHelper(b.left(), quantVarD);
 	    getQuantVarDsHelper(b.right(), quantVarD);
+	} else if (e instanceof Conditional) {
+	    Conditional c = (Conditional) e;
+	    getQuantVarDsHelper(c.consequent(), quantVarD);
+	    getQuantVarDsHelper(c.alternative(), quantVarD);
 	} else if (e instanceof ESJLogQuantifyExpr) {
 	    ESJLogQuantifyExpr e2 = (ESJLogQuantifyExpr) e;
 	    quantVarD.addAll(e2.quantVarD());
