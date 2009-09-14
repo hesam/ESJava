@@ -30,7 +30,7 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 	this.quantVarD2 = quantVarD2;
 	this.parentMethod = parentMethod;
 	this.quantListExpr = quantListExpr;
-	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantVarD, quantClauseExpr);
+	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantClauseExpr);
     }
 
     public Expr quantListExpr() {

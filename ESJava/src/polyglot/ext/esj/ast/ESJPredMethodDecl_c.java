@@ -106,7 +106,6 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	List formals = visitList(this.formals, v);
 	List quantVarD = visitList(this.quantVarD, v);
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
-
 	ESJQuantifyClauseExpr quantClauseExpr = (ESJQuantifyClauseExpr) visitChild(this.quantClauseExpr, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	Block body = (Block) visitChild(this.body, v);
@@ -135,10 +134,11 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 
 
     public Context enterScope(Node child, Context c) {
-	if (child instanceof ESJQuantifyClauseExpr) {
+	if (child instanceof Expr) {
 	    for (Formal f : (List<Formal>) formals) {
 		c.addVariable(c.typeSystem().localInstance(null, flags(),f.declType(), f.name()));
 	    }
+	    
 	}
 
 	return super.enterScope(child, c);

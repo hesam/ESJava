@@ -162,8 +162,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 		    TypeNode tn = l.type();
 		    quantVars.add(l.name());
 		    List args = new TypedList(new LinkedList(), Expr.class, false);
-		    //args.add(nf.StringLit(null, LogObject.genVar_log())); 
-		    //args.add(nf.ClassLit(null, tn));
 		    List args2 = new TypedList(new LinkedList(), Expr.class, false);
 		    args2.add(nf.StringLit(null, LogObject.genVar_log())); 
 		    args2.add(nf.ClassLit(null, tn));
@@ -184,7 +182,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    if (!methodDecl.isFallback()) {
 		methodDecl = (ESJLogPredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName(methodDecl.isPredicate() ? "polyglot.ext.esj.tologic.LogFormula" : "polyglot.ext.esj.tologic.LogSet")));
 	    }
-	    //System.out.println(methodDecl.name());		
 	    return methodDecl.formals(formals).body(nf.Block(null,inits));
 	    				    
 	} else if (r instanceof Block) {
@@ -237,7 +234,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 		(Expr) toLogicExpr(q.quantListExpr());
 	    args.add(nf.BooleanLit(null, quantKindIsaCount));
 	    args.add(nf.StringLit(null, q.quantKind().toString()));
-	    //args.add(nf.Local(null, q.quantVarN()));
 	    args.add(nf.Field(null, nf.Local(null, q.quantVarN()), "var_log"));
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
 	    return nf.Call(null, qListExpr, "quantifyOp", args);
@@ -266,7 +262,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 		return nf.Call(null, c.target(), c.name() + "_log2" , args);
 	    } else {
 		return nf.Call(null, 
-			       (c.target() == null || c.target() instanceof Field || c.target() instanceof Special) ?
+			       (c.target() == null || 
+				//c.target() instanceof Field ||
+				c.target() instanceof Special) ?
 			       c.target() : 
 			       (Receiver) toLogicExpr(c.target()), 
 			       c.name() + "_log" , args);

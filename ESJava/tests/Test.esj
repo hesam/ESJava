@@ -36,13 +36,17 @@ public class Test ensures (x > 0) {
 	//root.^(left+right).contains(root)
 	//!root.children().contains(root)
 	//no Node n | n.^(left+right).contains(n)
-	(root == null) ? true : no Node n | n.children().contains(n)
+	//(root == null) ? true : no Node n | n.children().contains(n)
 	//all Node n | all Node x | x.children().contains(n)
 	//all int i | i > this.x
 	//all int i | all int j | j < i
+	//all int i | (i == 0 || all int j | j < i)
 	//lone Node p | p.parent == p
 	//all Node n | lone Node p | n.parent == p
-	//all Node n : this.root.children() | one Node p | n.parent == p
+	all Node n | n.left.children().size() > 0
+	//all Node n : root.children() | one Node p | n.parent == p
+	//all Node n | one Node p : n.children() | n.parent == p
+	//all Node n | (n.left == null || all Node c : n.left.children() | c.value < n.value)
 	}
 
     public void m1()

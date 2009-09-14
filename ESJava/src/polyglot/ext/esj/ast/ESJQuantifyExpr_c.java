@@ -29,7 +29,7 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	this.quantVarD = quantVarD;
 	this.quantVarD2 = quantVarD2;
 	this.quantListExpr = quantListExpr;
-	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantVarD, quantClauseExpr);
+	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantClauseExpr);
     }
 
     public Expr quantListExpr() {
@@ -110,7 +110,6 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	n = (ESJQuantifyExpr)n.type(tc.typeSystem().Boolean()); //FIXME
 	return n;
     } 
-
 
 
 }

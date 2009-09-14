@@ -80,7 +80,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
               mStmts.add(nf.JL5Return(null, nf.BooleanLit(null,true)));
               logmStmts.add(nf.JL5Return(null, nf.NullLit(null)));
 
-	      for (ESJQuantifyExpr a : (List<ESJQuantifyExpr>)predExprs) { 
+	      for (ESJQuantifyExpr a : (List<ESJQuantifyExpr>)predExprs) {
 	          a.parentMethod(methodDecl);
     	      	  String quantMtdId = a.id();
 		  FormulaBinary.Operator quantKind = a.quantKind();
@@ -226,8 +226,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    List quantVarD2 = new TypedList(new LinkedList(), LocalDecl.class, false);
 	    JL5LocalDecl ld = nf.JL5LocalDecl(null, fl, tn, quantVarN, null);
 	    quantVarD.add(ld);
-	    if (quantClauseExpr instanceof ESJQuantifyExpr)
-		((ESJQuantifyExpr) quantClauseExpr).quantVarD2(quantVarD);
+	    propogateQuantVarDs(quantClauseExpr, quantVarD); //FIXME
 	    return this.nf.ESJQuantifyExpr(pos,quantKind,quantVarN, quantVarD, quantVarD2, quantListExpr,quantClauseExpr);
 }
 
@@ -256,18 +255,45 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    } else if (e instanceof ESJQuantifyExpr) {
 	       	  ESJQuantifyExpr q = (ESJQuantifyExpr) e;
 		  List quantVarD2 = new TypedList(new LinkedList(), JL5LocalDecl.class, false);
-		  if (q.quantClauseExpr().expr() instanceof ESJQuantifyExpr) {
-		      for (JL5LocalDecl d : (List<JL5LocalDecl>) ((ESJQuantifyExpr) q.quantClauseExpr().expr()).quantVarD()) {
-			  JL5LocalDecl dn = nf.JL5LocalDecl(null, emptyFlags, d.type(), d.name(), null);
-			  dn = (JL5LocalDecl) dn.localInstance(ts.localInstance(null, Flags.NONE,
-								 d.type().type(), d.name()));
-			  quantVarD2.add(dn);
-		      }
-		  }
+		  getQuantVarDs(q.quantClauseExpr().expr(), quantVarD2);		  
 		  return nf.ESJLogQuantifyExpr(null, q.quantKind(), q.quantVarN(), q.quantVarD(), quantVarD2, q.quantListExpr(), makeESJLogPredBlockHelper(q.quantClauseExpr().expr(), quantVarD, m), m);
 	    } else {
 	      	   return e;
 	    }
+     }
+
+     // FIXME
+     void propogateQuantVarDs(Expr quantClauseExpr, List quantVarD) {	       
+	 if (quantClauseExpr instanceof FormulaBinary) {
+	     FormulaBinary b = (FormulaBinary) quantClauseExpr;
+	     propogateQuantVarDs(b.left(), quantVarD);
+	     propogateQuantVarDs(b.right(), quantVarD);
+	 } if (quantClauseExpr instanceof Conditional) {
+	     Conditional c = (Conditional) quantClauseExpr;
+	     propogateQuantVarDs(c.consequent(), quantVarD);
+	     propogateQuantVarDs(c.alternative(), quantVarD);
+	 } else if (quantClauseExpr instanceof ESJQuantifyExpr)
+	     ((ESJQuantifyExpr) quantClauseExpr).quantVarD2(quantVarD);
+     }
+
+     // FIXME
+     void getQuantVarDs(Expr e, List quantVarD2) {
+	 if (e instanceof FormulaBinary) {
+	     FormulaBinary b = (FormulaBinary) e;
+	     getQuantVarDs(b.left(), quantVarD2);
+	     getQuantVarDs(b.right(), quantVarD2);		      
+	 } else if (e instanceof Conditional) {
+	     Conditional c = (Conditional) e;
+	     getQuantVarDs(c.consequent(), quantVarD2);
+	     getQuantVarDs(c.alternative(), quantVarD2);		      
+	 } else if (e instanceof ESJQuantifyExpr) {
+	     for (JL5LocalDecl d : (List<JL5LocalDecl>) ((ESJQuantifyExpr) e).quantVarD()) {
+		 JL5LocalDecl dn = nf.JL5LocalDecl(null, emptyFlags, d.type(), d.name(), null);
+		 dn = (JL5LocalDecl) dn.localInstance(ts.localInstance(null, Flags.NONE,
+								       d.type().type(), d.name()));
+		 quantVarD2.add(dn);
+	     }
+	 }
      }
 
      FlagAnnotations makeFlagAnnotations() {
