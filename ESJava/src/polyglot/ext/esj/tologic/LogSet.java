@@ -15,6 +15,10 @@ public class LogSet extends LogObject {
 	super(string, listSize, isaListInstVar);
     }
 
+    public boolean isEmpty() {
+	return string.equals("u0");
+    }
+
     public LogSet allButLast_log() {
 	return arithOp("-", ESJInteger.atom_log(listSize-1));
     }
@@ -28,9 +32,13 @@ public class LogSet extends LogObject {
     }
 
     public LogFormula quantifyOp(boolean quantKindIsaOneOrLone, String quantKind, LogObject quantVarN, LogFormula quantClauseExpr) {
-	String p =  " [" + quantVarN + ": one " + string + "] | " + quantClauseExpr.string();
-	String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
-	return new LogFormula("(" + quantKind + q + ")");
+	if (isEmpty())
+	    return new LogFormula("true");
+	else {
+	    String p =  " [" + quantVarN + ": one " + string + "] | " + quantClauseExpr.string();
+	    String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
+	    return new LogFormula("(" + quantKind + q + ")");
+	}
     }
 
     public LogInt count_log(LogObject itm) {
@@ -43,6 +51,10 @@ public class LogSet extends LogObject {
 
     public LogFormula contains_log(LogObject itm) {
 	return new LogFormula("some (" + string + " & " + itm.string() + ")");
+    }
+
+    public LogFormula contains_log(ESJObject itm) {
+	return new LogFormula("some (" + string + " & " + itm.var_log().string() + ")");
     }
 
 }

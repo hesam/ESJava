@@ -732,7 +732,8 @@ ensured_class_declaration ::=
 		  List<Flags> fs3 = new ArrayList<Flags>();
 		  fs3.add(Flags.PUBLIC);
 		  FlagAnnotations fl = parser.makeFlagAnnotations(fs3);
-		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), 0), "var_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Field(null, parser.nf.This(null), "var_log"))), new TypedList(new LinkedList(), TypeNode.class, false)));
+		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), 0), "var_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Field(null, parser.nf.This(null), "var_log"))), new TypedList(new LinkedList(), TypeNode.class, false))); 
+		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isQuantifyVar", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), Binary.NE, parser.nf.NullLit(null)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 
 		  // define a isRelationized mtd
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Int()), 0),"relationizerStep", parser.nf.IntLit(null, IntLit.INT, 0)));
@@ -902,7 +903,7 @@ override field_declaration ::=
 		     //Expr instVarGetCond = parser.nf.JL5Cast(null, parser.nf.CanonicalTypeNode(null, parser.ts.Object()), parser.nf.JL5Conditional(null, parser.nf.Binary(null, logVExpr, Binary.EQ, parser.nf.NullLit(null)), parser.nf.JL5Cast(null, parser.nf.CanonicalTypeNode(null, parser.ts.Object()), parser.nf.This(null)), parser.nf.JL5Cast(null, parser.nf.CanonicalTypeNode(null, parser.ts.Object()), logVExpr)));
 		     args3p.add(parser.nf.This(null));
 		     args3p.add(parser.nf.StringLit(null, d.name));
-		     args2p.add(parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")),isReferenceType ? "objInstVarStr_log" : "intInstVarStr_log", args3p));
+		     args2p.add(parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")),isReferenceType ? "objInstVarStr_log" : "objInstVarStr_log" /*"intInstVarStr_log"*/, args3p));
 		     args2p.add(parser.nf.ClassLit(null, b2));
 		     instVarGetArgs.add(parser.nf.JL5New(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2p, null, new TypedList(new LinkedList(), TypeNode.class, false)));
 		     List instVarGetBody = new TypedList(new LinkedList(), Stmt.class, false);
@@ -913,7 +914,7 @@ override field_declaration ::=
 		     l.add(parser.nf.JL5MethodDecl(null, a, b2, d.name+"_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, instVarGetBody), new TypedList(new LinkedList(), TypeNode.class, false)));
 
 		     args3p.set(1, parser.nf.StringLit(null, d.name+"_old"));
-		     args2p.set(0, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")),isReferenceType ? "objInstVarStr_log" : "intInstVarStr_log", args3p));
+		     args2p.set(0, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")),isReferenceType ? "objInstVarStr_log" : "objInstVarStr_log" /*"intInstVarStr_log"*/, args3p));
 		     instVarGetArgs.set(0, parser.nf.JL5New(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2p, null, new TypedList(new LinkedList(), TypeNode.class, false)));
 		     instVarGetBody.set(0,  parser.nf.JL5Return(null, parser.nf.JL5New(null, b2, instVarGetArgs, null, new TypedList(new LinkedList(), TypeNode.class, false))));
 		     l.add(parser.nf.JL5MethodDecl(null, a, b2, d.name+"_old_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, instVarGetBody), new TypedList(new LinkedList(), TypeNode.class, false)));

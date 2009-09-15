@@ -236,7 +236,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    args.add(nf.StringLit(null, q.quantKind().toString()));
 	    args.add(nf.Field(null, nf.Local(null, q.quantVarN()), "var_log"));
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
-	    return nf.Call(null, qListExpr, "quantifyOp", args);
+	    return nf.JL5Conditional(null, 
+				     nf.Call(null, qListExpr, "isEmpty", new TypedList(new LinkedList(), Expr.class, false)), 
+				     (Expr) toLogicExpr(nf.BooleanLit(null,true)), 
+				     nf.Call(null, qListExpr, "quantifyOp", args));
 	} else if (r instanceof ESJQuantifyTypeExpr) {
 	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName(((ESJQuantifyTypeExpr) r).theType())), "allInstances_log",new TypedList(new LinkedList(), Expr.class, false));
 	    

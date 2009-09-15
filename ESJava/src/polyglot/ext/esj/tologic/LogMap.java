@@ -128,8 +128,8 @@ public class LogMap {
 	if (c == int.class || c == Integer.class) 
 	    return ESJInteger.allInstances_log();
 	else {
-	    ArrayList atoms = (ArrayList) ClassAtoms.get(c);
-	    return new LogSet("u" + atoms.size() + '@' + atoms.get(0));
+	    ArrayList atoms = (ArrayList) ClassAtoms.get(c);	    
+	    return new LogSet("u" + atoms.size() + (atoms.size() > 0 ? ("@" + atoms.get(0)) : ""));
 	}
     }
 
@@ -172,10 +172,11 @@ public class LogMap {
 	return new LogIntAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
 	}*/
 
+    /*
     public static LogIntAtom intInstVar_log(Object obj, String instVar) {
 	System.out.println("instVar_log Object");
 	return new LogIntAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
-    }
+	}*/
     
     /*
     public static String intInstVarStr_log(LogVar var, String instVar) {
@@ -183,10 +184,11 @@ public class LogMap {
 	return "(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")";
 	}*/
 
+    /*
     public static String intInstVarStr_log(Object obj, String instVar) {
 	System.out.println("instVarStr_log Object");
 	return "(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")";
-    }
+	}*/
 
     
     /*
@@ -206,9 +208,11 @@ public class LogMap {
 	return "(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")";
 	}*/
 
+    // FIXME
     public static String objInstVarStr_log(ESJObject obj, String instVar) {
-	System.out.println("instVarStr_log Object " + obj.var_log() == null);
-	return "(" + (obj.var_log() == null ? get1_log(obj) : obj.var_log().string()) + "." + instVarRel_log(obj, instVar).id() + ")";
+	System.out.println("instVarStr_log -> isVar: " + obj.var_log() != null);
+	//return "(" + (obj.var_log() == null ? get1_log(obj) : obj.var_log().string()) + "." + instVarRel_log(obj, instVar).id() + ")";
+	return "(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + instVarRel_log(obj, instVar).id() + ")";
     }
 
     public static LogObjAtom null_log() {
@@ -229,8 +233,9 @@ public class LogMap {
 	return new LogSet("(" + obj.string + "." + (isReflexive ? "*" : "^") + fNs + ")");
 	}*/
 
-    public static LogSet instVarClosure_log(Object obj, boolean isReflexive, String... instVars) {
-	System.out.println("instVarClosure_log Object");
+    // FIXME
+    public static LogSet instVarClosure_log(ESJObject obj, boolean isReflexive, String... instVars) {
+	System.out.println("instVarClosure_log -> isVar: " + obj.var_log() != null);
 	String fNs = instVarRel_log(obj, instVars[0]).id();
 	if (instVars.length > 1) {
 	    fNs = "(" + fNs;
@@ -238,7 +243,7 @@ public class LogMap {
 		fNs += (" + " + instVarRel_log(obj, instVars[i]).id());
 	    fNs += ")";
 	}
-	return new LogSet("(" + get1_log(obj) + "." + (isReflexive ? "*" : "^") + fNs + ")");
+	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + (isReflexive ? "*" : "^") + fNs + ")");
     }
 
 
