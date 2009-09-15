@@ -27,4 +27,8 @@ public class LogInt extends LogObject {
 	return new LogInt("(" + string + " " + o + " " + o2.sumValue_log() + ")");
     }
 
+    public LogInt arithOp(String o, ESJObject o2) {
+	return new LogInt("(" + string + " " + o + " " + o2.var_log().sumValue_log() + ")");
+    }
+
 }

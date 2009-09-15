@@ -10,7 +10,7 @@ public class Test ensures (x > 0) {
     protected int y;
     protected Node root;
 
-    public Test(int x, int y, Node root){
+    public Test(int x, int y, Node root) {
 	super();
 	this.x = x;
 	this.y = y;
@@ -31,7 +31,8 @@ public class Test ensures (x > 0) {
 	//this.y() == 2 * this.x() 
 	//this.y == 2 * this.x 
 	//this.x == 2 * this.x_old
-	//no Node n | n == n.left()
+	//root != null
+	//no Node n | n == n.left
 	//no int i | i <= 0     
 	//root.^(left+right).contains(root)
 	//!root.children().contains(root)
@@ -42,8 +43,8 @@ public class Test ensures (x > 0) {
 	//all int i | all int j | j < i
 	//all int i | (i == 0 || all int j | j < i)
 	//lone Node p | p.parent == p
-	//all Node n | lone Node p | n.parent == p
-	all Node n | n.left.children().size() > 0
+	all Node n | lone Node p | n.parent == p
+	//all Node n | n.left.children().size() > 0
 	//all Node n : root.children() | one Node p | n.parent == p
 	//all Node n | one Node p : n.children() | n.parent == p
 	//all Node n | (n.left == null || all Node c : n.left.children() | c.value < n.value)
@@ -70,9 +71,9 @@ public class Test ensures (x > 0) {
 	System.out.println(t1.repOk());
 	t1.m1();
 	System.out.println(t1);
-	System.out.println(n1.children());
-	System.out.println(t1.root.children());
-	System.out.println(t1.nodes());
+	//System.out.println(n1.children());
+	//System.out.println(t1.root.children());
+	//System.out.println(t1.nodes());
 	//System.out.println(t1.nodes_log());
 	System.out.println(t1.repOk_log());
     }

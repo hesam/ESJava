@@ -4,7 +4,7 @@ import polyglot.ext.esj.tologic.*;
 
 import java.io.CharArrayWriter;
 
-public final class ESJInteger extends Number implements Comparable<ESJInteger>, ESJClass
+public final class ESJInteger extends Number implements Comparable<ESJInteger>, ESJObject
 {
   /**
    * Compatible with JDK 1.0.2+.
@@ -727,6 +727,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   // ESJInteger class init
 
   public LogVar var_log;
+  public LogVar var_log() { return var_log; }
 
   static {
       setBounds(0,30); // FIXME
@@ -789,6 +790,23 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
   public ESJList<Integer> allInstances2() {
       return ESJInteger.allInstances();
+  }
+
+
+  public LogFormula cmpOp(String o, LogObject o2) {
+      return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
+  }
+
+  public LogFormula cmpOp(String o, ESJObject o2) {
+      return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
+  }
+
+  public LogSet arithOp(String o, LogObject o2) {
+      return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
+  }
+
+  public LogSet arithOp(String o, ESJObject o2) {
+      return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
   }
 
   public static void main(String[] args) {

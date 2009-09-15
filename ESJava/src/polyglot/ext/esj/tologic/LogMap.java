@@ -73,8 +73,8 @@ public class LogMap {
 	try {
 	    Object [] args = new Object[1];
 	    args[0] = null;
-	    System.out.println(((ESJClass) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2());
-	    for (Object obj : ((ESJClass) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2()) {
+	    System.out.println(((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2());
+	    for (Object obj : ((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2()) {
 		classAs.add(AtomCtr);
 		LogtoJ.put(AtomCtr,obj);
 		JtoLog.put(obj,AtomCtr++);
@@ -156,39 +156,66 @@ public class LogMap {
     }
 
     // fixme? --> diff name or instanceof...
+    /*
     public static LogRelation instVarRel_log(LogVar var, String instVar) {
 	return (LogRelation) ((HashMap) InstVarRels.get(var.logType())).get(instVar);
-    }
+	}*/
 
     public static LogRelation instVarRel_log(Object obj, String instVar) {
 	return (LogRelation) ((HashMap) InstVarRels.get(obj.getClass())).get(instVar);
     }
 
+    /*
     // fixme? --> diff name or instanceof...
     public static LogIntAtom intInstVar_log(LogVar var, String instVar) {
 	System.out.println("instVar_log LogVar");
 	return new LogIntAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
-    }
+	}*/
 
     public static LogIntAtom intInstVar_log(Object obj, String instVar) {
 	System.out.println("instVar_log Object");
 	return new LogIntAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
     }
+    
+    /*
+    public static String intInstVarStr_log(LogVar var, String instVar) {
+	System.out.println("instVarStr_log LogVar");
+	return "(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")";
+	}*/
 
+    public static String intInstVarStr_log(Object obj, String instVar) {
+	System.out.println("instVarStr_log Object");
+	return "(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")";
+    }
+
+    
+    /*
     public static LogObjAtom objInstVar_log(LogVar var, String instVar) {
 	System.out.println("instVar_log LogVar");
 	return new LogObjAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
-    }
+	}*/
 
     public static LogObjAtom objInstVar_log(Object obj, String instVar) {
-	System.out.println("instVar_log Object");
+	System.out.println("instVar_log Object " + obj.getClass());
 	return new LogObjAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
+    }
+
+    /*
+    public static String objInstVarStr_log(LogVar var, String instVar) {
+	System.out.println("instVar_log LogVar");
+	return "(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")";
+	}*/
+
+    public static String objInstVarStr_log(ESJObject obj, String instVar) {
+	System.out.println("instVarStr_log Object " + obj.var_log() == null);
+	return "(" + (obj.var_log() == null ? get1_log(obj) : obj.var_log().string()) + "." + instVarRel_log(obj, instVar).id() + ")";
     }
 
     public static LogObjAtom null_log() {
 	return new LogObjAtom(get1_log(null));
     }
 
+    /*
     // fixme? --> diff name or instanceof...
     public static LogSet instVarClosure_log(LogVar obj, boolean isReflexive, String... instVars) {
 	System.out.println("instVarClosure_log LogVar");
@@ -200,7 +227,7 @@ public class LogMap {
 	    fNs += ")";
 	}
 	return new LogSet("(" + obj.string + "." + (isReflexive ? "*" : "^") + fNs + ")");
-    }
+	}*/
 
     public static LogSet instVarClosure_log(Object obj, boolean isReflexive, String... instVars) {
 	System.out.println("instVarClosure_log Object");
@@ -280,7 +307,13 @@ public class LogMap {
 	return false;
     }
 
+
     public static void addAsProblemRel(LogRelation r, String id) { ProblemRels.put(id,r); }
+
+    public static void addAsProblemRel(Object obj, String instVar) { 
+	LogRelation r = instVarRel_log(obj, instVar);
+	ProblemRels.put(r.id(),r);
+    }
 
     /*
     public static void getProblemRels(Object obj) {

@@ -27,6 +27,10 @@ public class LogFormula extends LogObject {
 	return new LogFormula(o + "( " + string + ")");
     }
 
+    public static LogFormula binaryOp(String o1, String o, String o2) {
+	return new LogFormula("( " + o1 + " " + o + " " + o2 + ")");
+    }
+
     public LogFormula notOp() {
 	return new LogFormula("!( " + string + ")");
     }

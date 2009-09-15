@@ -4,10 +4,10 @@ import polyglot.ext.esj.tologic.*;
 import java.util.*;
 
 
-public interface ESJClass {
+public interface ESJObject {
 
     public ESJList allInstances2();
     //public LogSet allInstances2_log(); 
-    //public LogVar var_log();
+    public LogVar var_log();
 
 }

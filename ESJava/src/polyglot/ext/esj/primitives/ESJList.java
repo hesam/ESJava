@@ -52,8 +52,16 @@ public class ESJList<E> extends ArrayList<E> {
 	return new LogIntAtom(LogObject.join_log(index.intValue_log().string(),rel_log.id()));
     }                              
 
+    public LogIntAtom get_log(ESJObject index) {
+	return new LogIntAtom(LogObject.join_log(index.var_log().intValue_log().string(),rel_log.id()));
+    }                              
+
     public LogInt count_log(LogObject itm) {
 	return new LogInt("#(" + rel_log.id() + "." + itm.string() + ")");
+    }
+
+    public LogInt count_log(ESJObject itm) {
+	return new LogInt("#(" + rel_log.id() + "." + itm.var_log().string() + ")");
     }
 
     public LogInt size_log() {
@@ -63,7 +71,6 @@ public class ESJList<E> extends ArrayList<E> {
     public LogFormula contains_log(LogObject itm) {
 	return new LogFormula("some (" + rel_log.id() + "." + itm.string() + ")");
     }
-
 
     // copies obj plus its relation
     public ESJList<E> copy(int from, int to) { ESJList<E> res = new ESJList<E>();

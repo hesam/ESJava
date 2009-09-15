@@ -22,7 +22,8 @@ public class LogVar extends LogObject {
     public LogObject intValue_log() { return this; }
 
     public String sumValue_log() {
-	return logType.getName().equals("int") ? "sum (" + string + ")" : string;
+	//return logType.getName().equals("int") ? "sum (" + string + ")" : string;
+	return "sum (" + string + ")";
     }
 
     public LogSet arithOp(String o, LogObject o2) {
