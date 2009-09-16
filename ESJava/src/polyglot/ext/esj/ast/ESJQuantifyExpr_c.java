@@ -32,6 +32,8 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantClauseExpr);
     }
 
+    public static int idCtr() { return idCtr; }
+
     public Expr quantListExpr() {
 	return quantListExpr;
     }

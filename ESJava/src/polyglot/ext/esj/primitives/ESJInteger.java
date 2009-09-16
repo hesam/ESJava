@@ -727,18 +727,28 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   // ESJInteger class init
 
   public LogVar var_log;
+  public ESJInteger old;
   public LogVar var_log() { return var_log; }
 
   static {
       setBounds(0,30); // FIXME
   }
 
-  public ESJInteger(LogVar dontcare) {
+  public ESJInteger(LogVar dontcare, boolean isQuantifyVar) {
       super();
       this.value = 0;
-      this.var_log =
-          dontcare;
+      if (isQuantifyVar)
+	  this.var_log =
+	      dontcare;
     }
+
+  public boolean isQuantifyVar() {
+      return this.var_log != null;
+  }
+
+  public ESJInteger old() { 
+      return old; 
+  }
 
   public static int BoundsSize() {
       return  MAX_VALUE - MIN_VALUE + 1;

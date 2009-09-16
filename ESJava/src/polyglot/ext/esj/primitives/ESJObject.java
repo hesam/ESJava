@@ -10,5 +10,5 @@ public interface ESJObject {
     //public LogSet allInstances2_log(); 
     public LogVar var_log();
     public boolean isQuantifyVar();
-
+    public ESJObject old();
 }

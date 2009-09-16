@@ -42,7 +42,7 @@ public class LogMap {
                                             // used to keep track which objs need to be 
                                             // re-relationized at current time (since may've been
                                             // updated.
-    
+    static int clonerStep = 0; //FIXME (should be same as relationizerStep)
 
     static {
 	LogtoJ.put(AtomCtr,null);
@@ -56,28 +56,42 @@ public class LogMap {
 
     public static int relationizerStep() { return relationizerStep; }
     public static void incrRelationizerStep() { relationizerStep++; }
+    public static int clonerStep() { return clonerStep; }
+    public static void incrClonerStep() { clonerStep++; }
 
     public static void initRelationize() {
 	AtomCtr = ESJInteger.BoundsSize()+1;
 	relationizerStep++;
+	clonerStep++;
+    }
+
+    public static void ObjToAtomMap() {
 	for (Class c : (Set<Class>) ClassAtoms.keySet()) {
 	    ClassAtoms.put(c, new ArrayList());
 	    newAtoms(c);
 	}
-
     }
 
     public static void newAtoms(Class c) { // FIXME?
-	System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")" + "\n" + ClassConstrs);
+	if (SolverOpt_debug)
+	    System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")" + "\n" + ClassConstrs);
 	ArrayList classAs = (ArrayList) ClassAtoms.get(c);
 	try {
-	    Object [] args = new Object[1];
+	    Object [] args = new Object[2];
 	    args[0] = null;
-	    System.out.println(((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2());
-	    for (Object obj : ((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2()) {
+	    args[1] = false;
+	    if (SolverOpt_debug)
+		System.out.println(((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2());
+	    for (Object obj : ((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2()) {		
+		//System.out.println("my old = " + ((ESJObject) obj).old());
 		classAs.add(AtomCtr);
 		LogtoJ.put(AtomCtr,obj);
 		JtoLog.put(obj,AtomCtr++);
+		if (((ESJObject) obj).old() != null) { //FIXME?
+		    classAs.add(AtomCtr);
+		    LogtoJ.put(AtomCtr,((ESJObject) obj).old());
+		    JtoLog.put(((ESJObject) obj).old(),AtomCtr++);
+		}
 	    }
 	} catch (Exception e) { System.out.println("oops " + e); }
     }
@@ -102,9 +116,11 @@ public class LogMap {
     }
 
     public static int get1(Object key) {
-	System.out.println("get1: " + key);
-	System.out.println(" --> " + JtoLog.get(key));
-	System.out.println(JtoLog);
+	if (SolverOpt_debug) {
+	    System.out.println("get1: " + key);
+	    System.out.println(" --> " + JtoLog.get(key));
+	    System.out.println(JtoLog);
+	}
 	return (Integer) JtoLog.get(key);
     }
 
@@ -123,8 +139,10 @@ public class LogMap {
     // FIXME
     public static LogSet bounds_log(Class c) {
 	//System.out.println(c.allInstances_log().string());
-	System.out.println(c);
-	System.out.println(ClassAtoms);
+	if (SolverOpt_debug) {
+	    System.out.println(c);
+	    System.out.println(ClassAtoms);
+	}
 	if (c == int.class || c == Integer.class) 
 	    return ESJInteger.allInstances_log();
 	else {
@@ -140,8 +158,9 @@ public class LogMap {
 	    // mark the class
 	    if (!ClassAtoms.containsKey(c)) {
 		ClassAtoms.put(c, new ArrayList());
-		Class[] parameterTypes = new Class[1];
+		Class[] parameterTypes = new Class[2];
 		parameterTypes[0] = LogVar.class;
+		parameterTypes[1] = boolean.class;
 		try {
 		    ClassConstrs.put(c, c.getConstructor(parameterTypes));
 		} catch (NoSuchMethodException e) { System.out.println(e); }
@@ -210,7 +229,8 @@ public class LogMap {
 
     // FIXME
     public static String objInstVarStr_log(ESJObject obj, String instVar) {
-	System.out.println("instVarStr_log -> isVar: " + obj.var_log() != null);
+	System.out.println("instVarStr_log -> isVar: " + (obj.var_log() != null));
+	System.out.println(instVar + " " + obj + " " + ((ESJObject)obj).old());
 	//return "(" + (obj.var_log() == null ? get1_log(obj) : obj.var_log().string()) + "." + instVarRel_log(obj, instVar).id() + ")";
 	return "(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + instVarRel_log(obj, instVar).id() + ")";
     }
@@ -235,7 +255,7 @@ public class LogMap {
 
     // FIXME
     public static LogSet instVarClosure_log(ESJObject obj, boolean isReflexive, String... instVars) {
-	System.out.println("instVarClosure_log -> isVar: " + obj.var_log() != null);
+	System.out.println("instVarClosure_log -> isVar: " + (obj.var_log() != null));
 	String fNs = instVarRel_log(obj, instVars[0]).id();
 	if (instVars.length > 1) {
 	    fNs = "(" + fNs;

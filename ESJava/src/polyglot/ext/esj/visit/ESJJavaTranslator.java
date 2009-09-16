@@ -167,6 +167,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		    args2.add(nf.ClassLit(null, tn));
 		    TypeNode logVarTN = nf.CanonicalTypeNode(null, ts.typeForName((tn.type().isPrimitive() ? "polyglot.ext.esj.primitives.ESJInteger" : tn.toString())));
 		    args.add(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2, null, new TypedList(new LinkedList(), TypeNode.class, false)));
+		    args.add(nf.BooleanLit(null, true));
 		    //TypeNode logVarTN = nf.CanonicalTypeNode(null, ts.typeForName((tn.type().isPrimitive() ? "polyglot.ext.esj.tologic." : tn.toString()) + "LogVar"));
 		    
 		    inits.add(l.type(logVarTN).init(nf.JL5New(null, logVarTN, args, null, new TypedList(new LinkedList(), TypeNode.class, false))));
@@ -256,17 +257,26 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    ESJFieldCall c = (ESJFieldCall) r;
 	    //return instVarGet_log(c.target(), c.name(), c.type());
 	    //return nf.Field(null, (Receiver) toLogicExpr(c.target()), c.name() + "_log");
+	    String def = "_log";
+	    if (c.target() instanceof Field && ((Field) c.target()).name().equals("old")) //FIXME
+		def = "_old_log";
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    return nf.Call(null, (Receiver) toLogicExpr(c.target()), c.name() + "_log", args);
+	    String m = c.name() + (c.name().equals("old") ? "" : def); //FIXME
+	    return nf.Call(null, (Receiver) toLogicExpr(c.target()), m, args);
 	} else if (r instanceof Call) {
 	    Call c = (Call) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
+	    String def = "_log";
+	    if (c.target() instanceof Field && ((Field) c.target()).name().equals("old")) //FIXME
+		def = "_old_log";
+	    String m = c.name() + (c.name().equals("old") ? "" : def); //FIXME
 	    for (Expr e : (List<Expr>) c.arguments()) {
 		 args.add((Expr) toLogicExpr(e));
 	    }
 	    if (c.target() instanceof Local && quantVars.contains(((Local) c.target()).name())) {
 		//return nf.Call(null, c.target(), c.name() + "_log2" , args);
-		return nf.Call(null, c.target(), c.name() + "_log" , args);
+		System.out.println("wow: " + c.name());
+		return nf.Call(null, c.target(), m , args);
 	    } else {
 		return nf.Call(null, 
 			       (c.target() == null || 
@@ -274,14 +284,18 @@ public class ESJJavaTranslator extends ContextVisitor {
 				c.target() instanceof Special) ?
 			       c.target() : 
 			       (Receiver) toLogicExpr(c.target()), 
-			       c.name() + "_log" , args);
+			       m , args);
 	    }
 	} else if (r instanceof Field) {
 	    Field f = (Field) r;
 	    //return instVarGet_log(f.target(), f.name(), f.type());
 	    //return nf.Field(null, (Receiver) toLogicExpr(f.target()), f.name() + "_log");
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    return nf.Call(null, (Receiver) toLogicExpr(f.target()), f.name() + "_log", args);
+	    String def = "_log";
+	    if (f.target() instanceof Field && ((Field) f.target()).name().equals("old")) //FIXMe
+		def = "_old_log";
+	    String m = f.name() + (f.name().equals("old") ? "" : def); //FIXME
+	    return nf.Call(null, (Receiver) toLogicExpr(f.target()), m, args);
 	} else if (r instanceof JL5LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    Expr e1 = nf.Call(null, null, "verifyInvariants_log", new TypedList(new LinkedList(), Expr.class, false));

@@ -27,7 +27,7 @@ public class Test ensures (x > 0) {
     }
 
     function public boolean repOk() {
-	//x == 2 * x_old
+	x == 2 * old.x
 	//this.y() == 2 * this.x() 
 	//this.y == 2 * this.x 
 	//this.x == 2 * this.x_old
@@ -43,7 +43,7 @@ public class Test ensures (x > 0) {
 	//all int i | all int j | j < i
 	//all int i | (i == 0 || all int j | j < i)
 	//lone Node p | p.parent == p
-	all Node n | lone Node p | n.parent == p
+	//all Node n | lone Node p | n.parent == p
 	//all Node n | n.left.children().size() > 0
 	//all Node n : root.children() | one Node p | n.parent == p
 	//all Node n | one Node p : n.children() | n.parent == p
@@ -52,7 +52,9 @@ public class Test ensures (x > 0) {
 
     public void m1()
 	ensures repOk() {
-	
+	this.x = 20;
+	System.out.println("me: " + this);
+	System.out.println("old me: " + old);
 	System.out.println();
     }
 
@@ -67,15 +69,20 @@ public class Test ensures (x > 0) {
 	Node n3 = new Node(3, 3, null, null);	
 	Node n1 = new Node(1, 1, n2, n3);
 	Test t1 = new Test(13,10,n1);
+	//LogMap.initRelationize();
 	System.out.println(t1);
-	System.out.println(t1.repOk());
 	t1.m1();
 	System.out.println(t1);
 	//System.out.println(n1.children());
 	//System.out.println(t1.root.children());
+	//System.out.println(t1);	
 	//System.out.println(t1.nodes());
+	//t1.initEnsuredMethod();
 	//System.out.println(t1.nodes_log());
-	System.out.println(t1.repOk_log());
+	//System.out.println(t1.nodes_old());
+	//System.out.println(t1.nodes_old_log());
+	//System.out.println(t1.repOk());
+	//System.out.println(t1.repOk_log());
     }
 
 }

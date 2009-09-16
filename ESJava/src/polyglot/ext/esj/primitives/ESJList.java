@@ -24,7 +24,7 @@ public class ESJList<E> extends ArrayList<E> {
 
     public ESJList<E> old() { return old; }
     
-    public ESJList<E> old_log() { return old; }
+    //public ESJList<E> old_log() { return old; }
 
     public LogRelation rel_log() {
 	return rel_log;
