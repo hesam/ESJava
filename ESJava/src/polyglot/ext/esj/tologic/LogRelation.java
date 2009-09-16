@@ -69,15 +69,15 @@ public class LogRelation extends Hashtable {
     public void incrFixedSize() { fixedSize++; }
 
     public String domain_log() { 
-	return isaList ? ESJInteger.zeroTo_log(fixedSize).string() : LogMap.bounds_log(domain).string();
+	return isaList ? ESJInteger.zeroTo_log(fixedSize).string() : LogMap.bounds_log(domain, false, false).string();
     }
 
-    public String range_log() { 
-	return LogMap.bounds_log(range).string();
+    public String range_log(boolean isBoundsDef) { 
+	return LogMap.bounds_log(range, true, isBoundsDef).string();
     }
 
     public String fullDomainRange() {
-	return domain_log() + "->" + (isaListInstVar ? listInstVarDomain_log() : "") + range_log();
+	return domain_log() + "->" + (isaListInstVar ? listInstVarDomain_log() : "") + range_log(true);
     }
 
     // FIXME
@@ -152,7 +152,7 @@ public class LogRelation extends Hashtable {
 
     public String funDef_log() {
 	CharArrayWriter o = new CharArrayWriter();
-	String r = range_log();
+	String r = range_log(false);
 	if (isaListInstVar) {
 	    String d = listInstVarDomain_log();	    
 	    for (LogRelation s : (ArrayList<LogRelation>) subRels) {

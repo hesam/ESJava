@@ -83,19 +83,21 @@ public class LogMap {
 	    if (SolverOpt_debug)
 		System.out.println(((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2());
 	    ArrayList<ESJObject> objs = ((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2();
-	    for (Object obj : objs) {		
+	    for (ESJObject obj : objs) {		
 		//System.out.println("my old = " + ((ESJObject) obj).old());
 		classAs.add(AtomCtr);
 		LogtoJ.put(AtomCtr,obj);
-		JtoLog.put(obj,AtomCtr++);
+		//LogtoJ.put(AtomCtr,obj.old());
+		JtoLog.put(obj,AtomCtr);
+		JtoLog.put(obj.old(),AtomCtr);
+		AtomCtr++;
 	    }
-	    for (ESJObject obj : objs) {
+	    /*for (ESJObject obj : objs) {
 		if (obj.old() != null) { //FIXME?
-		    //classAs.add(AtomCtr);
 		    LogtoJ.put(AtomCtr,obj.old());
 		    JtoLog.put(obj.old(),AtomCtr++);
 		}
-	    }
+		}*/
 	} catch (Exception e) { System.out.println("oops " + e); }
     }
 
@@ -140,7 +142,7 @@ public class LogMap {
     }
 
     // FIXME
-    public static LogSet bounds_log(Class c) {
+    public static LogSet bounds_log(Class c, boolean addNull, boolean isBoundDef) {
 	//System.out.println(c.allInstances_log().string());
 	if (SolverOpt_debug) {
 	    System.out.println(c);
@@ -148,9 +150,15 @@ public class LogMap {
 	}
 	if (c == int.class || c == Integer.class) 
 	    return ESJInteger.allInstances_log();
-	else {
+	else {	     
 	    ArrayList atoms = (ArrayList) ClassAtoms.get(c);	    
-	    return new LogSet("u" + atoms.size() + (atoms.size() > 0 ? ("@" + atoms.get(0)) : ""));
+	    String addL = "";
+	    String addR = "";
+	    if (isBoundDef) {
+		addL = "{[";
+		addR = "]}";
+	    }
+	    return new LogSet("(" + (addNull ? addL+get1_log(null) + addR + " + " : "") + "u" + atoms.size() + (atoms.size() > 0 ? ("@" + atoms.get(0)) : "") + ")");
 	}
     }
 

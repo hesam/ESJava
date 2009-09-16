@@ -3,8 +3,9 @@ import polyglot.ext.esj.tologic.*;
 
 import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Test ensures (x > 0) {
+public class Test ensures (x > 20) {
     
     protected int x;
     protected int y;
@@ -48,8 +49,8 @@ public class Test ensures (x > 0) {
 	//all Node n : root.children() | one Node p | n.parent == p
 	//all Node n | one Node p : n.children() | n.parent == p
 	//all Node n | (n.left == null || all Node c : n.left.children() | c.value < n.value)
-	//this.nodes().equals(old.nodes())
-	this.nodes().size() == old.nodes().size() + 1
+	this.nodes().equals(old.nodes()) 
+	//this.nodes().size() == old.nodes().size() + 1
 	}
 
     public void m1()
@@ -78,13 +79,16 @@ public class Test ensures (x > 0) {
 	//System.out.println(n1.children());
 	//System.out.println(t1.root.children());
 	//System.out.println(t1);	
-	//System.out.println(t1.nodes());
-	//System.out.println(t1.old().nodes());
+	System.out.println(t1.nodes());
+	System.out.println(t1.old().nodes());
+	System.out.println(t1.nodes().equals(t1.old.nodes()));
 	//t1.initEnsuredMethod();
 	//System.out.println(t1.nodes_log());
 	//System.out.println(t1.old().nodes_log());
-	//System.out.println(t1.repOk());
-	//System.out.println(t1.repOk_log());
+	System.out.println(t1.repOk());
+	System.out.println(t1.repOk_log());
+
+
     }
 
 }
