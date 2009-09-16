@@ -54,6 +54,10 @@ public class LogObject  {
 	return "sum (" + string + ")";
     }
 
+    public LogFormula equals_log(LogObject o2) {
+	return new LogFormula("(" + string + " = " + o2.string() + ")");
+    }
+
     public static String join_log(String s1, String s2) {
 	return s1 + "." + s2;
     }

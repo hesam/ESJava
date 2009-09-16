@@ -82,15 +82,18 @@ public class LogMap {
 	    args[1] = false;
 	    if (SolverOpt_debug)
 		System.out.println(((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2());
-	    for (Object obj : ((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2()) {		
+	    ArrayList<ESJObject> objs = ((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2();
+	    for (Object obj : objs) {		
 		//System.out.println("my old = " + ((ESJObject) obj).old());
 		classAs.add(AtomCtr);
 		LogtoJ.put(AtomCtr,obj);
 		JtoLog.put(obj,AtomCtr++);
-		if (((ESJObject) obj).old() != null) { //FIXME?
-		    classAs.add(AtomCtr);
-		    LogtoJ.put(AtomCtr,((ESJObject) obj).old());
-		    JtoLog.put(((ESJObject) obj).old(),AtomCtr++);
+	    }
+	    for (ESJObject obj : objs) {
+		if (obj.old() != null) { //FIXME?
+		    //classAs.add(AtomCtr);
+		    LogtoJ.put(AtomCtr,obj.old());
+		    JtoLog.put(obj.old(),AtomCtr++);
 		}
 	    }
 	} catch (Exception e) { System.out.println("oops " + e); }
@@ -254,13 +257,14 @@ public class LogMap {
 	}*/
 
     // FIXME
-    public static LogSet instVarClosure_log(ESJObject obj, boolean isReflexive, String... instVars) {
-	System.out.println("instVarClosure_log -> isVar: " + (obj.var_log() != null));
-	String fNs = instVarRel_log(obj, instVars[0]).id();
+    public static LogSet instVarClosure_log(ESJObject obj, boolean isOld, boolean isReflexive, String... instVars) {
+	System.out.println("instVarClosure_log -> idOld: " + isOld + " isVar: " + (obj.var_log() != null));
+	String fA = isOld ? "_old" : "";
+	String fNs = instVarRel_log(obj, instVars[0]+fA).id();
 	if (instVars.length > 1) {
 	    fNs = "(" + fNs;
 	    for(int i=1;i<instVars.length;i++)
-		fNs += (" + " + instVarRel_log(obj, instVars[i]).id());
+		fNs += (" + " + instVarRel_log(obj, instVars[i]+fA).id());
 	    fNs += ")";
 	}
 	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + (isReflexive ? "*" : "^") + fNs + ")");

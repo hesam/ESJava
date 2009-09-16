@@ -51,7 +51,7 @@ public class LogRelation extends Hashtable {
 	this.isaListInstVar = isaListInstVar;
 	this.id = "r" + this.RelCtr++;
 	if (LogMap.SolverOpt_debug())
-	    System.out.println("new relation " + this.id + " " + instVar + " unknown: " + isUnknown);
+	    System.out.println("new relation " + this.id + " " + instVar + " old: " + !isUnknown);
     }
 
     public String instVar() { return instVar; }

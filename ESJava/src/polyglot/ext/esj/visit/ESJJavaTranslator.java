@@ -257,19 +257,20 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    ESJFieldCall c = (ESJFieldCall) r;
 	    //return instVarGet_log(c.target(), c.name(), c.type());
 	    //return nf.Field(null, (Receiver) toLogicExpr(c.target()), c.name() + "_log");
-	    String def = "_log";
-	    if (c.target() instanceof Field && ((Field) c.target()).name().equals("old")) //FIXME
-		def = "_old_log";
+	    //String def = "_log";
+	    //if (c.target() instanceof Field && ((Field) c.target()).name().equals("old")) //FIXME
+		  //def = "_old_log";
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    String m = c.name() + (c.name().equals("old") ? "" : def); //FIXME
+	    String m = c.name() + (c.name().equals("old") ? "" : "_log"); //FIXME
 	    return nf.Call(null, (Receiver) toLogicExpr(c.target()), m, args);
 	} else if (r instanceof Call) {
 	    Call c = (Call) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    String def = "_log";
-	    if (c.target() instanceof Field && ((Field) c.target()).name().equals("old")) //FIXME
-		def = "_old_log";
-	    String m = c.name() + (c.name().equals("old") ? "" : def); //FIXME
+	    //String def = "_log";
+	    //if ((c.target() instanceof Field && ((Field) c.target()).name().equals("old")) ||
+	    //(c.target() instanceof Call && ((Call) c.target()).name().equals("old"))) //FIXME
+	    //def = "_old_log";
+	    String m = c.name() + (c.name().equals("old") ? "" : "_log"); //FIXME
 	    for (Expr e : (List<Expr>) c.arguments()) {
 		 args.add((Expr) toLogicExpr(e));
 	    }
@@ -291,10 +292,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    //return instVarGet_log(f.target(), f.name(), f.type());
 	    //return nf.Field(null, (Receiver) toLogicExpr(f.target()), f.name() + "_log");
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    String def = "_log";
-	    if (f.target() instanceof Field && ((Field) f.target()).name().equals("old")) //FIXMe
-		def = "_old_log";
-	    String m = f.name() + (f.name().equals("old") ? "" : def); //FIXME
+	    //String def = "_log";
+	    //if (f.target() instanceof Field && ((Field) f.target()).name().equals("old")) //FIXMe
+	    //def = "_old_log";
+	    String m = f.name() + (f.name().equals("old") ? "" : "_log"); //FIXME
 	    return nf.Call(null, (Receiver) toLogicExpr(f.target()), m, args);
 	} else if (r instanceof JL5LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
@@ -444,7 +445,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	
 	List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
 	instVarGetArgs.add((Receiver) toLogicExpr(target));
-	//instVarGetArgs.add(target);
+	instVarGetArgs.add(nf.Call(null, null, "isOld", new TypedList(new LinkedList(), Expr.class, false)));
 	instVarGetArgs.addAll(origArgs);
 	return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarClosure_log", instVarGetArgs);
     }

@@ -57,4 +57,5 @@ public class LogList extends LogObject {
 	return new LogFormula("some (" + string + "." + itm.var_log().string() + ")");
     }
 
+
 }

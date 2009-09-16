@@ -750,6 +750,10 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return old; 
   }
 
+  public boolean isOld() { 
+      return old == null;
+  }
+
   public static int BoundsSize() {
       return  MAX_VALUE - MIN_VALUE + 1;
   }
