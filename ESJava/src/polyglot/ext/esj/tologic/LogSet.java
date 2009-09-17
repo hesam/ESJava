@@ -27,7 +27,7 @@ public class LogSet extends LogObject {
 	return new LogIntAtom(LogObject.join_log(index.intValue_log().string(),string));
     }                              
 
-    public LogSet arithOp(String o, LogSet o2) {
+    public LogSet arithOp(String o, LogObject o2) {
 	return new LogSet("(" + string + " " + o + " " + o2.string() + ")");
     }
 
@@ -55,6 +55,14 @@ public class LogSet extends LogObject {
 
     public LogFormula contains_log(ESJObject itm) {
 	return new LogFormula("some (" + string + " & " + itm.var_log().string() + ")");
+    }
+
+    public LogSet union_log(LogSet o2) {
+	return arithOp("+", o2);
+    }
+
+    public LogSet union_log(ESJObject o2) { //FIXME
+	return arithOp("+", new LogObjAtom(LogMap.get1_log(o2)));
     }
 
 }

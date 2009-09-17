@@ -4,7 +4,7 @@ import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 
 import java.util.HashMap;
-import java.util.HashSet;
+//import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -240,8 +240,10 @@ public class LogMap {
 
     // FIXME
     public static String objInstVarStr_log(ESJObject obj, String instVar) {
-	System.out.println("instVarStr_log -> isVar: " + (obj.var_log() != null));
-	System.out.println(instVar + " " + obj + " " + ((ESJObject)obj).old());
+	if (SolverOpt_debug) {
+	    System.out.println("instVarStr_log -> isVar: " + (obj.var_log() != null));
+	    System.out.println(instVar + " " + obj + " " + ((ESJObject)obj).old());
+	}
 	//return "(" + (obj.var_log() == null ? get1_log(obj) : obj.var_log().string()) + "." + instVarRel_log(obj, instVar).id() + ")";
 	return "(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + instVarRel_log(obj, instVar).id() + ")";
     }
@@ -266,7 +268,8 @@ public class LogMap {
 
     // FIXME
     public static LogSet instVarClosure_log(ESJObject obj, boolean isOld, boolean isReflexive, String... instVars) {
-	System.out.println("instVarClosure_log -> idOld: " + isOld + " isVar: " + (obj.var_log() != null));
+	if (SolverOpt_debug)
+	    System.out.println("instVarClosure_log -> idOld: " + isOld + " isVar: " + (obj.var_log() != null));
 	String fA = isOld ? "_old" : "";
 	String fNs = instVarRel_log(obj, instVars[0]+fA).id();
 	if (instVars.length > 1) {
@@ -386,13 +389,15 @@ public class LogMap {
 		Class[] paramTypes = new Class[1];
 		Object[] args = new Object[1];
 		paramTypes[0] = u.range();
-		//System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);
+		Class c = u.domain();
+		System.out.println("relation " + u.instVar() + " of type: " + paramTypes[0] + " for class: " + u.domain());
+		System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);
 		try { 
-		    Method m = obj.getClass().getDeclaredMethod(u.instVar(), paramTypes); 
-		    //System.out.println(m);
+		    Method m = c.getDeclaredMethod(u.instVar(), paramTypes); 
+		    System.out.println(m);
 		    for (ArrayList v : (ArrayList<ArrayList>) val) {
-			//System.out.println(get2((Integer) v.get(0)));
-			//System.out.println(get2((Integer) v.get(1)));
+			System.out.println(get2((Integer) v.get(0)));
+			System.out.println(get2((Integer) v.get(1)));
 			args[0] = get2((Integer) v.get(1));
 			m.invoke(get2((Integer) v.get(0)),args);
 		    }

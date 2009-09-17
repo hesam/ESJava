@@ -100,4 +100,16 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
     }
     */
 
+    public Context enterScope(Node child, Context c) {
+	if (child instanceof Expr) {
+	    for (Formal f : (List<Formal>) formals) {
+		c.addVariable(c.typeSystem().localInstance(null, flags(),f.declType(), f.name()));
+	    }
+	    
+	}
+
+	return super.enterScope(child, c);
+	}
+
+
 }

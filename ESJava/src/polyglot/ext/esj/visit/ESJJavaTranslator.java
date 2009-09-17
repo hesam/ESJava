@@ -223,6 +223,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return nf.Call(null,(Expr) toLogicExpr(u.expr()), "unaryOp", args);
 	} else if (r instanceof JL5Conditional) {
 	    JL5Conditional c = (JL5Conditional) r;
+	    if (c.alternative() instanceof ESJFieldClosureCall) // FIXME
+		return (Expr) toLogicExpr(c.alternative());
 	    return nf.JL5Conditional(null, c.cond(), (Expr) toLogicExpr(c.consequent()), (Expr) toLogicExpr(c.alternative()));
 	} else if (r instanceof ESJLogQuantifyExpr) {
 	    ESJLogQuantifyExpr q = (ESJLogQuantifyExpr) r;
@@ -366,7 +368,11 @@ public class ESJJavaTranslator extends ContextVisitor {
 	args.add(nf.BooleanLit(null, fc.isReflexive()));	
 	for (int i=0; i<fc.multiNames().size(); i++) 
 	    args.add(nf.StringLit(null, (String) fc.multiNames().get(i)));
-	Expr res = nf.ESJFieldClosureCall(null, fc.target(), "fieldsClosure", args);
+	List args0 = new TypedList(new LinkedList(), Expr.class, false);
+	Expr res0 = nf.Binary(null, (Expr) fc.target(), Binary.EQ, nf.NullLit(null));
+	Expr res1 = nf.JL5New(null, nf.CanonicalTypeNode(null, fc.type()), args0, null, new TypedList(new LinkedList(), TypeNode.class, false));
+	Expr res2 = nf.ESJFieldClosureCall(null, fc.target(), "fieldsClosure", args);
+	Expr res = nf.JL5Conditional(null, res0, res1, res2);
 	return res;
     }
 

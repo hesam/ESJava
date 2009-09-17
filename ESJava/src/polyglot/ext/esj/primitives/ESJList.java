@@ -13,8 +13,10 @@ public class ESJList<E> extends ArrayList<E> {
 
 
     // keep my pre-state copy in old field and relationize it
-    public void setOld() {
-	this.old = copy(0,size()-1);
+    public ESJList<E> clone() {
+	ESJList<E> res = copy(0,size()-1);
+	this.old = res;
+	return res;
     }
 
     // relationize me

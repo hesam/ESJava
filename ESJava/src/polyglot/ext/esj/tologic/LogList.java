@@ -27,7 +27,7 @@ public class LogList extends LogObject {
 	return new LogIntAtom(LogObject.join_log(index.intValue_log().string(),string));
     }                              
 
-    public LogSet arithOp(String o, LogSet o2) {
+    public LogSet arithOp(String o, LogObject o2) {
 	return new LogSet("(" + string + " " + o + " " + o2.string() + ")");
     }
 

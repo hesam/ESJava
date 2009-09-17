@@ -73,6 +73,7 @@ public class LogRelation extends Hashtable {
     }
 
     public String range_log(boolean isBoundsDef) { 
+	// have to add 'null' to the set of possible values for the ref field
 	return LogMap.bounds_log(range, true, isBoundsDef).string();
     }
 

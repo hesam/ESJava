@@ -75,7 +75,7 @@ public class ESJFieldClosure_c extends Field_c
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	ESJFieldClosure n = (ESJFieldClosure) super.typeCheck(tc);
 	JL5TypeSystem ts = (JL5TypeSystem) tc.typeSystem();
-	Type t = ts.typeForName("java.util.HashSet");
+	Type t = ts.typeForName("polyglot.ext.esj.primitives.ESJSet"); //"java.util.HashSet");
 	ParameterizedType pt = ts.parameterizedType((JL5ParsedClassType) t);
 	ArrayList<Type> at = new ArrayList<Type>();
 	at.add(n.type());

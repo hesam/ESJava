@@ -893,9 +893,9 @@ ensured_class_declaration ::=
 	      // define an initEnsuredMethod mtd
 	      List initEM = new TypedList(new LinkedList(), Stmt.class, false);
 	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "initRelationize", new TypedList(new LinkedList(), Expr.class, false))));
-	      if (!parser.currClassName.equals("MyList")) // HACK FIXME
+	      //if (!parser.currClassName.equals("MyList")) // HACK FIXME
 		  //initEM.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), "old"), Assign.ASSIGN, parser.nf.Call(null, null, "clone", parser.emptyArgs))));
-		  initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "clone", parser.emptyArgs)));
+	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "clone", parser.emptyArgs)));
 	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "ObjToAtomMap", new TypedList(new LinkedList(), Expr.class, false))));
 	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "relationize", new TypedList(new LinkedList(), Expr.class, false))));
 	      //initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "relationizeOld", new TypedList(new LinkedList(), Expr.class, false))));
@@ -994,7 +994,7 @@ override field_declaration ::=
 	      		gt.add(cl);
 	      		AmbTypeNode tn = parser.nf.AmbTypeNode(null, "java.util.ArrayList");
 	      		AmbTypeNode atn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)tn).qual(), ((AmbTypeNode)tn).name(), gt);
-	      		AmbTypeNode settn = parser.nf.AmbTypeNode(null, "java.util.HashSet");
+	      		AmbTypeNode settn = parser.nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJSet");
 	      		AmbTypeNode asettn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)settn).qual(), ((AmbTypeNode)settn).name(), gt);
 		     	List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Class()), "c", parser.nf.ClassLit(null, cl)));
