@@ -1,0 +1,48 @@
+import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.tologic.*;
+
+import java.util.ArrayList;
+
+public class Node
+{
+    public Integer value;
+    public Node left;
+    public Node right;
+    public Node parent;
+
+    public Node(Integer value, Node left, Node right) {
+        this.value = value;
+        this.left = left;
+        this.right = right;
+        if (left != null) left.parent = this;
+        if (right != null) right.parent = this;
+        this.parent = null;
+    }
+
+    public void value(Integer v) { this.value = v; }
+    public void left(Node l) { this.left = l; }
+    public void right(Node r) { this.right = r; }
+    public void parent(Node p) { this.parent = p; }
+
+    function public ESJSet<Node> children() {
+	this.^(left+right)
+    }
+
+    function public ESJSet<Node> leftChildren() {
+	this.left.*(left+right)
+    }
+
+    function public ESJSet<Node> rightChildren() {
+	this.right.*(left+right)
+	    }
+
+    public boolean equals(Object n) { return n instanceof Node &&  value == ((Node)n).value; }
+
+    public int hashCode() { return value; }
+
+    public String toString() {
+	return "(" + left + " <--- Node(" + value + ") ---> " + right + ")";
+    }
+
+
+}

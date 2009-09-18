@@ -1,0 +1,103 @@
+import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.tologic.*;
+
+import java.util.Random;
+
+public class BSTree 
+    ensures isBinarySearchTree()
+{
+
+    private static final int INDENT_STEP = 4;
+
+    public Node root;
+
+    public BSTree() { root = null; }
+
+    public void root(Node r) { this.root = r; }
+
+    function public ESJSet<Node> nodes() { root.*(left+right) }
+
+    function public boolean isBinarySearchTree() {
+	isAcyclic() && oneParent() && isValidBinarySearch() 
+    }
+
+    function public boolean isAcyclic() { no Node n | n.^(left+right).contains(n) }
+
+    function public boolean oneParent() {
+	(root == null) ? true : all Node n : this.root.children() | one Node p | n.parent == p
+    }
+
+    function public boolean isValidBinarySearch() {
+	all Node n | ((n.left == null || all Node lc : n.leftChildren() | lc.value < n.value) &&
+		      (n.right == null || all Node rc : n.rightChildren() | rc.value > n.value))
+    }
+
+    public void insert(Integer value) {
+        Node insertedNode = new Node(value, null, null);
+	insert(insertedNode);
+    }
+
+    public void insert(Node insertedNode)
+	modifies BSTree.root, Node.left, Node.right, Node.parent
+	ensures this.nodes().equals(this.old.nodes().union(insertedNode)) {
+	// no implementation...
+    }    
+    
+    public void print() {
+        printHelper(root, 0);
+	System.out.println("---------------------------------------" + 
+			   (root == null ? 0 : nodes().size()) + " nodes");
+    }
+
+    private static void printHelper(Node n, int indent) {
+        if (n == null) {
+            System.out.println("<empty tree>");
+            return;
+        }
+        if (n.right != null) {
+            printHelper(n.right, indent + INDENT_STEP);
+        }
+        for (int i = 0; i < indent; i++)
+            System.out.print(" "); 
+            System.out.println(n.value);
+        if (n.left != null) {
+            printHelper(n.left, indent + INDENT_STEP);
+        }
+    }
+        
+    public static void main(String[] args) {
+	//LogMap.SolverOpt_debug(true);
+	int MAX_SIZE = 10;
+
+	Random rand = new Random(1111L);
+
+        BSTree t = new BSTree();
+        t.print();
+
+	// create an array of the given size
+	int[] a = new int[MAX_SIZE];
+	  	
+	for (int i = 0 ; i < MAX_SIZE; ++i) {
+	    a[i] = i;// * 5;
+	}
+
+	// randomly shuffle the elements in the array and 
+	// insert them in the tree	
+	
+	for (int i = MAX_SIZE; i>0; --i) {
+	    int n = rand.nextInt(i);
+	    int temp = a[n];
+	    a[n] = a[i-1];
+	    t.insert(temp);
+	    t.print();
+	    }
+	/*
+	t.insert(1);
+	t.insert(4);
+	t.insert(2);
+	t.insert(3);
+	t.print();*/
+    }
+
+}
+
