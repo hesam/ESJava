@@ -175,7 +175,7 @@ public class LogMap {
 		parameterTypes[1] = boolean.class;
 		try {
 		    ClassConstrs.put(c, c.getConstructor(parameterTypes));
-		} catch (NoSuchMethodException e) { System.out.println(e); }
+		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
 	    }
 	}
 	LogRelation r = new LogRelation(instVar, domain, range, false, isUnknown);
@@ -234,7 +234,7 @@ public class LogMap {
 	}*/
 
     public static LogObjAtom objInstVar_log(Object obj, String instVar) {
-	System.out.println("instVar_log Object " + obj.getClass());
+	//System.out.println("instVar_log Object " + obj.getClass());
 	return new LogObjAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
     }
 
@@ -397,14 +397,14 @@ public class LogMap {
 		Object[] args = new Object[1];
 		paramTypes[0] = u.range();
 		Class c = u.domain();
-		System.out.println("relation " + u.instVar() + " of type: " + paramTypes[0] + " for class: " + u.domain());
-		System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);
+		//System.out.println("relation " + u.instVar() + " of type: " + paramTypes[0] + " for class: " + u.domain());
+		//System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);
 		try { 
 		    Method m = c.getDeclaredMethod(u.instVar(), paramTypes); 
-		    System.out.println(m);
+		    //System.out.println(m);
 		    for (ArrayList v : (ArrayList<ArrayList>) val) {
-			System.out.println(get2((Integer) v.get(0)));
-			System.out.println(get2((Integer) v.get(1)));
+			//System.out.println(get2((Integer) v.get(0)));
+			//System.out.println(get2((Integer) v.get(1)));
 			args[0] = get2((Integer) v.get(1));
 			m.invoke(get2((Integer) v.get(0)),args);
 		    }

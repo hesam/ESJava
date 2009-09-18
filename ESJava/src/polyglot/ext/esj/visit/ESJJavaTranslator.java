@@ -283,7 +283,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    }
 	    if (c.target() instanceof Local && quantVars.contains(((Local) c.target()).name())) {
 		//return nf.Call(null, c.target(), c.name() + "_log2" , args);
-		System.out.println("wow: " + c.name());
 		return nf.Call(null, c.target(), m , args);
 	    } else {
 		return nf.Call(null, 

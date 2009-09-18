@@ -142,7 +142,6 @@ public class LogRelation extends Hashtable {
     }
 
     public String log() {
-	System.out.println("hello i'm " + id + " " + domain + " " + instVar + " ");
 	String lower = lowerBound_log();
 	if (isUnknown()) {
 	    CharArrayWriter o = new CharArrayWriter();
