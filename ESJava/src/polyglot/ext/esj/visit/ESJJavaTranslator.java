@@ -86,7 +86,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	for (Formal f : (List<Formal>) methodDecl.formals())
 	    args.add(nf.Local(null,f.name()));
-	//args.add(nf.Local(null,"modifiables"));
 	catchBody.add(nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback", args)));
 	Block catchBlock = nf.Block(null,catchBody);
 	catches.add(nf.JL5Catch(null, methodDecl.catchFormal(), catchBlock));

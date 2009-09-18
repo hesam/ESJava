@@ -70,7 +70,8 @@ public class LogRelation extends Hashtable {
     public void incrFixedSize() { fixedSize++; }
 
     public boolean isModifiable(HashMap modifiableFields) {
-	return modifiableFields.containsKey(domain + "." + instVar);
+	return modifiableFields == null ? true : 
+	    modifiableFields.containsKey(domain.getName() + "." + instVar);
     }
 
     public String domain_log() { 

@@ -176,14 +176,14 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
      public ESJEnsuredMethodDecl makeESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
 				  TypeNode returnType, String name,
 				  List formals, List throwTypes, Block body, 
-				  List paramTypes, Expr ensuresExpr) throws Exception {
+				  List paramTypes, Expr ensuresExpr, List modifiables) throws Exception {
 	    FlagAnnotations fl = emptyFlags;
 	    TypeNode cftn = this.nf.CanonicalTypeNode(null, this.ts.Throwable());
 	    JL5Formal catchFormal = this.nf.JL5Formal(null, fl, this.array(cftn, 0), "rte");
-       	    return this.nf.ESJEnsuredMethodDecl(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal); 
+       	    return this.nf.ESJEnsuredMethodDecl(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal, modifiables); 
      }    
 
-     public ESJLogPredMethodDecl makeFallbackMtd(ESJEnsuredMethodDecl methodDecl) throws SemanticException {
+     public ESJLogPredMethodDecl makeFallbackMtd(ESJEnsuredMethodDecl methodDecl, List modifiables) throws SemanticException {
 	    FlagAnnotations fl = emptyFlags; 
 	    //System.out.println(methodDecl.body());
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
@@ -195,7 +195,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    args2.add(nf.Local(null,"problem"));
 	    args3.add(nf.This(null));
 	    args3.add(nf.Local(null,"problem"));
-	    args3.add(nf.Local(null,"modifiables"));
+	    args3.add(modifiables == null ? nf.NullLit(null) : nf.Local(null,"modifiables"));
 	    List l = new TypedList(new LinkedList(), Stmt.class, false);
 	    LocalDecl d2 = nf.LocalDecl(null, fl.classicFlags(), nf.CanonicalTypeNode(null, ts.Boolean()), "isSatisfiable", nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "solve", args3));
 	    l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args)));
@@ -206,14 +206,14 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    AmbTypeNode tn = nf.AmbTypeNode(null, "java.util.HashMap");
 	    AmbTypeNode atn = nf.JL5AmbTypeNode(null, ((AmbTypeNode)tn).qual(), ((AmbTypeNode)tn).name(), gt);
 	    
-
-	    l.add(nf.LocalDecl(null, fl.classicFlags(), atn, "modifiables", nf.JL5New(null, atn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
-	    String[] ms = { "class BSTree.root", "class Node.left", "class Node.right", "class Node.parent" };
-	    for(String s : ms) {
-		List as = new TypedList(new LinkedList(), Expr.class, false);
-		as.add(nf.StringLit(null, s));
-		as.add(nf.NullLit(null));
-		l.add(nf.Eval(null, nf.Call(null, nf.Local(null,"modifiables"), "put", as)));
+	    if (modifiables != null) {
+		l.add(nf.LocalDecl(null, fl.classicFlags(), atn, "modifiables", nf.JL5New(null, atn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
+		for(Name s : (List<Name>) modifiables) {
+		    List as = new TypedList(new LinkedList(), Expr.class, false);
+		    as.add(nf.StringLit(null, s.toString()));
+		    as.add(nf.NullLit(null));
+		    l.add(nf.Eval(null, nf.Call(null, nf.Local(null,"modifiables"), "put", as)));
+		}
 	    }
 	    l.add(d1);
 	    l.add(d2);
@@ -222,7 +222,6 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    l.add(nf.Return(null, nf.Local(null,"isSatisfiable")));
 	    List frms = new TypedList(new LinkedList(), Formal.class, false); 
 	    frms.addAll(methodDecl.formals());
-	    //frms.add(nf.JL5Formal(null, emptyFlags, nf.CanonicalTypeNode(null, ts.typeForName("java.util.HashMap")), "modifiables"));
      	    return nf.ESJLogPredMethodDecl(null, fl,
 	                                          nf.CanonicalTypeNode(null,ts.Boolean()),
 						  methodDecl.name() + "_fallback", 
@@ -335,6 +334,7 @@ terminal Token INVARIANTS;
 terminal Token FUNCTION;
 terminal Token ENSURES;
 terminal Token ENSURED;
+terminal Token MODIFIES;
 terminal Token SOME;
 terminal Token ALL;
 terminal Token NO;
@@ -351,7 +351,7 @@ non terminal ESJQuantifyExpr fn_expression;
 non terminal Expr quantify_expression, quant_list_expr, ensures_opt, ensures_clause;
 non terminal FormulaBinary.Operator quant_kind;
 non terminal FormulaBinary.Operator closure_kind;
-non terminal List fields_closure, identifiers_union;
+non terminal List fields_closure, identifiers_union, modifies_opt, modifiables, modifiables_list;
 non terminal ESJEnsuredClassDecl ensured_class_declaration;
 non terminal Expr predicate_expr, conditional_predicate_expr;
 non terminal Expr or_predicate_expr;
@@ -685,24 +685,27 @@ ensured_method_declaration ::=
 	   {: ESJEnsuredMethodDecl mainMtdDecl = (ESJEnsuredMethodDecl) a.body(b);
               List l = new TypedList(new LinkedList(), ClassMember.class, false);
 	      l.add(mainMtdDecl);
-	      l.add(parser.makeFallbackMtd(mainMtdDecl));
+	      l.add(parser.makeFallbackMtd(mainMtdDecl, mainMtdDecl.modifiables()));
               RESULT = l; 
 	   :}
 	   ;
 
 ensured_method_header ::=
-    modifiers_or_annotations_opt:a type:b method_declarator:c throws_opt:d ensures_clause:z {:
-       RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, parser.array(b, c.dims().intValue()), c.name(), c.formals(), d, null, new TypedList(new LinkedList(), TypeNode.class, false), z); 
-        :}
- |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c type:d method_declarator:e throws_opt:f ensures_clause:z {:
-                                                                                                        RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, parser.array(d, e.dims().intValue()), e.name(), e.formals(), f, null, c, z); 
-                                                                                                        :}
- |  modifiers_or_annotations_opt:a VOID:b method_declarator:c throws_opt:e ensures_clause:z {:
-                                                                           RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, parser.nf.CanonicalTypeNode(parser.pos(b), parser.ts.Void()), c.name(), c.formals(), e, null, new TypedList(new LinkedList(), TypeNode.class, false), z); 
-                                                                           :}
- |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c VOID:d method_declarator:e throws_opt:f ensures_clause:z {:
-                                                                                                        RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, parser.nf.CanonicalTypeNode(parser.pos(d), parser.ts.Void()), e.name(), e.formals(), f, null, c, z); 
-                                                                                                        :};
+        modifiers_or_annotations_opt:a type:b method_declarator:c throws_opt:d modifies_opt:y ensures_clause:z 
+           {: 
+              RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, parser.array(b, c.dims().intValue()), c.name(), c.formals(), d, null, new TypedList(new LinkedList(), TypeNode.class, false), z, y); 
+           :}
+ |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c type:d method_declarator:e throws_opt:f modifies_opt:y ensures_clause:z 
+           {: 
+	       RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, parser.array(d, e.dims().intValue()), e.name(), e.formals(), f, null, c, z, y); 
+	   :}
+ |  modifiers_or_annotations_opt:a VOID:b method_declarator:c throws_opt:e modifies_opt:y ensures_clause:z 
+           {: 
+	       RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, parser.nf.CanonicalTypeNode(parser.pos(b), parser.ts.Void()), c.name(), c.formals(), e, null, new TypedList(new LinkedList(), TypeNode.class, false), z, y);                                                                
+           :}
+ |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c VOID:d method_declarator:e throws_opt:f modifies_opt:y ensures_clause:z 
+ {:                                                                                                  RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, parser.nf.CanonicalTypeNode(parser.pos(d), parser.ts.Void()), e.name(), e.formals(), f, null, c, z, y); 
+           :};
 
 ensures_opt ::=
            {: RESULT = null;  :}
@@ -714,6 +717,32 @@ ensures_clause ::=
         ENSURES predicate_expr:a
            {: RESULT = a; :}
 	   ;
+
+modifies_opt ::=
+           {:
+	      RESULT = null;
+           :}
+     |  modifiables:a 
+           {:  
+	      RESULT = a;  
+	   :};
+
+modifiables ::=
+        MODIFIES modifiables_list:a 
+           {:  
+              RESULT = a;  
+	   :};
+
+modifiables_list ::=
+        name:a 
+           {: List l = new TypedList(new LinkedList(), Name.class, false);
+	      l.add(a);
+	      RESULT = l; 
+	   :}
+     |  modifiables_list:a COMMA name:b 
+           {: RESULT = a;
+	      a.add(b); 
+	   :};
 
 // PART3:      ESJClassInvariantDecl
 

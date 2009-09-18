@@ -14,4 +14,5 @@ public interface ESJEnsuredMethodDecl extends JL5MethodDecl {
     public Expr ensuresExpr();
     public JL5Formal catchFormal();
     public boolean ensuresExprHasOld();
+    public List modifiables();
 }

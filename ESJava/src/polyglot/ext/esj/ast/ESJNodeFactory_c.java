@@ -66,8 +66,8 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 						     TypeNode returnType, String name,
 						     List formals, List throwTypes, Block body, 
 						     List paramTypes, Expr ensuresExpr, 
-						     JL5Formal catchFormal) {
-	return new ESJEnsuredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal);
+						     JL5Formal catchFormal, List modifiables) {
+	return new ESJEnsuredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal, modifiables);
 
     }
 

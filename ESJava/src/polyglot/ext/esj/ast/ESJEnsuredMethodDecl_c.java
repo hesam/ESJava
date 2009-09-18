@@ -24,15 +24,17 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 
     protected Expr ensuresExpr;
     protected JL5Formal catchFormal;
+    protected List modifiables;
 
     public ESJEnsuredMethodDecl_c(Position pos, FlagAnnotations flags,
 				  TypeNode returnType, String name,
 				  List formals, List throwTypes, Block body, 
 				  List paramTypes, Expr ensuresExpr, 
-				  JL5Formal catchFormal) {
+				  JL5Formal catchFormal, List modifiables) {
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
 	this.ensuresExpr = ensuresExpr;
 	this.catchFormal = catchFormal;
+	this.modifiables = modifiables;
     }
     
     public Expr ensuresExpr() {
@@ -41,6 +43,10 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 
     public JL5Formal catchFormal() {
 	return catchFormal;
+    }
+
+    public List modifiables() {
+	return modifiables;
     }
 
     public boolean ensuresExprHasOld() {

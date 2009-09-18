@@ -247,6 +247,7 @@ SingleCharacter = [^\r\n\'\\]
   "assert"                       { return key(sym.ASSERT); }
   "function"                     { return key(sym.FUNCTION); }
   "ensures"                      { return key(sym.ENSURES); }
+  "modifies"                     { return key(sym.MODIFIES); }
   "all"                          { return key(sym.ALL); }
   "some"                         { return key(sym.SOME); }
   "no"                           { return key(sym.NO); }

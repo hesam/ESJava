@@ -318,7 +318,7 @@ public class LogMap {
 	
 	//ch.append(csq);
 	//ch.flush();
-	if (SolverOpt_debug)
+	//if (SolverOpt_debug)
 	    System.out.println(problem.toString());
 	String solution = Kodkodi.ESJCallSolver(problem.toString());
 	SolverOutputParser parser = null;
