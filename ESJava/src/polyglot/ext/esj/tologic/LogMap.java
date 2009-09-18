@@ -196,6 +196,11 @@ public class LogMap {
 	return (LogRelation) ((HashMap) InstVarRels.get(obj.getClass())).get(instVar);
     }
 
+    public static LogRelation instVarRelOld_log(LogRelation r) {
+	return (LogRelation) ((HashMap) InstVarRels.get(r.domain())).get(r.instVar()+"_old");
+	//return r;
+    }
+
     /*
     // fixme? --> diff name or instanceof...
     public static LogIntAtom intInstVar_log(LogVar var, String instVar) {
@@ -279,11 +284,11 @@ public class LogMap {
 		fNs += (" + " + instVarRel_log(obj, instVars[i]+fA).id());
 	    fNs += ")";
 	}
-	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + (isReflexive ? "*" : "^") + fNs + ")");
+	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + (isReflexive ? "*" : "^") + fNs + " - " + get1_log(null) + " )"); //FIXME: get_log(null) ?
     }
 
 
-    public static boolean solve(Object obj, Object formula) {
+    public static boolean solve(Object obj, Object formula, HashMap<String,String> modifiableFields) {
 
 	CharArrayWriter problem = new CharArrayWriter();
 	CharArrayWriter funDefs = new CharArrayWriter();
@@ -301,7 +306,8 @@ public class LogMap {
 	problem.append("univ: u" + AtomCtr + spacer);
 	for (Object k : ProblemRels.keySet() ) {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
-	    problem.append("bounds " + k + ": " + r.log() + spacer);
+	    String rBound = (!r.isUnknown() || r.isModifiable(modifiableFields)) ? r.log() : instVarRelOld_log(r).log();
+	    problem.append("bounds " + k + ": " + rBound + spacer);
 	    if (r.isUnknown()) {
 		unknowns.add(r);
 		funDefs.append(r.funDef_log());

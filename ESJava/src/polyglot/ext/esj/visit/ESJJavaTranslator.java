@@ -71,6 +71,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 	Expr assertExpr = methodDecl.ensuresExpr() == null ? call1 : 
 	    nf.FormulaBinary(null, call1, Binary.COND_AND, methodDecl.ensuresExpr());
 	extraMtdBody.add(nf.Eval(null, nf.Call(null, null, "initEnsuredMethod", new TypedList(new LinkedList(), Expr.class, false))));
+	for (Formal f : (List<Formal>) methodDecl.formals()) {
+	    extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,f.name()), "clone", new TypedList(new LinkedList(), Expr.class, false))));
+	    extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,f.name()), "relationize", new TypedList(new LinkedList(), Expr.class, false))));
+	}
 	extraMtdBody.addAll(methodDecl.body().statements());
 	extraMtdBody.add(nf.JL5Assert(null, assertExpr, null));
 
@@ -81,7 +85,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 					      new TypedList(new LinkedList(), Expr.class, false))));
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	for (Formal f : (List<Formal>) methodDecl.formals())
-	    args.add( nf.Local(null,f.name()));
+	    args.add(nf.Local(null,f.name()));
+	//args.add(nf.Local(null,"modifiables"));
 	catchBody.add(nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback", args)));
 	Block catchBlock = nf.Block(null,catchBody);
 	catches.add(nf.JL5Catch(null, methodDecl.catchFormal(), catchBlock));
@@ -335,6 +340,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, "" + ((BooleanLit) r).value() ));
 	    return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
+	}  else if (r instanceof New) {
+	    return r;
 	} else if (r instanceof CanonicalTypeNode) {
 	    return r;
 	}

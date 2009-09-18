@@ -3,6 +3,7 @@ package polyglot.ext.esj.tologic;
 import polyglot.ext.esj.primitives.*;
 
 import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -67,6 +68,10 @@ public class LogRelation extends Hashtable {
     public boolean hasFixedSize() { return fixedSize != 0; }
     public void fixedSize(int s) { fixedSize = s; }
     public void incrFixedSize() { fixedSize++; }
+
+    public boolean isModifiable(HashMap modifiableFields) {
+	return modifiableFields.containsKey(domain + "." + instVar);
+    }
 
     public String domain_log() { 
 	return isaList ? ESJInteger.zeroTo_log(fixedSize).string() : LogMap.bounds_log(domain, false, false).string();
@@ -137,6 +142,7 @@ public class LogRelation extends Hashtable {
     }
 
     public String log() {
+	System.out.println("hello i'm " + id + " " + domain + " " + instVar + " ");
 	String lower = lowerBound_log();
 	if (isUnknown()) {
 	    CharArrayWriter o = new CharArrayWriter();

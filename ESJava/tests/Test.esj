@@ -32,7 +32,7 @@ public class Test ensures (x > 20) {
 
     function public boolean repOk() {
 	//z == x
-	//x == 2 * old.x
+	x == 2 * old.x
 	//this.y() == 2 * this.x() 
 	//this.y == 2 * this.x 
 	//this.x == 2 * this.x_old
@@ -53,7 +53,7 @@ public class Test ensures (x > 20) {
 	//all Node n : root.children() | one Node p | n.parent == p
 	//all Node n | one Node p : n.children() | n.parent == p
 	//all Node n | (n.left == null || all Node c : n.left.children() | c.value < n.value)
-	this.nodes().equals(old.nodes().union(root))
+	//this.nodes().equals(old.nodes().union(root))
 	//this.nodes().size() == old.nodes().size() + 1
 	}
 
@@ -112,12 +112,9 @@ public class Test ensures (x > 20) {
 	*/
 	Test t1 = new Test(13,10,null); //n1);
 	//LogMap.initRelationize();
-	//System.out.println(t1);
-	t1.print();
-	//t1.m1();
-	t1.insert(2);
-	//t1.print();
-	//System.out.println(t1);
+	System.out.println(t1);
+	t1.m1();
+	System.out.println(t1);
 	//System.out.println(t1.old());
 	//System.out.println(t1.old());
 	//System.out.println(t1.old().old());
@@ -138,10 +135,6 @@ public class Test ensures (x > 20) {
 	//System.out.println(t1.old().nodes_log().union_log(t1.root_log()));
 	//System.out.println(t1.nodes_log().equals_log(t1.old().nodes_log().union_log(t1.root_log())));
 
-	System.out.println(t1.root);
-	System.out.println(t1.root.left);
-	System.out.println(t1.root.right);
-	System.out.println(t1.root.parent);
 
     }
 
