@@ -89,7 +89,8 @@ public class LogMap {
 		LogtoJ.put(AtomCtr,obj);
 		//LogtoJ.put(AtomCtr,obj.old());
 		JtoLog.put(obj,AtomCtr);
-		JtoLog.put(obj.old(),AtomCtr);
+		if (obj.old() != null)
+		    JtoLog.put(obj.old(),AtomCtr);
 		AtomCtr++;
 	    }
 	    /*for (ESJObject obj : objs) {
@@ -402,7 +403,8 @@ public class LogMap {
 			m.invoke(get2((Integer) v.get(0)),args);
 		    }
 		} catch (Exception e) {
-		    System.out.println("duh" + e);
+		    System.out.println("duh: " + e);
+		    System.exit(1);
 		}
 		
 	    }
