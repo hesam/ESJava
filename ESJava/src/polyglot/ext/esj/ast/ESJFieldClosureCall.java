@@ -4,4 +4,5 @@ import polyglot.ast.Call;
 
 public interface ESJFieldClosureCall extends Call {
 
+    public boolean isSetFieldsMap();
 }

@@ -12,6 +12,7 @@ import polyglot.ext.jl5.ast.*;
 public interface ESJFieldClosure extends Field {
 
     public boolean isReflexive();
+    public boolean isSetFieldsMap();
     public boolean isMulti();
     public List multiNames();
     public String id();

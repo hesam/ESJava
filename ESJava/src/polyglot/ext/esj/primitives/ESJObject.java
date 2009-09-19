@@ -12,4 +12,5 @@ public interface ESJObject {
     public boolean isQuantifyVar();
     public ESJObject old();
     public boolean isOld();
+    //public ESJSet fieldsClosure(boolean isReflexive, java.lang.String ... fieldNs);
 }

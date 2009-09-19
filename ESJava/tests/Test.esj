@@ -30,6 +30,11 @@ public class Test ensures (x > 20) {
 	root.*(left+right)
     }
 
+    // this is a map not a closure... write a diff one
+    function public ESJSet<Integer> nodeValues() {
+	this.nodes().<value
+    }
+
     function public boolean repOk() {
 	//z == x
 	x == 2 * old.x
@@ -62,12 +67,8 @@ public class Test ensures (x > 20) {
 
     }
 
-    public void insert(Integer key) {
-	insert(key, key);
-    }
-
-    public void insert(Integer key, Integer value) {
-        Node insertedNode = new Node(key, value, null, null);
+    public void insert(Integer value) {
+        Node insertedNode = new Node(value, null, null);
 	insert(insertedNode);
     }
 
@@ -94,7 +95,7 @@ public class Test ensures (x > 20) {
         }
         for (int i = 0; i < indent; i++)
             System.out.print(" "); 
-            System.out.println(n.key);
+            System.out.println(n.value);
         if (n.left != null) {
             printHelper(n.left, indent + INDENT_STEP);
         }
@@ -103,18 +104,16 @@ public class Test ensures (x > 20) {
 
     public static void main(String[] args) {
 	LogMap.SolverOpt_debug(true);
-	/*
-	Node n4 = new Node(4, 4, null, null);	
-	Node n5 = new Node(5, 5, null, null);	
-	Node n2 = new Node(2, 2, n4, n5);	
-	Node n3 = new Node(3, 3, null, null);	
-	Node n1 = new Node(1, 1, n2, n3);
-	*/
-	Test t1 = new Test(13,10,null); //n1);
+	Node n4 = new Node(4, null, null);	
+	Node n5 = new Node(5, null, null);	
+	Node n2 = new Node(2, n4, n5);	
+	Node n3 = new Node(3, null, null);	
+	Node n1 = new Node(1, n2, n3);
+	Test t1 = new Test(13, 10, n1);
 	//LogMap.initRelationize();
 	System.out.println(t1);
-	t1.m1();
-	System.out.println(t1);
+	//t1.m1();
+	//System.out.println(t1);
 	//System.out.println(t1.old());
 	//System.out.println(t1.old());
 	//System.out.println(t1.old().old());
@@ -122,7 +121,8 @@ public class Test ensures (x > 20) {
 	//System.out.println(t1.root.children());
 	//System.out.println(t1);	
 	//t1.initEnsuredMethod();
-	//System.out.println(t1.nodes());
+	System.out.println(t1.nodes());
+	System.out.println(t1.nodeValues());
 	//System.out.println(t1.old().nodes());
 	//System.out.println(t1.nodes().equals(t1.old.nodes()));
 

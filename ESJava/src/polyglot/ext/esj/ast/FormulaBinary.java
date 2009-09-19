@@ -15,5 +15,6 @@ public interface FormulaBinary extends Binary {
     // closure ops (FIXME: move...)
     public static final Operator RFLX       = new Operator(".*", Precedence.RELATIONAL);
     public static final Operator NONRFLX       = new Operator(".^", Precedence.RELATIONAL);
+    public static final Operator MAP        = new Operator(".<", Precedence.RELATIONAL);
 
 }

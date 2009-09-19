@@ -288,6 +288,23 @@ public class LogMap {
 	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + (isReflexive ? "*" : "^") + fNs + " - " + get1_log(null) + " )"); //FIXME: get_log(null) ?
     }
 
+    //FIXME
+    public static LogSet instVarClosure_log(LogSet obj, boolean isOld, boolean isReflexive, String... instVars) {
+	String fA = isOld ? "_old" : "";
+	String fNs = instVarRel_log(null, instVars[0]+fA).id();
+	if (instVars.length > 1) {
+	    fNs = "(" + fNs;
+	    for(int i=1;i<instVars.length;i++)
+		fNs += (" + " + instVarRel_log(null, instVars[i]+fA).id());
+	    fNs += ")";
+	}
+	return new LogSet("(" + obj.string() + "." + (isReflexive ? "*" : "^") + fNs + " - " + get1_log(null) + " )"); //FIXME: get_log(null) ?
+    }
+
+    /*
+    public static LogSet instVarClosure_log(LogSet obj, boolean isOld, boolean isReflexive, String... instVars) {
+	return null;
+	}*/
 
     public static boolean solve(Object obj, Object formula, HashMap<String,String> modifiableFields) {
 

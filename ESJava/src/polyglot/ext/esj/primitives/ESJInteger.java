@@ -815,6 +815,11 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
   }
 
+  public LogFormula cmpOp(String o, Integer o2) {
+      return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + new LogInt(o2.toString()).sumValue_log() + ")");
+  }
+
+
   public LogSet arithOp(String o, LogObject o2) {
       return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
   }

@@ -28,16 +28,18 @@ public class ESJFieldClosure_c extends Field_c
     protected static int idCtr = 0;
 
     protected boolean isReflexive;
+    protected boolean isSetFieldsMap;
     protected boolean isMulti;
     protected List multiNames;
     protected String id;
     protected JL5MethodDecl parentMethod;
     protected String theType;
 
-    public ESJFieldClosure_c(Position pos, Receiver target, String name, boolean isReflexive, List multiNames, String theType) {
+    public ESJFieldClosure_c(Position pos, Receiver target, String name, boolean isReflexive, boolean isSetFieldsMap, List multiNames, String theType) {
 	super(pos, target, name);
 	this.id = Integer.toString(idCtr++);
 	this.isReflexive = isReflexive;
+	this.isSetFieldsMap = isSetFieldsMap;
 	this.isMulti = multiNames.size() > 1;
 	this.multiNames = multiNames;
 	this.theType = theType;
@@ -45,6 +47,10 @@ public class ESJFieldClosure_c extends Field_c
     
     public boolean isReflexive() {
 	return isReflexive;
+    }
+
+    public boolean isSetFieldsMap() {
+	return isSetFieldsMap;
     }
 
     public String id() {
