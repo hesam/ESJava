@@ -122,11 +122,12 @@ public class LogMap {
     }
 
     public static int get1(Object key) {
+	/*
 	if (SolverOpt_debug) {
 	    System.out.println("get1: " + key);
 	    System.out.println(" --> " + JtoLog.get(key));
 	    System.out.println(JtoLog);
-	}
+	    }*/
 	return (Integer) JtoLog.get(key);
     }
 

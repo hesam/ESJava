@@ -21,16 +21,21 @@ public class BSTree
 	isAcyclic() && oneParent() && isValidBinarySearch() 
     }
 
-    function public boolean isAcyclic() { no Node n | n.^(left+right).contains(n) }
+    function public boolean isAcyclic() { no Node n | n.children().contains(n) }
 
     function public boolean oneParent() {
 	(root == null) ? true : all Node n : this.root.children() | one Node p | n.parent == p
     }
 
     function public boolean isValidBinarySearch() {
-	all Node n | ((n.left == null || all Node lc : n.leftChildren() | lc.value < n.value) &&
-		      (n.right == null || all Node rc : n.rightChildren() | rc.value > n.value))
+       all Node n | ((n.left == null  || all Node lc : n.leftChildren()  | lc.value < n.value) &&
+        	     (n.right == null || all Node rc : n.rightChildren() | rc.value > n.value))
     }
+
+    /*    
+    function public boolean contains(Integer value) {
+	some Node n : nodes() | n.value == value
+	}*/
 
     public void insert(Integer value) {
         Node insertedNode = new Node(value, null, null);
@@ -42,6 +47,42 @@ public class BSTree
 	ensures this.nodes().equals(this.old.nodes().union(insertedNode)) {
 	// no implementation...
     }    
+
+    /*
+    public void delete(Integer key)
+	modifies BSTree.root, Node.left, Node.right, Node.parent
+	ensures !contains(key) {
+	// no implementation...
+	} */ 
+  
+
+    public void delete(Integer value) {
+        Node deleteNode = lookupNode(value);
+	delete(deleteNode);
+    }
+
+    public void delete(Node deleteNode)
+	modifies BSTree.root, Node.left, Node.right, Node.parent
+	ensures this.nodes().equals(this.old.nodes().minus(deleteNode)) {
+	// no implementation...
+    }    
+
+    private Node lookupNode(Integer value) {
+        Node n = root;
+        while (n != null) {
+            int compResult = value.compareTo(n.value);
+            if (compResult == 0) {
+                return n;
+            } else if (compResult < 0) {
+                n = n.left;
+            } else {
+                assert compResult > 0;
+                n = n.right;
+            }
+        }
+        return n;
+    }
+    
     
     public void print() {
         printHelper(root, 0);
@@ -83,7 +124,7 @@ public class BSTree
 
 	// randomly shuffle the elements in the array and 
 	// insert them in the tree	
-	
+	// then remove all from top
 	for (int i = MAX_SIZE; i>0; --i) {
 	    int n = rand.nextInt(i);
 	    int temp = a[n];
@@ -91,13 +132,13 @@ public class BSTree
 	    t.insert(temp);
 	    t.print();
 	    }
-	/*
-	t.insert(1);
-	t.insert(4);
-	t.insert(2);
-	t.insert(3);
-	t.print();*/
+	for (int i = MAX_SIZE; i>=0; --i) {
+	    t.delete(i);
+	    t.print();
+	}
+	//System.out.println(t.contains(3));
+	
     }
-
+    
 }
 
