@@ -837,7 +837,6 @@ ensured_class_declaration ::=
 		 lfArgs.set(2,parser.nf.Call(null, parser.nf.Local(null,"o2"), "string", parser.emptyArgs));
 		 l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		 
-
 		 // define setFieldsMap mtd
 		 AmbTypeNode settn = parser.nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJSet");
 		 AmbTypeNode asettn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)settn).qual(), ((AmbTypeNode)settn).name(), gt);
@@ -899,8 +898,8 @@ ensured_class_declaration ::=
 		 extraMtdBody.add(parser.nf.JL5Return(null, parser.nf.Local(null,"res")));
 		 Block extraMtdBlock = parser.nf.Block(null, extraMtdBody);
 		 l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs2), settn, "setFieldsMap", frms, new TypedList(new LinkedList(), TypeNode.class, false), extraMtdBlock, new TypedList(new LinkedList(), TypeNode.class, false)));
-		 
-		 
+
+				 
 	      	 // define relationize() and relationizeOld() and clone()...
 	      	 List args = new TypedList(new LinkedList(), Expr.class, false);
 	      	 args.add(parser.nf.This(null));
@@ -947,33 +946,7 @@ ensured_class_declaration ::=
 			    } else {
 				//relationizeOldMtdBody.addAll(relationizeOldMtdIfBody);
 				cloneBody.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.Local(null, "res"), fi.name()), Assign.ASSIGN, parser.nf.Field(null, parser.nf.This(null), fi.name()))));
-			    }
-			    
-			    // set <field>_log here...
-			    /*
-			    TypeNode tnP = fi.type();
-			    TypeNode tnP2 = fi.isReferenceType() ? tnP : parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.primitives.ESJInteger")); //FIXME
-			    List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
-			    List args2p = new TypedList(new LinkedList(), Expr.class, false);
-			    List args3p = new TypedList(new LinkedList(), Expr.class, false);
-			    args3p.add(parser.nf.This(null));
-			    args3p.add(parser.nf.StringLit(null, fi.name()));
-			    args2p.add(parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), fi.isReferenceType() ? "objInstVarStr_log" : "intInstVarStr_log", args3p));
-			    args2p.add(parser.nf.ClassLit(null, tnP));
-			    instVarGetArgs.add(parser.nf.JL5New(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2p, null, new TypedList(new LinkedList(), TypeNode.class, false)));
-			    relationizeMtdSubBody.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), fi.name()+"_log"), Assign.ASSIGN, parser.nf.JL5New(null, tnP2, instVarGetArgs, null, new TypedList(new LinkedList(), TypeNode.class, false)))));
-
-			    instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
-			    args2p = new TypedList(new LinkedList(), Expr.class, false);
-			    args3p = new TypedList(new LinkedList(), Expr.class, false);
-			    args3p.add(parser.nf.This(null));
-			    args3p.add(parser.nf.StringLit(null, fi.name()+"_old"));
-			    args2p.add(parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), fi.isReferenceType() ? "objInstVarStr_log" : "intInstVarStr_log", args3p));
-			    args2p.add(parser.nf.ClassLit(null, tnP));
-			    instVarGetArgs.add(parser.nf.JL5New(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2p, null, new TypedList(new LinkedList(), TypeNode.class, false)));
-			    relationizeOldMtdBody.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), fi.name()+"_old_log"), Assign.ASSIGN, parser.nf.JL5New(null, tnP2, instVarGetArgs, null, new TypedList(new LinkedList(), TypeNode.class, false)))));
-			    */
-			    
+			    }			    			   
 			}
 	             }			    
 	       	 }
@@ -1071,16 +1044,41 @@ override field_declaration ::=
 		     Block relDefBodyP = parser.nf.Block(null, parser.nf.Eval(null,parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newInstVarRel", relDefBodyArgsP)));
                      l.add(parser.nf.Initializer(null, Flags.STATIC, relDefBodyP));
 
+		     List gt = new TypedList(new LinkedList(), TypeNode.class, false);
+		     AmbTypeNode cl = parser.nf.AmbTypeNode(null, parser.currClassName);
+		     gt.add(cl);
+		     AmbTypeNode tn = parser.nf.AmbTypeNode(null, "java.util.ArrayList");
+		     AmbTypeNode atn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)tn).qual(), ((AmbTypeNode)tn).name(), gt);
+
+		     AmbTypeNode settn = parser.nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJSet");
+		     AmbTypeNode asettn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)settn).qual(), ((AmbTypeNode)settn).name(), gt);
+
+		     // define setMap_<field> mtd
+		     /*
+		     List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
+		     List frms = new TypedList(new LinkedList(), Formal.class, false);
+		     frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, asettn, "objs"));
+		     extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, asettn, "res", parser.nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
+		     AmbTypeNode itrtn = parser.nf.AmbTypeNode(null, "java.util.Iterator");
+		     extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, itrtn, "i", parser.nf.Call(null, parser.nf.Local(null, "objs"), "iterator", parser.emptyArgs)));
+		     List whileLoopStmts = new TypedList(new LinkedList(), Stmt.class, false);
+		     List argsW2a = new TypedList(new LinkedList(), Expr.class, false);
+		     argsW2a.add(parser.nf.Call(null, parser.nf.Local(null, "i"), "next", parser.emptyArgs));
+		     Stmt s1 = parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "res"), "add", argsW2a));			
+		     whileLoopStmts.add(s1);
+		     Stmt whileLoopBody = parser.nf.Block(null, whileLoopStmts);
+		     extraMtdBody.add(parser.nf.While(null, parser.nf.Call(null, parser.nf.Local(null, "i"), "hasNext", parser.emptyArgs) , whileLoopBody));
+		     extraMtdBody.add(parser.nf.JL5Return(null, parser.nf.Local(null,"res")));
+		     Block extraMtdBlock = parser.nf.Block(null, extraMtdBody);
+		     List<Flags> fs2 = new ArrayList<Flags>();
+		     fs2.add(Flags.STATIC);
+		     fs2.add(Flags.PUBLIC);
+
+		     l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs2), asettn, "setMap_"+d.name, frms, new TypedList(new LinkedList(), TypeNode.class, false), extraMtdBlock, new TypedList(new LinkedList(), TypeNode.class, false)));
+		     */
 		     // also define field closure access for recursive fields
 		     if (b.toString().equals(parser.currClassName+"{amb}") && parser.noClosureDefYet) { //FIXME
 			parser.noClosureDefYet(false);
-	      		List gt = new TypedList(new LinkedList(), TypeNode.class, false);
-	      		AmbTypeNode cl = parser.nf.AmbTypeNode(null, parser.currClassName);
-	      		gt.add(cl);
-	      		AmbTypeNode tn = parser.nf.AmbTypeNode(null, "java.util.ArrayList");
-	      		AmbTypeNode atn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)tn).qual(), ((AmbTypeNode)tn).name(), gt);
-	      		AmbTypeNode settn = parser.nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJSet");
-	      		AmbTypeNode asettn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)settn).qual(), ((AmbTypeNode)settn).name(), gt);
 		     	List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Class()), "c", parser.nf.ClassLit(null, cl)));
 			List frms = new TypedList(new LinkedList(), Formal.class, false);
@@ -1128,19 +1126,25 @@ override field_declaration ::=
 
 			List forLoop2VarD = new TypedList(new LinkedList(), LocalDecl.class, false);
 			forLoop2VarD.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, fldtn, "f", null));
+
 			List forLoop2Stmts = new TypedList(new LinkedList(), Stmt.class, false);
+
 			List argsW2a = new TypedList(new LinkedList(), Expr.class, false);
+
 			argsW2a.add(parser.nf.Local(null, "n"));
 			forLoop2Stmts.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, cl, "childN", parser.nf.JL5Cast(null, parser.array(cl, 0), parser.nf.Call(null, parser.nf.Local(null, "f"), "get", argsW2a))));
 			Expr forLoop2Ife1 = parser.nf.Binary(null, parser.nf.Local(null, "childN"), Binary.NE, parser.nf.NullLit(null));
+
 			List argsW2b = new TypedList(new LinkedList(), Expr.class, false);
 			argsW2b.add(parser.nf.Local(null, "childN"));
+
 			Stmt forLoop2Ife2 = parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "unExpanded"), "add", argsW2b));			
 			forLoop2Stmts.add(parser.nf.JL5If(null, forLoop2Ife1, forLoop2Ife2, null));
+
 			Stmt forLoop2Body = parser.nf.Block(null, forLoop2Stmts);
 			Stmt forLoop2 = parser.nf.ExtendedFor(null, forLoop2VarD, parser.nf.Local(null, "fields"), forLoop2Body);
 			whileLoopStmts.add(forLoop2);
-			Stmt whileLoopBody = parser.nf.Block(null, whileLoopStmts);
+			Block whileLoopBody = parser.nf.Block(null, whileLoopStmts);
 			tryBody.add(parser.nf.While(null, parser.nf.Binary(null, parser.nf.Call(null, parser.nf.Local(null, "unExpanded"), "size", argsW0), Binary.GT, parser.nf.IntLit(null, IntLit.INT, 0)), whileLoopBody));
 			tryBody.add(parser.nf.JL5If(null, parser.nf.Unary(null, Unary.NOT, parser.nf.Local(null,"isReflexive")), parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "res"), "remove", argsW2)), null));
 			Block tryBlock = parser.nf.Block(null, tryBody);

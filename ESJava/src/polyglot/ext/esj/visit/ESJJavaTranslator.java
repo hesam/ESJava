@@ -279,9 +279,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    //(c.target() instanceof Call && ((Call) c.target()).name().equals("old"))) //FIXME
 	    //def = "_old_log";
 	    String m = c.name() + (c.name().equals("old") ? "" : "_log"); //FIXME
-	    for (Expr e : (List<Expr>) c.arguments()) {
-		 args.add((Expr) toLogicExpr(e));
-	    }
+	    for (Expr e : (List<Expr>) c.arguments())
+		args.add((Expr) toLogicExpr(e));
 	    if (c.target() instanceof Local && quantVars.contains(((Local) c.target()).name())) {
 		//return nf.Call(null, c.target(), c.name() + "_log2" , args);
 		return nf.Call(null, c.target(), m , args);
@@ -331,7 +330,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, "" + ((IntLit) r).value() ));
 	    return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
-	} else if (r instanceof StringLit) {
+	}  else if (r instanceof StringLit) {
 	    return r;
 	} else if (r instanceof NullLit) {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
@@ -465,8 +464,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	return nf.JL5New(null, tn, instVarGetArgs, null, new TypedList(new LinkedList(), TypeNode.class, false));
 	}*/
 
+    // FIXME
     public Node instVarClosureGet_log(boolean isSetFieldsMap, Receiver target, List origArgs) throws SemanticException {
-	System.out.println("hi" + target + " " +  origArgs + " " + isSetFieldsMap);
 	List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
 	if (isSetFieldsMap) {
 	    instVarGetArgs.add((Expr) toLogicExpr((Expr) origArgs.get(0)));

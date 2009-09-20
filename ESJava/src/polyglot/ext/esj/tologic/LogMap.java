@@ -197,6 +197,10 @@ public class LogMap {
 	return (LogRelation) ((HashMap) InstVarRels.get(obj.getClass())).get(instVar);
     }
 
+    public static LogRelation instVarRel_log(Class c, String instVar) {
+	return (LogRelation) ((HashMap) InstVarRels.get(c)).get(instVar);
+    }
+
     public static LogRelation instVarRelOld_log(LogRelation r) {
 	return (LogRelation) ((HashMap) InstVarRels.get(r.domain())).get(r.instVar()+"_old");
 	//return r;
@@ -285,20 +289,22 @@ public class LogMap {
 		fNs += (" + " + instVarRel_log(obj, instVars[i]+fA).id());
 	    fNs += ")";
 	}
-	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + (isReflexive ? "*" : "^") + fNs + " - " + get1_log(null) + " )"); //FIXME: get_log(null) ?
+	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + (isReflexive ? "*" : "^") + fNs + " - " + get1_log(null) + ")", obj.getClass()); //FIXME: get_log(null) ?
     }
 
-    //FIXME
+    //FIXME: this is not closure: a setmap of fields
     public static LogSet instVarClosure_log(LogSet obj, boolean isOld, boolean isReflexive, String... instVars) {
+	System.out.println("hi: " + obj.string() + " " + obj.range());
+	Class range = obj.range();
 	String fA = isOld ? "_old" : "";
-	String fNs = instVarRel_log(null, instVars[0]+fA).id();
+	String fNs = instVarRel_log(range, instVars[0]+fA).id();
 	if (instVars.length > 1) {
 	    fNs = "(" + fNs;
 	    for(int i=1;i<instVars.length;i++)
-		fNs += (" + " + instVarRel_log(null, instVars[i]+fA).id());
+		fNs += (" + " + instVarRel_log(range, instVars[i]+fA).id());
 	    fNs += ")";
 	}
-	return new LogSet("(" + obj.string() + "." + (isReflexive ? "*" : "^") + fNs + " - " + get1_log(null) + " )"); //FIXME: get_log(null) ?
+	return new LogSet("(" + obj.string() + "." + fNs + " - " + get1_log(null) + " )"); //FIXME: get_log(null) ?
     }
 
     /*

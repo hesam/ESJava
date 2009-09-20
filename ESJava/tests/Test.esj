@@ -30,7 +30,6 @@ public class Test ensures (x > 20) {
 	root.*(left+right)
     }
 
-    // this is a map not a closure... write a diff one
     function public ESJSet<Integer> nodeValues() {
 	this.nodes().<value
     }
@@ -120,7 +119,7 @@ public class Test ensures (x > 20) {
 	//System.out.println(n1.children());
 	//System.out.println(t1.root.children());
 	//System.out.println(t1);	
-	//t1.initEnsuredMethod();
+	t1.initEnsuredMethod();
 	System.out.println(t1.nodes());
 	System.out.println(t1.nodeValues());
 	//System.out.println(t1.old().nodes());
@@ -130,6 +129,7 @@ public class Test ensures (x > 20) {
 	//System.out.println(t1.old().nodes_log());
 	//System.out.println(t1.repOk());
 	//System.out.println(t1.repOk_log());
+	System.out.println(t1.nodeValues_log());
 	//System.out.println("hello");
 	//System.out.println(t1.old().nodes_log());
 	//System.out.println(t1.old().nodes_log().union_log(t1.root_log()));

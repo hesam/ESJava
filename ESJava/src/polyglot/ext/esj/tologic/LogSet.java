@@ -7,13 +7,25 @@ import java.util.ArrayList;
 
 public class LogSet extends LogObject {
 
+    protected Class range;
+
     public LogSet(String string) {
-	this(string, 0, false);
+	this(string, 0, false, null);
+    }
+    public LogSet(String string, Class range) {
+	this(string, 0, false, range);
     }
 
     public LogSet(String string, int listSize, boolean isaListInstVar) {
-	super(string, listSize, isaListInstVar);
+	this(string, listSize, isaListInstVar, null);	
     }
+
+    public LogSet(String string, int listSize, boolean isaListInstVar, Class range) {
+	super(string, listSize, isaListInstVar);
+	this.range = range;
+    }
+
+    public Class range() { return range; }
 
     public boolean isEmpty() {
 	return string.equals("u0");
@@ -70,6 +82,10 @@ public class LogSet extends LogObject {
     }
 
     public LogSet minus_log(ESJObject o2) { //FIXME
+	return arithOp("-", new LogObjAtom(LogMap.get1_log(o2)));
+    }
+
+    public LogSet minus_log(Integer o2) { //FIXME
 	return arithOp("-", new LogObjAtom(LogMap.get1_log(o2)));
     }
 

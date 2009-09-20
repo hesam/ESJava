@@ -17,6 +17,8 @@ public class BSTree
 
     function public ESJSet<Node> nodes() { root.*(left+right) }
 
+    function public ESJSet<Integer> nodeValues() { this.nodes().<value }
+
     function public boolean isBinarySearchTree() {
 	isAcyclic() && oneParent() && isValidBinarySearch() 
     }
@@ -47,42 +49,12 @@ public class BSTree
 	// no implementation...
     }    
 
-    /*
     public void delete(Integer key)
 	modifies BSTree.root, Node.left, Node.right, Node.parent
-    //ensures !contains(key) {
-	ensures this.nodes().<value.equals(this.old.nodes().<value.minus(key)) {
+	ensures this.nodeValues().equals(this.old.nodeValues().minus(key)) {
 	// no implementation...
-	} 
-    */
-    
-    public void delete(Integer value) {
-        Node deleteNode = lookupNode(value);
-	delete(deleteNode);
-    }
+    } 
 
-    public void delete(Node deleteNode)
-	modifies BSTree.root, Node.left, Node.right, Node.parent
-	ensures this.nodes().equals(this.old.nodes().minus(deleteNode)) {
-	// no implementation...
-    }    
-
-    private Node lookupNode(Integer value) {
-        Node n = root;
-        while (n != null) {
-            int compResult = value.compareTo(n.value);
-            if (compResult == 0) {
-                return n;
-            } else if (compResult < 0) {
-                n = n.left;
-            } else {
-                assert compResult > 0;
-                n = n.right;
-            }
-        }
-        return n;
-    }
-    
     public void print() {
         printHelper(root, 0);
 	System.out.println("---------------------------------------" + 
