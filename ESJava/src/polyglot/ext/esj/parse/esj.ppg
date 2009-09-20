@@ -247,6 +247,117 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    return nf.Block(null, l); 
      }    
 
+     public JL5MethodDecl makeFieldClosureMethod (AmbTypeNode cl, AmbTypeNode tn, AmbTypeNode asettn) throws Exception {
+
+	 List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
+	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, nf.CanonicalTypeNode(null, ts.Class()), "c", nf.ClassLit(null, cl)));
+	 List frms = new TypedList(new LinkedList(), Formal.class, false);
+	 frms.add(nf.JL5Formal(null, emptyFlags, array(nf.CanonicalTypeNode(null, ts.Boolean()), 0), "isReflexive"));
+	 TypeNode strtn = nf.ArrayTypeNode(null, nf.CanonicalTypeNode(null, ts.String()));
+	 frms.add(nf.JL5Formal(null, emptyFlags, strtn, "fieldNs", true));
+	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, asettn, "res", nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
+	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, asettn, "unExpanded", nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
+	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, cl, "n", nf.This(null)));
+	 List argsW = new TypedList(new LinkedList(), Expr.class, false);
+	 argsW.add(nf.Local(null, "n"));
+	 extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.Local(null, "unExpanded"), "add", argsW)));
+	 
+	 List tryBody = new TypedList(new LinkedList(), Stmt.class, false);
+	 List catches = new TypedList(new LinkedList(), Catch.class, false);
+	 List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
+	 catchBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,"rte"), "printStackTrace",
+					     new TypedList(new LinkedList(), Expr.class, false))));
+	 Block catchBlock = nf.Block(null,catchBody);
+	 catches.add(nf.JL5Catch(null, nf.JL5Formal(null,  emptyFlags, array(nf.CanonicalTypeNode(null, ts.Exception()), 0), "rte"), catchBlock));
+	 List argsW2 = new TypedList(new LinkedList(), Expr.class, false);
+	 List argsW0 = new TypedList(new LinkedList(), Expr.class, false);
+	 argsW2.add(nf.This(null));
+	 
+	 List whileLoopStmts = new TypedList(new LinkedList(), Stmt.class, false);
+	 whileLoopStmts.add(nf.Eval(null, nf.Assign(null, nf.Local(null, "n"), Assign.ASSIGN, nf.Call(null, nf.Call(null, nf.Local(null, "unExpanded"), "iterator", argsW0), "next", argsW0))));
+	 whileLoopStmts.add(nf.Eval(null, nf.Call(null, nf.Local(null, "unExpanded"), "remove", argsW)));
+	 whileLoopStmts.add(nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "add", argsW)));
+	 List fldgt = new TypedList(new LinkedList(), TypeNode.class, false);
+	 AmbTypeNode fldtn = nf.AmbTypeNode(null, "java.lang.reflect.Field");
+	 fldgt.add(fldtn);
+	 AmbTypeNode afldtn = nf.JL5AmbTypeNode(null, ((AmbTypeNode)tn).qual(), ((AmbTypeNode)tn).name(), fldgt);
+	 tryBody.add(nf.JL5LocalDecl(null, emptyFlags, afldtn, "fields", nf.JL5New(null, afldtn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
+	 List forLoop1VarD = new TypedList(new LinkedList(), LocalDecl.class, false);
+	 forLoop1VarD.add(nf.JL5LocalDecl(null, emptyFlags, nf.CanonicalTypeNode(null, ts.String()), "fN", null));
+	 List forLoop1Stmts = new TypedList(new LinkedList(), Stmt.class, false);
+	 List argsW1 = new TypedList(new LinkedList(), Expr.class, false);
+	 List argsW1a = new TypedList(new LinkedList(), Expr.class, false);
+	 argsW1a.add(nf.Local(null, "fN"));
+	 argsW1.add(nf.Call(null, nf.Local(null, "c"), "getField", argsW1a));
+	 forLoop1Stmts.add(nf.Eval(null, nf.Call(null, nf.Local(null, "fields"), "add", argsW1)));
+	 Stmt forLoop1Body = nf.Block(null, forLoop1Stmts);
+	 Stmt forLoop1 = nf.ExtendedFor(null, forLoop1VarD, nf.Local(null, "fieldNs"), forLoop1Body);			
+	 tryBody.add(forLoop1);
+	 
+	 List forLoop2VarD = new TypedList(new LinkedList(), LocalDecl.class, false);
+	 forLoop2VarD.add(nf.JL5LocalDecl(null, emptyFlags, fldtn, "f", null));
+	 
+	 List forLoop2Stmts = new TypedList(new LinkedList(), Stmt.class, false);
+	 
+	 List argsW2a = new TypedList(new LinkedList(), Expr.class, false);
+	 
+	 argsW2a.add(nf.Local(null, "n"));
+	 forLoop2Stmts.add(nf.JL5LocalDecl(null, emptyFlags, cl, "childN", nf.JL5Cast(null, array(cl, 0), nf.Call(null, nf.Local(null, "f"), "get", argsW2a))));
+	 Expr forLoop2Ife1 = nf.Binary(null, nf.Local(null, "childN"), Binary.NE, nf.NullLit(null));
+	 
+	 List argsW2b = new TypedList(new LinkedList(), Expr.class, false);
+	 argsW2b.add(nf.Local(null, "childN"));
+	 
+	 Stmt forLoop2Ife2 = nf.Eval(null, nf.Call(null, nf.Local(null, "unExpanded"), "add", argsW2b));			
+	 forLoop2Stmts.add(nf.JL5If(null, forLoop2Ife1, forLoop2Ife2, null));
+	 
+	 Stmt forLoop2Body = nf.Block(null, forLoop2Stmts);
+	 Stmt forLoop2 = nf.ExtendedFor(null, forLoop2VarD, nf.Local(null, "fields"), forLoop2Body);
+	 whileLoopStmts.add(forLoop2);
+	 Block whileLoopBody = nf.Block(null, whileLoopStmts);
+	 tryBody.add(nf.While(null, nf.Binary(null, nf.Call(null, nf.Local(null, "unExpanded"), "size", argsW0), Binary.GT, nf.IntLit(null, IntLit.INT, 0)), whileLoopBody));
+	 tryBody.add(nf.JL5If(null, nf.Unary(null, Unary.NOT, nf.Local(null,"isReflexive")), nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "remove", argsW2)), null));
+	 Block tryBlock = nf.Block(null, tryBody);
+	 extraMtdBody.add(nf.Try(null, tryBlock, catches));
+	 extraMtdBody.add(nf.JL5Return(null, nf.Local(null,"res")));
+	 Block extraMtdBlock = nf.Block(null, extraMtdBody);
+	 return nf.JL5MethodDecl(null, emptyFlags, array(asettn, 0), "fieldsClosure", frms, new TypedList(new LinkedList(), TypeNode.class, false), extraMtdBlock, new TypedList(new LinkedList(), TypeNode.class, false));
+	 
+     }
+     
+     public JL5MethodDecl makeSetMapFieldMethod(String fN, TypeNode fT, AmbTypeNode cl, AmbTypeNode tn, AmbTypeNode asettn, AmbTypeNode asettn2) throws Exception {
+	 List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
+	 List frms = new TypedList(new LinkedList(), Formal.class, false);
+	 frms.add(nf.JL5Formal(null, emptyFlags, asettn, "objs"));
+	 TypeNode strtn = nf.ArrayTypeNode(null, nf.CanonicalTypeNode(null, ts.String()));
+	 frms.add(nf.JL5Formal(null, emptyFlags, strtn, "fieldNs", true));
+	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, asettn2, "res", nf.JL5New(null, asettn2, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
+
+
+	 List gt2 = new TypedList(new LinkedList(), TypeNode.class, false);
+	 gt2.add(cl);
+	 AmbTypeNode itrtn = nf.AmbTypeNode(null, "java.util.Iterator");
+	 AmbTypeNode aitrtn = nf.JL5AmbTypeNode(null, ((AmbTypeNode)itrtn).qual(), ((AmbTypeNode)itrtn).name(), gt2);
+
+	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, aitrtn, "i", nf.Call(null, nf.Local(null, "objs"), "iterator", emptyArgs)));
+	 List whileLoopStmts = new TypedList(new LinkedList(), Stmt.class, false);
+	 List argsW2a = new TypedList(new LinkedList(), Expr.class, false);
+	 
+	 argsW2a.add(nf.Field(null, nf.Call(null, nf.Local(null, "i"), "next", emptyArgs), fN));
+	 Stmt s1 = nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "add", argsW2a));			
+	 whileLoopStmts.add(s1);
+	 Stmt whileLoopBody = nf.Block(null, whileLoopStmts);
+	 extraMtdBody.add(nf.While(null, nf.Call(null, nf.Local(null, "i"), "hasNext", emptyArgs) , whileLoopBody));
+	 extraMtdBody.add(nf.JL5Return(null, nf.Local(null,"res")));
+	 Block extraMtdBlock = nf.Block(null, extraMtdBody);
+	 List<Flags> fs2 = new ArrayList<Flags>();
+	 fs2.add(Flags.STATIC);
+	 fs2.add(Flags.PUBLIC);
+
+	 return nf.JL5MethodDecl(null, makeFlagAnnotations(fs2), asettn2, "setMap_"+fN, frms, new TypedList(new LinkedList(), TypeNode.class, false), extraMtdBlock, new TypedList(new LinkedList(), TypeNode.class, false));
+     }
+
+
      public Expr makeESJLogPredBlockHelper(Expr e, List quantVarD, ESJLogPredMethodDecl m) {
      	    if (e instanceof FormulaBinary) {
 	       	  Binary b = (Binary) e;
@@ -838,6 +949,7 @@ ensured_class_declaration ::=
 		 l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		 
 		 // define setFieldsMap mtd
+		 /*
 		 AmbTypeNode settn = parser.nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJSet");
 		 AmbTypeNode asettn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)settn).qual(), ((AmbTypeNode)settn).name(), gt);
 		 extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
@@ -898,7 +1010,7 @@ ensured_class_declaration ::=
 		 extraMtdBody.add(parser.nf.JL5Return(null, parser.nf.Local(null,"res")));
 		 Block extraMtdBlock = parser.nf.Block(null, extraMtdBody);
 		 l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs2), settn, "setFieldsMap", frms, new TypedList(new LinkedList(), TypeNode.class, false), extraMtdBlock, new TypedList(new LinkedList(), TypeNode.class, false)));
-
+		 */
 				 
 	      	 // define relationize() and relationizeOld() and clone()...
 	      	 List args = new TypedList(new LinkedList(), Expr.class, false);
@@ -1053,109 +1165,23 @@ override field_declaration ::=
 		     AmbTypeNode settn = parser.nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJSet");
 		     AmbTypeNode asettn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)settn).qual(), ((AmbTypeNode)settn).name(), gt);
 
-		     // define setMap_<field> mtd
-		     /*
-		     List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
-		     List frms = new TypedList(new LinkedList(), Formal.class, false);
-		     frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, asettn, "objs"));
-		     extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, asettn, "res", parser.nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
-		     AmbTypeNode itrtn = parser.nf.AmbTypeNode(null, "java.util.Iterator");
-		     extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, itrtn, "i", parser.nf.Call(null, parser.nf.Local(null, "objs"), "iterator", parser.emptyArgs)));
-		     List whileLoopStmts = new TypedList(new LinkedList(), Stmt.class, false);
-		     List argsW2a = new TypedList(new LinkedList(), Expr.class, false);
-		     argsW2a.add(parser.nf.Call(null, parser.nf.Local(null, "i"), "next", parser.emptyArgs));
-		     Stmt s1 = parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "res"), "add", argsW2a));			
-		     whileLoopStmts.add(s1);
-		     Stmt whileLoopBody = parser.nf.Block(null, whileLoopStmts);
-		     extraMtdBody.add(parser.nf.While(null, parser.nf.Call(null, parser.nf.Local(null, "i"), "hasNext", parser.emptyArgs) , whileLoopBody));
-		     extraMtdBody.add(parser.nf.JL5Return(null, parser.nf.Local(null,"res")));
-		     Block extraMtdBlock = parser.nf.Block(null, extraMtdBody);
-		     List<Flags> fs2 = new ArrayList<Flags>();
-		     fs2.add(Flags.STATIC);
-		     fs2.add(Flags.PUBLIC);
+		     TypeNode fT = b.toString().equals("int") ? parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("java.lang.Integer")) : b; //FIXME
 
-		     l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs2), asettn, "setMap_"+d.name, frms, new TypedList(new LinkedList(), TypeNode.class, false), extraMtdBlock, new TypedList(new LinkedList(), TypeNode.class, false)));
-		     */
+		     List gt2 = new TypedList(new LinkedList(), TypeNode.class, false);
+		     gt2.add(fT);
+		     AmbTypeNode asettn2 = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)settn).qual(), ((AmbTypeNode)settn).name(), gt2);
+		     
+
+		     // define setMap_<field> mtd
+		     l.add(parser.makeSetMapFieldMethod(d.name, fT, cl, tn, asettn, asettn2));
 		     // also define field closure access for recursive fields
 		     if (b.toString().equals(parser.currClassName+"{amb}") && parser.noClosureDefYet) { //FIXME
 			parser.noClosureDefYet(false);
-		     	List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
-			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Class()), "c", parser.nf.ClassLit(null, cl)));
-			List frms = new TypedList(new LinkedList(), Formal.class, false);
-			frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), 0), "isReflexive"));
-			TypeNode strtn = parser.nf.ArrayTypeNode(null, parser.nf.CanonicalTypeNode(null, parser.ts.String()));
-			frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, strtn, "fieldNs", true));
-			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, asettn, "res", parser.nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
-			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, asettn, "unExpanded", parser.nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
-			extraMtdBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, cl, "n", parser.nf.This(null)));
-		     	List argsW = new TypedList(new LinkedList(), Expr.class, false);
-			argsW.add(parser.nf.Local(null, "n"));
-			extraMtdBody.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "unExpanded"), "add", argsW)));
-
-			List tryBody = new TypedList(new LinkedList(), Stmt.class, false);
-			List catches = new TypedList(new LinkedList(), Catch.class, false);
-			List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
-			catchBody.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null,"rte"), "printStackTrace",
-							    new TypedList(new LinkedList(), Expr.class, false))));
-			Block catchBlock = parser.nf.Block(null,catchBody);
-			catches.add(parser.nf.JL5Catch(null, parser.nf.JL5Formal(null,  parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Exception()), 0), "rte"), catchBlock));
-		     	List argsW2 = new TypedList(new LinkedList(), Expr.class, false);
-			List argsW0 = new TypedList(new LinkedList(), Expr.class, false);
-			argsW2.add(parser.nf.This(null));
-
-			List whileLoopStmts = new TypedList(new LinkedList(), Stmt.class, false);
-			whileLoopStmts.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Local(null, "n"), Assign.ASSIGN, parser.nf.Call(null, parser.nf.Call(null, parser.nf.Local(null, "unExpanded"), "iterator", argsW0), "next", argsW0))));
-			whileLoopStmts.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "unExpanded"), "remove", argsW)));
-			whileLoopStmts.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "res"), "add", argsW)));
-	      		List fldgt = new TypedList(new LinkedList(), TypeNode.class, false);
-	      		AmbTypeNode fldtn = parser.nf.AmbTypeNode(null, "java.lang.reflect.Field");
-	      		fldgt.add(fldtn);
-	      		AmbTypeNode afldtn = parser.nf.JL5AmbTypeNode(null, ((AmbTypeNode)tn).qual(), ((AmbTypeNode)tn).name(), fldgt);
-			tryBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, afldtn, "fields", parser.nf.JL5New(null, afldtn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
-			List forLoop1VarD = new TypedList(new LinkedList(), LocalDecl.class, false);
-			forLoop1VarD.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.String()), "fN", null));
-			List forLoop1Stmts = new TypedList(new LinkedList(), Stmt.class, false);
-			List argsW1 = new TypedList(new LinkedList(), Expr.class, false);
-			List argsW1a = new TypedList(new LinkedList(), Expr.class, false);
-			argsW1a.add(parser.nf.Local(null, "fN"));
-			argsW1.add(parser.nf.Call(null, parser.nf.Local(null, "c"), "getField", argsW1a));
-			forLoop1Stmts.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "fields"), "add", argsW1)));
-			Stmt forLoop1Body = parser.nf.Block(null, forLoop1Stmts);
-			Stmt forLoop1 = parser.nf.ExtendedFor(null, forLoop1VarD, parser.nf.Local(null, "fieldNs"), forLoop1Body);			
-			tryBody.add(forLoop1);
-
-			List forLoop2VarD = new TypedList(new LinkedList(), LocalDecl.class, false);
-			forLoop2VarD.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, fldtn, "f", null));
-
-			List forLoop2Stmts = new TypedList(new LinkedList(), Stmt.class, false);
-
-			List argsW2a = new TypedList(new LinkedList(), Expr.class, false);
-
-			argsW2a.add(parser.nf.Local(null, "n"));
-			forLoop2Stmts.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, cl, "childN", parser.nf.JL5Cast(null, parser.array(cl, 0), parser.nf.Call(null, parser.nf.Local(null, "f"), "get", argsW2a))));
-			Expr forLoop2Ife1 = parser.nf.Binary(null, parser.nf.Local(null, "childN"), Binary.NE, parser.nf.NullLit(null));
-
-			List argsW2b = new TypedList(new LinkedList(), Expr.class, false);
-			argsW2b.add(parser.nf.Local(null, "childN"));
-
-			Stmt forLoop2Ife2 = parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "unExpanded"), "add", argsW2b));			
-			forLoop2Stmts.add(parser.nf.JL5If(null, forLoop2Ife1, forLoop2Ife2, null));
-
-			Stmt forLoop2Body = parser.nf.Block(null, forLoop2Stmts);
-			Stmt forLoop2 = parser.nf.ExtendedFor(null, forLoop2VarD, parser.nf.Local(null, "fields"), forLoop2Body);
-			whileLoopStmts.add(forLoop2);
-			Block whileLoopBody = parser.nf.Block(null, whileLoopStmts);
-			tryBody.add(parser.nf.While(null, parser.nf.Binary(null, parser.nf.Call(null, parser.nf.Local(null, "unExpanded"), "size", argsW0), Binary.GT, parser.nf.IntLit(null, IntLit.INT, 0)), whileLoopBody));
-			tryBody.add(parser.nf.JL5If(null, parser.nf.Unary(null, Unary.NOT, parser.nf.Local(null,"isReflexive")), parser.nf.Eval(null, parser.nf.Call(null, parser.nf.Local(null, "res"), "remove", argsW2)), null));
-			Block tryBlock = parser.nf.Block(null, tryBody);
-			extraMtdBody.add(parser.nf.Try(null, tryBlock, catches));
-			extraMtdBody.add(parser.nf.JL5Return(null, parser.nf.Local(null,"res")));
-			Block extraMtdBlock = parser.nf.Block(null, extraMtdBody);
-		     	l.add(parser.nf.JL5MethodDecl(null, a, parser.array(asettn, 0), "fieldsClosure", frms, new TypedList(new LinkedList(), TypeNode.class, false), extraMtdBlock, new TypedList(new LinkedList(), TypeNode.class, false)));
-
+			l.add(parser.makeFieldClosureMethod(cl, tn, asettn));
 		     }
 		  }
               }
+	   
               RESULT = l; 
            :}
 	   ;

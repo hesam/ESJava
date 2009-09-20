@@ -376,7 +376,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	String m;
 	if (isSetFieldsMap) {
 	    r = (Receiver) nf.CanonicalTypeNode(null, ((ParameterizedType) fc.target().type()).typeArguments().get(0));
-	    m = "setFieldsMap";
+	    m = "setMap_" + fc.multiNames().get(0);
 	    args.add(fc.target());
 	} else {
 	    r = fc.target();
