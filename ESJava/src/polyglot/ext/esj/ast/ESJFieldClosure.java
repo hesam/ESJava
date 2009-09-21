@@ -11,6 +11,8 @@ import polyglot.ext.jl5.ast.*;
 /** a field access with (reflexive) transitive closure **/
 public interface ESJFieldClosure extends Field {
 
+    public FormulaBinary.Operator kind();
+    public boolean isSimple();
     public boolean isReflexive();
     public boolean isSetFieldsMap();
     public boolean isMulti();

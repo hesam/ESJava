@@ -100,15 +100,15 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 	return new ESJFieldDecl_c(pos, flags, type, name, init, isOld);
     }
 
-    public ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, boolean isReflexive, boolean isSetFieldsMap, List multiNames, String theType) {
-	return new  ESJFieldClosure_c(pos, target, name, isReflexive, isSetFieldsMap, multiNames, theType);
+    public ESJFieldClosure ESJFieldClosure(Position pos, Receiver target, String name, FormulaBinary.Operator kind, List multiNames, String theType) {
+	return new  ESJFieldClosure_c(pos, target, name, kind, multiNames, theType);
     }
 
     public ESJFieldCall ESJFieldCall(Position pos, Receiver target, String name, List arguments) {
 	return new ESJFieldCall_c(pos, target, name, arguments);
     }
 
-    public ESJFieldClosureCall ESJFieldClosureCall(Position pos, Receiver target, String name, List arguments, boolean isSetFieldsMap) {
-	return new ESJFieldClosureCall_c(pos, target, name, arguments, isSetFieldsMap);
+    public ESJFieldClosureCall ESJFieldClosureCall(Position pos, Receiver target, String name, List arguments, FormulaBinary.Operator kind) {
+	return new ESJFieldClosureCall_c(pos, target, name, arguments, kind);
     }
 }

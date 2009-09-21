@@ -27,30 +27,36 @@ public class ESJFieldClosure_c extends Field_c
 
     protected static int idCtr = 0;
 
-    protected boolean isReflexive;
-    protected boolean isSetFieldsMap;
+    protected FormulaBinary.Operator kind;
     protected boolean isMulti;
     protected List multiNames;
     protected String id;
     protected JL5MethodDecl parentMethod;
     protected String theType;
 
-    public ESJFieldClosure_c(Position pos, Receiver target, String name, boolean isReflexive, boolean isSetFieldsMap, List multiNames, String theType) {
+    public ESJFieldClosure_c(Position pos, Receiver target, String name, FormulaBinary.Operator kind, List multiNames, String theType) {
 	super(pos, target, name);
 	this.id = Integer.toString(idCtr++);
-	this.isReflexive = isReflexive;
-	this.isSetFieldsMap = isSetFieldsMap;
+	this.kind = kind;
 	this.isMulti = multiNames.size() > 1;
 	this.multiNames = multiNames;
 	this.theType = theType;
     }
+
+    public FormulaBinary.Operator kind() {
+	return kind;
+    }
+
+    public boolean isSimple() {
+	return kind == FormulaBinary.SIMP;
+    }
     
     public boolean isReflexive() {
-	return isReflexive;
+	return kind == FormulaBinary.RFLX;
     }
 
     public boolean isSetFieldsMap() {
-	return isSetFieldsMap;
+	return kind == FormulaBinary.MAP;
     }
 
     public String id() {

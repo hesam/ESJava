@@ -23,15 +23,15 @@ public class BSTree
 	isAcyclic() && oneParent() && isValidBinarySearch() 
     }
 
-    function public boolean isAcyclic() { no Node n | n.children().contains(n) }
+    function public boolean isAcyclic() { no Node n | n.descendants().contains(n) }
 
     function public boolean oneParent() {
-	(root == null) ? true : all Node n : this.root.children() | one Node p | n.parent == p
+	(root == null) ? true : all Node n : this.root.descendants() | one Node p | n.parent == p
     }
 
     function public boolean isValidBinarySearch() {
-       all Node n | ((n.left == null  || all Node lc : n.leftChildren()  | lc.value < n.value) &&
-        	     (n.right == null || all Node rc : n.rightChildren() | rc.value > n.value))
+       all Node n | ((n.left == null  || all Node lc : n.leftDescendants()  | lc.value < n.value) &&
+        	     (n.right == null || all Node rc : n.rightDescendants() | rc.value > n.value))
     }
 
     function public boolean contains(Integer value) {

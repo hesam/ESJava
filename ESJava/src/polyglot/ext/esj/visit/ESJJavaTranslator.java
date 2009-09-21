@@ -260,7 +260,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return r;
 	} else if (r instanceof ESJFieldClosureCall) {
 	    ESJFieldClosureCall c = (ESJFieldClosureCall) r;
-	    return instVarClosureGet_log(c.isSetFieldsMap(), c.target(), c.arguments());
+	    return instVarClosureGet_log(c.isSimple(), c.isSetFieldsMap(), c.target(), c.arguments());
 	} else if (r instanceof ESJFieldCall) {
 	    ESJFieldCall c = (ESJFieldCall) r;
 	    //return instVarGet_log(c.target(), c.name(), c.type());
@@ -271,7 +271,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    String m = c.name() + (c.name().equals("old") ? "" : "_log"); //FIXME
 	    return nf.Call(null, (Receiver) toLogicExpr(c.target()), m, args);
-	} else if (r instanceof Call) {
+	} else if (r instanceof Call) {	    
 	    Call c = (Call) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    //String def = "_log";
@@ -295,14 +295,23 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    }
 	} else if (r instanceof Field) {
 	    Field f = (Field) r;
-	    //return instVarGet_log(f.target(), f.name(), f.type());
-	    //return nf.Field(null, (Receiver) toLogicExpr(f.target()), f.name() + "_log");
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    //String def = "_log";
-	    //if (f.target() instanceof Field && ((Field) f.target()).name().equals("old")) //FIXMe
-	    //def = "_old_log";
-	    String m = f.name() + (f.name().equals("old") ? "" : "_log"); //FIXME
-	    return nf.Call(null, (Receiver) toLogicExpr(f.target()), m, args);
+	    if (f.target() instanceof TypeNode) {
+		//return new LogObjAtom(LogMap.get1_log(Color.RED));
+		List args2 = new TypedList(new LinkedList(), Expr.class, false);
+		args2.add(f);
+		args.add(nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "get1_log", args2));
+		return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObjAtom")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
+	    } else {
+		
+		//return instVarGet_log(f.target(), f.name(), f.type());
+		//return nf.Field(null, (Receiver) toLogicExpr(f.target()), f.name() + "_log");
+		//String def = "_log";
+		//if (f.target() instanceof Field && ((Field) f.target()).name().equals("old")) //FIXMe
+		//def = "_old_log";
+		String m = f.name() + (f.name().equals("old") ? "" : "_log"); //FIXME
+		return nf.Call(null, (Receiver) toLogicExpr(f.target()), m, args);
+	    }
 	} else if (r instanceof JL5LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    Expr e1 = nf.Call(null, null, "verifyInvariants_log", new TypedList(new LinkedList(), Expr.class, false));
@@ -372,6 +381,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	ESJFieldClosure fc = (ESJFieldClosure) f;
 	boolean isSetFieldsMap =  fc.isSetFieldsMap();
+	boolean isSimple =  fc.isSimple();
 	Receiver r;
 	String m;
 	if (isSetFieldsMap) {
@@ -380,15 +390,19 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    args.add(fc.target());
 	} else {
 	    r = fc.target();
-	    m = "fieldsClosure";
-	    args.add(nf.BooleanLit(null, fc.isReflexive()));	
+	    if (isSimple) {
+		m = "multiFields";
+	    } else {
+		m = "fieldsClosure";
+		args.add(nf.BooleanLit(null, fc.isReflexive()));
+	    }
 	}
 	for (int i=0; i<fc.multiNames().size(); i++) 
 	    args.add(nf.StringLit(null, (String) fc.multiNames().get(i)));
 	List args0 = new TypedList(new LinkedList(), Expr.class, false);
 	Expr res0 = nf.Binary(null, (Expr) fc.target(), Binary.EQ, nf.NullLit(null));
 	Expr res1 = nf.JL5New(null, nf.CanonicalTypeNode(null, fc.type()), args0, null, new TypedList(new LinkedList(), TypeNode.class, false));
-	Expr res2 = nf.ESJFieldClosureCall(null, r, m, args, isSetFieldsMap);
+	Expr res2 = nf.ESJFieldClosureCall(null, r, m, args, fc.kind());
 	Expr res = nf.JL5Conditional(null, res0, res1, res2);
 	return res;
     }
@@ -465,17 +479,21 @@ public class ESJJavaTranslator extends ContextVisitor {
 	}*/
 
     // FIXME
-    public Node instVarClosureGet_log(boolean isSetFieldsMap, Receiver target, List origArgs) throws SemanticException {
+    public Node instVarClosureGet_log(boolean isSimple, boolean isSetFieldsMap, Receiver target, List origArgs) throws SemanticException {
 	List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
 	if (isSetFieldsMap) {
 	    instVarGetArgs.add((Expr) toLogicExpr((Expr) origArgs.get(0)));
 	    instVarGetArgs.add(nf.Call(null, null, "isOld", new TypedList(new LinkedList(), Expr.class, false)));
+	    instVarGetArgs.add(nf.BooleanLit(null, false));
 	    instVarGetArgs.add(nf.BooleanLit(null, false));
 	    for (int i=1;i<origArgs.size();i++)
 		instVarGetArgs.add((Expr) origArgs.get(i));
 	} else {
 	    instVarGetArgs.add((Expr) toLogicExpr(target));
 	    instVarGetArgs.add(nf.Call(null, null, "isOld", new TypedList(new LinkedList(), Expr.class, false)));
+	    instVarGetArgs.add(nf.BooleanLit(null, isSimple));
+	    if (isSimple)
+		instVarGetArgs.add(nf.BooleanLit(null, false));
 	    instVarGetArgs.addAll(origArgs);
 	}
 	return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarClosure_log", instVarGetArgs);

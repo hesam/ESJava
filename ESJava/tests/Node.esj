@@ -31,11 +31,13 @@ public class Node
     public void right(Node r) { this.right = r; }
     public void parent(Node p) { this.parent = p; }
 
-    function public ESJSet<Node> children() { this.^(left+right) }
+    function public ESJSet<Node> children() { this.(left+right) }
 
-    function public ESJSet<Node> leftChildren() { this.left.*(left+right) }
+    function public ESJSet<Node> descendants() { this.^(left+right) }
 
-    function public ESJSet<Node> rightChildren() { this.right.*(left+right) }
+    function public ESJSet<Node> leftDescendants() { this.left.*(left+right) }
+
+    function public ESJSet<Node> rightDescendants() { this.right.*(left+right) }
 
     public boolean equals(Object n) { return n instanceof Node &&  value == ((Node)n).value; }
 

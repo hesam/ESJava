@@ -13,6 +13,7 @@ public interface FormulaBinary extends Binary {
     public static final Operator LONE       = new Operator("lone", Precedence.RELATIONAL);
 
     // closure ops (FIXME: move...)
+    public static final Operator SIMP       = new Operator(".", Precedence.RELATIONAL);
     public static final Operator RFLX       = new Operator(".*", Precedence.RELATIONAL);
     public static final Operator NONRFLX       = new Operator(".^", Precedence.RELATIONAL);
     public static final Operator MAP        = new Operator(".<", Precedence.RELATIONAL);
