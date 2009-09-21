@@ -4,7 +4,6 @@ import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 
 import java.util.HashMap;
-//import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -36,6 +35,8 @@ public class LogMap {
     static HashMap InstVarRels = new HashMap(); // Holds inst var relations for each class
     static HashMap ClassAtoms = new HashMap(); // Holds atoms for each class
     static HashMap ClassConstrs = new HashMap(); // Holds class constr for each class
+    static HashMap Enums = new HashMap(); // Holds enums
+    static HashMap EnumAtoms = new HashMap(); // Holds atoms for enums
     
     static int AtomCtr = ESJInteger.BoundsSize(); // mapping of objs to number ids
     static int relationizerStep = 0; // time steps get incremented when ensured mtd is run
@@ -44,6 +45,7 @@ public class LogMap {
                                             // updated.
     static int clonerStep = 0; //FIXME (should be same as relationizerStep)
 
+    // insert mappings for null and enums
     static {
 	LogtoJ.put(AtomCtr,null);
 	JtoLog.put(null,AtomCtr++);
@@ -66,6 +68,21 @@ public class LogMap {
     }
 
     public static void ObjToAtomMap() {
+
+	if (SolverOpt_debug)
+	    System.out.println("classes: " + ClassAtoms + " enums: " + EnumAtoms);
+
+	for (Class c : (Set<Class>) Enums.keySet()) {
+	    EnumAtoms.put(c, new ArrayList());
+	    ArrayList classAs = (ArrayList) EnumAtoms.get(c);
+	    Enum[] es = (Enum[]) Enums.get(c);
+	    for (Enum e : es) {
+		classAs.add(AtomCtr);
+		LogtoJ.put(AtomCtr,e);
+		JtoLog.put(e,AtomCtr++);
+		}      
+	}
+
 	for (Class c : (Set<Class>) ClassAtoms.keySet()) {
 	    ClassAtoms.put(c, new ArrayList());
 	    newAtoms(c);
@@ -80,9 +97,11 @@ public class LogMap {
 	    Object [] args = new Object[2];
 	    args[0] = null;
 	    args[1] = false;
-	    if (SolverOpt_debug)
-		System.out.println(((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2());
+
 	    ArrayList<ESJObject> objs = ((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2();
+	    if (SolverOpt_debug)
+		System.out.println(objs);
+
 	    for (ESJObject obj : objs) {		
 		//System.out.println("my old = " + ((ESJObject) obj).old());
 		classAs.add(AtomCtr);
@@ -93,13 +112,7 @@ public class LogMap {
 		    JtoLog.put(obj.old(),AtomCtr);
 		AtomCtr++;
 	    }
-	    /*for (ESJObject obj : objs) {
-		if (obj.old() != null) { //FIXME?
-		    LogtoJ.put(AtomCtr,obj.old());
-		    JtoLog.put(obj.old(),AtomCtr++);
-		}
-		}*/
-	} catch (Exception e) { System.out.println("oops " + e); }
+	} catch (Exception e) { System.out.println("oops " + e); System.exit(1); }
     }
 
     /*
@@ -122,12 +135,12 @@ public class LogMap {
     }
 
     public static int get1(Object key) {
-	/*
+
 	if (SolverOpt_debug) {
 	    System.out.println("get1: " + key);
 	    System.out.println(" --> " + JtoLog.get(key));
 	    System.out.println(JtoLog);
-	    }*/
+	}
 	return (Integer) JtoLog.get(key);
     }
 
@@ -168,7 +181,12 @@ public class LogMap {
 	String k = instVar;
 	if (!isUnknown) {
 	    k += "_old";
-	    // mark the class
+	    // mark enum and class
+	    if (range.isEnum() && !ClassAtoms.containsKey(range)) {
+		try {
+		    Enums.put(range, range.getEnumConstants());
+		} catch (Exception e) { System.out.println(e); System.exit(1); }		
+	    }
 	    if (!ClassAtoms.containsKey(c)) {
 		ClassAtoms.put(c, new ArrayList());
 		Class[] parameterTypes = new Class[2];
@@ -294,7 +312,6 @@ public class LogMap {
 
     //FIXME: this is not closure: a setmap of fields
     public static LogSet instVarClosure_log(LogSet obj, boolean isOld, boolean isReflexive, String... instVars) {
-	System.out.println("hi: " + obj.string() + " " + obj.range());
 	Class range = obj.range();
 	String fA = isOld ? "_old" : "";
 	String fNs = instVarRel_log(range, instVars[0]+fA).id();

@@ -107,7 +107,6 @@ public class BSTree
 	    t.delete(i);
 	    t.print();
 	}
-	//System.out.println(t.contains(3));
 	
     }
     
