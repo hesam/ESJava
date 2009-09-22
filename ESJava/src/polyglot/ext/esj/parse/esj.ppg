@@ -90,7 +90,9 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
                   ESJQuantifyClauseExpr quantExpr = a.quantClauseExpr();
 		  List quantVarD = a.quantVarD();
 		  List quantVarD2 = a.quantVarD2();
+		  boolean isComprehension = a.isComprehension();
 		  List frms = new TypedList(new LinkedList(), Formal.class, false);
+		  TypeNode rTp = nf.CanonicalTypeNode(null,ts.Boolean());
 		  frms.addAll(methodDecl.formals());
 		  for(LocalDecl d : (List<LocalDecl>)quantVarD2)
 		      frms.add(nf.JL5Formal(null, emptyFlags, d.type(), d.name()));
@@ -99,18 +101,25 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		  	    quantKind == FormulaBinary.LONE;
 	      	  List stmts = new TypedList(new LinkedList(), Stmt.class, false);
 		  if (quantKindIsaCount) {
-	      	      LocalDecl d1 = nf.JL5LocalDecl(null, emptyFlags, nf.CanonicalTypeNode(null, ts.Int()), "quantCount", nf.IntLit(null, IntLit.INT, 0));
-		      stmts.add(d1);		  
-		  }
+		      stmts.add(nf.JL5LocalDecl(null, emptyFlags, nf.CanonicalTypeNode(null, ts.Int()), "quantCount", nf.IntLit(null, IntLit.INT, 0)));		  
+		  } /*else if (isComprehension) {
+		      List gt = new TypedList(new LinkedList(), TypeNode.class, false);
+		      gt.add(((LocalDecl) quantVarD.get(0)).type());
+		      AmbTypeNode settn = nf.AmbTypeNode(null, "polyglot.ext.esj.primitives.ESJSet");
+		      AmbTypeNode asettn = nf.JL5AmbTypeNode(null, ((AmbTypeNode)settn).qual(), ((AmbTypeNode)settn).name(), gt);
+		      System.out.println(((LocalDecl) quantVarD.get(0)).type() + " " + asettn);
+		      rTp = asettn;
+		      }*/
 		  stmts.addAll(mStmts);
-	      	  ESJPredMethodDecl extraMtd = nf.ESJPredMethodDecl(null, fl,
-	                                          nf.CanonicalTypeNode(null,ts.Boolean()), 
-						  methodDecl.name() + "_" + quantMtdId, 
-						  frms, 
-						  new TypedList(new LinkedList(), TypeNode.class, false), 
-						  nf.Block(null, stmts), methodDecl.throwTypes(),
-						  quantMtdId, quantKind, quantVarN, 
-						  quantVarD, quantList, quantExpr); 
+	      	  ESJPredMethodDecl extraMtd = 
+		      nf.ESJPredMethodDecl(null, fl,
+					   rTp, 
+					   methodDecl.name() + "_" + quantMtdId, 
+					   frms, 
+					   new TypedList(new LinkedList(), TypeNode.class, false), 
+					   nf.Block(null, stmts), methodDecl.throwTypes(),
+					   quantMtdId, quantKind, quantVarN, 
+					   quantVarD, quantList, quantExpr, isComprehension);
                   extraMtds.add(extraMtd);
 
              }
@@ -119,13 +128,14 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	     String quantVarN = null;
 	     List quantVarD = new TypedList(new LinkedList(), LocalDecl.class, false);
 	     List quantVarD2 = new TypedList(new LinkedList(), LocalDecl.class, false);
-		  
+	     boolean isComprehension = false;
 	     if (predExprs.size() > 0) {
 	     	ESJQuantifyExpr a = (ESJQuantifyExpr) predExprs.get(0);
 	 	quantKind = a.quantKind();
 	 	quantVarN = a.quantVarN();
 		quantVarD = a.quantVarD();
 		quantVarD2 = a.quantVarD2();
+		isComprehension = a.isComprehension();
 	     }
 	     ESJLogPredMethodDecl extraLogMtd = 
 		 nf.ESJLogPredMethodDecl(null, fl,
@@ -135,7 +145,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 					 new TypedList(new LinkedList(), TypeNode.class, false), 
 					 null, 
 					 methodDecl.throwTypes(), quantVarD, quantVarD2, methodDecl.isPredicate(), false, false); 
-	     Block logPredBlock = this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(), quantVarD, quantVarN, extraLogMtd);
+	     Block logPredBlock = this.makeESJLogPredBlock(((Return) methodDecl.body().statements().get(0)).expr(), quantVarD, quantVarN, extraLogMtd, isComprehension);
 	     extraLogMtd = (ESJLogPredMethodDecl) extraLogMtd.body(logPredBlock);
              extraMtds.add(extraLogMtd);
 	     //currClassLogPredMtdDecls.add(extraLogMtd);
@@ -223,7 +233,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
      }
 
-     public ESJQuantifyExpr makeESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, TypeNode tn, String quantVarN, Expr quantListExpr, Expr quantClauseExpr) throws Exception {
+     public ESJQuantifyExpr makeESJQuantifyExpr(Position pos, boolean isComprehension, FormulaBinary.Operator quantKind, TypeNode tn, String quantVarN, Expr quantListExpr, Expr quantClauseExpr) throws Exception {
 	    
 	    // FIXME
 	    if (tn.toString().equals("polyglot.ext.esj.primitives.ESJInteger{amb}")) {
@@ -236,13 +246,13 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    JL5LocalDecl ld = nf.JL5LocalDecl(null, fl, tn, quantVarN, null);
 	    quantVarD.add(ld);
 	    propogateQuantVarDs(quantClauseExpr, quantVarD); //FIXME
-	    return this.nf.ESJQuantifyExpr(pos,quantKind,quantVarN, quantVarD, quantVarD2, quantListExpr,quantClauseExpr);
+	    return this.nf.ESJQuantifyExpr(pos,quantKind,quantVarN, quantVarD, quantVarD2, quantListExpr,quantClauseExpr,isComprehension);
 }
 
 	    //FIXME
-     public Block makeESJLogPredBlock(Expr expr, List quantVarD, String quantVarN, ESJLogPredMethodDecl m) throws SemanticException {
+     public Block makeESJLogPredBlock(Expr expr, List quantVarD, String quantVarN, ESJLogPredMethodDecl m, boolean isComprehension) throws SemanticException {
 	    FlagAnnotations fl = emptyFlags; 
-	    Expr newExpr = makeESJLogPredBlockHelper(expr, new TypedList(new LinkedList(), LocalDecl.class, false), m);
+	    Expr newExpr = makeESJLogPredBlockHelper(expr, new TypedList(new LinkedList(), LocalDecl.class, false), m, isComprehension);
 	    List l = new TypedList(new LinkedList(), Stmt.class, false);
 	    l.add(nf.Return(null, newExpr));
 	    return nf.Block(null, l); 
@@ -398,10 +408,10 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
      }
 
 
-     public Expr makeESJLogPredBlockHelper(Expr e, List quantVarD, ESJLogPredMethodDecl m) {
+     public Expr makeESJLogPredBlockHelper(Expr e, List quantVarD, ESJLogPredMethodDecl m, boolean isComprehension) {
      	    if (e instanceof FormulaBinary) {
 	       	  Binary b = (Binary) e;
-	       	  return nf.FormulaBinary(null,  makeESJLogPredBlockHelper(b.left(),quantVarD, m), b.operator(), makeESJLogPredBlockHelper(b.right(), quantVarD, m));
+	       	  return nf.FormulaBinary(null,  makeESJLogPredBlockHelper(b.left(),quantVarD, m, isComprehension), b.operator(), makeESJLogPredBlockHelper(b.right(), quantVarD, m, isComprehension));
 	    } else if (e instanceof CmpBinary) {
 	       	  Binary b = (Binary) e;
 	       	  return nf.CmpBinary(null, b.left(), b.operator(), b.right());
@@ -410,12 +420,12 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	       	  return nf.Binary(null, b.left(), b.operator(), b.right());
 	    } else if (e instanceof Conditional) {
 		  Conditional c = (Conditional) e;
-		  return nf.JL5Conditional(null, c.cond(), makeESJLogPredBlockHelper(c.consequent(),quantVarD, m), makeESJLogPredBlockHelper(c.alternative(),quantVarD, m));
+		  return nf.JL5Conditional(null, c.cond(), makeESJLogPredBlockHelper(c.consequent(),quantVarD, m, isComprehension), makeESJLogPredBlockHelper(c.alternative(),quantVarD, m, isComprehension));
 	    } else if (e instanceof ESJQuantifyExpr) {
 	       	  ESJQuantifyExpr q = (ESJQuantifyExpr) e;
 		  List quantVarD2 = new TypedList(new LinkedList(), JL5LocalDecl.class, false);
 		  getQuantVarDs(q.quantClauseExpr().expr(), quantVarD2);		  
-		  return nf.ESJLogQuantifyExpr(null, q.quantKind(), q.quantVarN(), q.quantVarD(), quantVarD2, q.quantListExpr(), makeESJLogPredBlockHelper(q.quantClauseExpr().expr(), quantVarD, m), m);
+		  return nf.ESJLogQuantifyExpr(null, q.quantKind(), q.quantVarN(), q.quantVarD(), quantVarD2, q.quantListExpr(), makeESJLogPredBlockHelper(q.quantClauseExpr().expr(), quantVarD, m, isComprehension), m, isComprehension);
 	    } else {
 	      	   return e;
 	    }
@@ -490,7 +500,7 @@ non terminal Block fn_method_body, fn_block;
 non terminal List fn_block_statements;
 non terminal Return fn_statement;
 non terminal ESJQuantifyExpr fn_expression;
-non terminal Expr quantify_expression, quant_list_expr, ensures_opt, ensures_clause;
+non terminal Expr quantify_expression, comprehension_expression, quant_list_expr, ensures_opt, ensures_clause;
 non terminal FormulaBinary.Operator quant_kind;
 non terminal FormulaBinary.Operator closure_kind;
 non terminal List fields_closure, fields_closure_multi, identifiers_union, modifies_opt, modifiables, modifiables_list;
@@ -583,16 +593,23 @@ fn_statement ::=
 	   {: RESULT = parser.nf.JL5Return(parser.pos(a), a); :}
 	   ;
 
+comprehension_expression ::=
+        LBRACE esj_type:g name:b quant_list_expr:d OR:e equality_predicate_expr:f RBRACE
+       	   {: if (d == null) 
+	         d = parser.nf.ESJQuantifyTypeExpr(null,((AmbTypeNode)g).name());
+	      RESULT = parser.makeESJQuantifyExpr(null,true,FormulaBinary.ALL,g,b.toString(),d,f);
+	   :} 
+	   ;
+
 quantify_expression ::=
         quant_kind:a esj_type:g name:b quant_list_expr:d OR:e equality_predicate_expr:f
        	   {: if (a == FormulaBinary.NO) {
 	          a = FormulaBinary.ALL;
 		  f = parser.nf.Unary(null, Unary.NOT, f);
 	       }
-             if (d == null) { 
+             if (d == null)
 	         d = parser.nf.ESJQuantifyTypeExpr(null,((AmbTypeNode)g).name());
-             }
-	     RESULT = parser.makeESJQuantifyExpr(null,a,g,b.toString(),d,f); 
+	     RESULT = parser.makeESJQuantifyExpr(null,false,a,g,b.toString(),d,f); 
 	   :} 
 	   ;
 
@@ -682,6 +699,8 @@ equality_predicate_expr ::=
         conditional_predicate_expr:a
 	    {: RESULT = a; :}
     |   quantify_expression:a
+	    {: RESULT = a; :}
+    |   comprehension_expression:a
 	    {: RESULT = a; :}
     |   relational_predicate_expr:a
             {: RESULT = a; :}
@@ -1099,6 +1118,15 @@ ensured_class_declaration ::=
 			    
 			    // have to do deep relationizing for reference types... 
 			    boolean isEnumFd = fi.type() instanceof JL5AmbTypeNode && parser.enums.contains(((AmbTypeNode) fi.type()).name());
+			    // HACK FIXME:
+			    try {
+
+				ClassType tt = (ClassType) parser.ts.typeForName(((AmbTypeNode) fi.type()).name());
+				if (JL5Flags.isEnumModifier(tt.flags())) {
+				    isEnumFd = true;		      
+				}
+			    } catch (Exception ex) {}
+
 			    if (fi.isReferenceType() && !isEnumFd) {
 				Expr fieldExpr1 = parser.nf.Field(null, parser.nf.This(null), fi.name());
 				Expr ifC1 = parser.nf.Binary(null, fieldExpr1, Binary.NE, parser.nf.NullLit(null));
@@ -1160,6 +1188,15 @@ ensured_class_declaration ::=
 override field_declaration ::=
     modifiers_or_annotations_opt:a type:b variable_declarators:c SEMICOLON:e 
            {: List l = new TypedList(new LinkedList(), ClassMember.class, false);
+	    boolean isEnumFd = b instanceof JL5AmbTypeNode && parser.enums.contains(((AmbTypeNode) b).name());
+ 	      // HACK FIXME:
+	      try {
+		  ClassType tt = (ClassType) parser.ts.typeForName(((AmbTypeNode) b).name());
+		  if (JL5Flags.isEnumModifier(tt.flags())) {
+		      isEnumFd = true;		      
+		  }
+	      } catch (Exception e2) {}
+	    
        	      for (Iterator i = c.iterator(); i.hasNext(); ) {
               	  VarDeclarator d = (VarDeclarator) i.next();
 		  if (a.classicFlags().isStatic() || false) {
@@ -1168,7 +1205,6 @@ override field_declaration ::=
 		  } else {
          	     l.add(parser.nf.ESJFieldDecl(parser.pos(b, e),a, parser.array(b, d.dims),d.name, d.init, false));
 		     boolean isReferenceType = b instanceof JL5AmbTypeNode && !b.toString().equals("Integer{amb}"); //FIXME
-		     boolean isEnumFd = b instanceof JL5AmbTypeNode && parser.enums.contains(((AmbTypeNode) b).name());
 	 	     //System.out.println("somebody adding a fieeeeeld!" + d.name + " " + isReferenceType);
 		     List args = new TypedList(new LinkedList(), Expr.class, false);
 		     List relDefBodyArgs = new TypedList(new LinkedList(), Expr.class, false);

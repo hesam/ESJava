@@ -19,6 +19,7 @@ public interface ESJPredMethodDecl extends JL5MethodDecl {
     public Expr quantListExpr();
     public ESJQuantifyClauseExpr quantClauseExpr();
     public ESJPredMethodDecl quantVarD(List l);
-    
+    public boolean isComprehension();
+
 
 }

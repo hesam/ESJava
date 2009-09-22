@@ -1,8 +1,6 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
-enum Color { RED, BLACK }
-
 public class Node
 {
     public Integer value;
@@ -38,6 +36,14 @@ public class Node
     function public ESJSet<Node> leftDescendants() { this.left.*(left+right) }
 
     function public ESJSet<Node> rightDescendants() { this.right.*(left+right) }
+
+    function public ESJSet<Node> ancestors() { 
+	this.^parent 
+    }
+
+    function public ESJSet<Node> blackAncestors() { 
+	{ Node n : ancestors() | n.color == Color.BLACK }
+    }
 
     public boolean equals(Object n) { return n instanceof Node &&  value == ((Node)n).value; }
 

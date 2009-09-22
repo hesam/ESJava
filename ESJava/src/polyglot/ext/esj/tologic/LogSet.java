@@ -53,6 +53,16 @@ public class LogSet extends LogObject {
 	}
     }
 
+    public LogSet setComprehensionOp(LogObject quantVarN, LogFormula quantClauseExpr) {
+	if (isEmpty())
+	    return new LogSet("u0");
+	else {
+	    String p =  " [" + quantVarN + ": one " + string + "] | " + quantClauseExpr.string();
+	    String q = " {" + p + "} ";
+	    return new LogSet(q);
+	}
+    }
+
     public LogInt count_log(LogObject itm) {
 	return new LogInt("#(" + string + "." + itm.string() + ")");
     }

@@ -6,6 +6,7 @@ import polyglot.ext.jl.ast.*;
 import polyglot.ext.jl5.ast.*;
 import polyglot.util.*;
 import polyglot.types.*;
+import polyglot.ext.jl5.types.*;
 import polyglot.ext.esj.types.ESJTypeSystem;
 import polyglot.visit.*;
 
@@ -20,16 +21,18 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
     protected ESJLogPredMethodDecl parentMethod;
+    protected boolean isComprehension;
 
-    public ESJLogQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr, ESJLogPredMethodDecl parentMethod) {
+    public ESJLogQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr, ESJLogPredMethodDecl parentMethod, boolean isComprehension) {
 	super(pos);
-	this.id = (quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
+	this.id = (isComprehension ? "setComprehension_" : quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
 	this.quantVarD2 = quantVarD2;
 	this.parentMethod = parentMethod;
 	this.quantListExpr = quantListExpr;
+	this.isComprehension = isComprehension;
 	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantClauseExpr);
     }
 
@@ -63,6 +66,10 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
 
     public ESJLogPredMethodDecl parentMethod() {
 	return parentMethod;
+    }
+
+    public boolean isComprehension() {
+	return isComprehension;
     }
 
     public void parentMethod(ESJLogPredMethodDecl m) {
@@ -109,10 +116,21 @@ public class ESJLogQuantifyExpr_c extends Expr_c implements ESJLogQuantifyExpr {
     
     public Node typeCheck(TypeChecker tc) throws SemanticException { //FIXME
 
-	TypeSystem ts = tc.typeSystem();
+	JL5TypeSystem ts = (JL5TypeSystem) tc.typeSystem();
 	NodeFactory nf = tc.nodeFactory();
 	ESJLogQuantifyExpr n = (ESJLogQuantifyExpr) super.typeCheck(tc);
-	n = (ESJLogQuantifyExpr)n.type(ts.Boolean()); 
+
+	if (isComprehension) {
+	    Type t = ts.typeForName("polyglot.ext.esj.primitives.ESJSet"); 
+	    ParameterizedType pt = ts.parameterizedType((JL5ParsedClassType) t);
+	    ArrayList<Type> at = new ArrayList<Type>();
+	    at.add(((LocalDecl) quantVarD.get(0)).declType());
+	    pt.typeArguments(at);
+	    n = (ESJLogQuantifyExpr)n.type(pt);
+	} else {
+	    n = (ESJLogQuantifyExpr)n.type(ts.Boolean());
+	}
+
 	List newQuantVarD2 = new TypedList(new LinkedList(), LocalDecl.class, false);	
 	for (LocalDecl d : (List<LocalDecl>) quantVarD2) {
 	    if (d.type() instanceof AmbTypeNode)

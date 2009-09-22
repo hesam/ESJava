@@ -100,13 +100,14 @@ public class ESJJavaTranslator extends ContextVisitor {
 
 
     // quantify expr method desugars into a foreach stmt
-    public JL5MethodDecl DesugarPredMethodDecl (ESJPredMethodDecl methodDecl)  {
-
+    public JL5MethodDecl DesugarPredMethodDecl (ESJPredMethodDecl methodDecl) throws SemanticException {
+	boolean isComprehension = methodDecl.isComprehension();
 	String quantMtdId = methodDecl.id();	  
 	FormulaBinary.Operator quantKind = methodDecl.quantKind();
-	boolean quantKindBool1 = quantKind == FormulaBinary.ALL ? true : false;
+	boolean quantKindBool1 = quantKind == FormulaBinary.ALL && !isComprehension ? true : false;
 	boolean quantKindBool2 = quantKind == FormulaBinary.SOME ? false : true;
-	boolean quantKindIsaCount = quantKind == FormulaBinary.ONE ||
+	boolean quantKindIsaCount = 
+	    quantKind == FormulaBinary.ONE ||
 	    quantKind == FormulaBinary.LONE;
 	String quantVarN = methodDecl.quantVarN();
 	Expr quantList = methodDecl.quantListExpr();
@@ -116,23 +117,44 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List quantClauseStmts = new TypedList(new LinkedList(), Stmt.class, false);
 	Expr quantMainIfExpr = quantKindBool1 ? nf.Unary(null, Unary.NOT, quantExpr.expr()) : quantExpr.expr();
 	Local quantCount = nf.Local(null, "quantCount");
-	Stmt ifExprPart = quantKindIsaCount ? 
-	    nf.Eval(null, nf.Unary(null, Unary.POST_INC, quantCount)) : 
-	    nf.JL5Return(null, nf.BooleanLit(null, !quantKindBool2));
+	Stmt ifExprPart;
+	if (quantKindIsaCount)
+	    ifExprPart = nf.Eval(null, nf.Unary(null, Unary.POST_INC, quantCount));
+	else if (isComprehension) {
+	    List argsW = new TypedList(new LinkedList(), Expr.class, false);
+	    argsW.add(nf.Local(null, quantVarN));
+	    ifExprPart = nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "add", argsW));
+	} else 
+	    ifExprPart = nf.JL5Return(null, nf.BooleanLit(null, !quantKindBool2));
 	Stmt quantMainStmt = nf.JL5If(null, quantMainIfExpr, ifExprPart, null);
 	quantClauseStmts.add(quantMainStmt);	    
 	if (quantKindIsaCount) {
 	    extraMtdBody.add((Stmt) methodDecl.body().statements().get(0));
 	    Expr countViolation = nf.Binary(null, quantCount, Binary.GT, nf.IntLit(null, IntLit.INT, 1));
-	    Stmt quantMainStmt2 = nf.JL5If(null, countViolation, nf.JL5Return(null, nf.BooleanLit(null, !quantKindBool2)), null);
+	    Stmt ifC = nf.JL5Return(null, nf.BooleanLit(null, !quantKindBool2));
+	    Stmt quantMainStmt2 = nf.JL5If(null, countViolation, ifC, null);
 	    quantClauseStmts.add(quantMainStmt2);	    
+	} else if (isComprehension) {
+	    Type sett = ts.typeForName("polyglot.ext.esj.primitives.ESJSet"); 
+	    ParameterizedType pt = ((JL5TypeSystem)ts).parameterizedType((JL5ParsedClassType) sett);
+	    ArrayList<Type> at = new ArrayList<Type>();
+	    at.add(((LocalDecl) quantVarD.get(0)).declType());
+	    pt.typeArguments(at);
+	    TypeNode dTp = nf.CanonicalTypeNode(null, pt);
+	    LocalDecl d1 = nf.JL5LocalDecl(null, makeFlagAnnotations(), dTp, "res", nf.JL5New(null, dTp, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false)));
+	    d1 = d1.localInstance(ts.localInstance(null, d1.flags(), d1.declType(), d1.name()));
+	    extraMtdBody.add(d1);
+	    methodDecl = (ESJPredMethodDecl) methodDecl.returnType(dTp);
 	}
 	Stmt forLoopBody = nf.Block(null, quantClauseStmts);
 	Stmt forLoop = nf.ExtendedFor(null,quantVarD, quantList, forLoopBody);
 	extraMtdBody.add(forLoop);
-	Stmt retStmt = quantKind == FormulaBinary.ONE ? 
-	    nf.JL5Return(null, nf.Binary(null, quantCount, Binary.EQ, nf.IntLit(null, IntLit.INT, 1))) :
-	    nf.JL5Return(null, nf.BooleanLit(null, quantKindBool2));
+	Stmt retStmt =  
+	    nf.JL5Return(null, 
+			 quantKind == FormulaBinary.ONE ? 
+			 nf.Binary(null, quantCount, Binary.EQ, nf.IntLit(null, IntLit.INT, 1)) :
+			 isComprehension ? nf.Local(null, "res") :
+			 nf.BooleanLit(null, quantKindBool2));
 	extraMtdBody.add(retStmt);
 	Block extraMtdBlock = nf.Block(null, extraMtdBody);
 	methodDecl = (ESJPredMethodDecl) methodDecl.body(extraMtdBlock);
@@ -236,19 +258,32 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    ESJLogQuantifyExpr q = (ESJLogQuantifyExpr) r;
 	    boolean quantKindIsaCount = q.quantKind() == FormulaBinary.ONE ||
 		q.quantKind() == FormulaBinary.LONE;
+	    boolean isComprehension = q.isComprehension();
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    // FIXME
 	    Expr qListExpr = (q.quantListExpr() instanceof Special) ? 
 		nf.Call(null, null, "range_log", new TypedList(new LinkedList(), Expr.class, false)) : 
 		(Expr) toLogicExpr(q.quantListExpr());
-	    args.add(nf.BooleanLit(null, quantKindIsaCount));
-	    args.add(nf.StringLit(null, q.quantKind().toString()));
+	    String opM;
+	    Expr dExp;
+	    if (isComprehension) {
+		opM = "setComprehensionOp";
+		List args1 = new TypedList(new LinkedList(), Expr.class, false);
+		args1.add(nf.StringLit(null, "u0"));
+		dExp = nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogSet")), args1, null, new TypedList(new LinkedList(), TypeNode.class, false));
+	    } else {
+		opM = "quantifyOp";
+		dExp = (Expr) toLogicExpr(nf.BooleanLit(null,true));
+		args.add(nf.BooleanLit(null, quantKindIsaCount));
+		args.add(nf.StringLit(null, q.quantKind().toString()));
+	    }
 	    args.add(nf.Field(null, nf.Local(null, q.quantVarN()), "var_log"));
 	    args.add((Expr) toLogicExpr(q.quantClauseExpr().expr()));
+
 	    return nf.JL5Conditional(null, 
 				     nf.Call(null, qListExpr, "isEmpty", new TypedList(new LinkedList(), Expr.class, false)), 
-				     (Expr) toLogicExpr(nf.BooleanLit(null,true)), 
-				     nf.Call(null, qListExpr, "quantifyOp", args));
+				     dExp, 
+				     nf.Call(null, qListExpr, opM, args));
 	} else if (r instanceof ESJQuantifyTypeExpr) {
 	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName(((ESJQuantifyTypeExpr) r).theType())), "allInstances_log",new TypedList(new LinkedList(), Expr.class, false));
 	    
@@ -359,6 +394,12 @@ public class ESJJavaTranslator extends ContextVisitor {
 				       }
 	}
 
+    // comprehension expr desugars to a method call
+    public Expr DesugarComprehensionExpr (ESJComprehensionExpr a) {
+	System.out.println("hi: " + a.quantExpr());
+	return DesugarQuantifyExpr(a.quantExpr());
+    }
+
     // quantify expr desugars to a method call (defined above)
     public Expr DesugarQuantifyExpr (ESJQuantifyExpr a) {
 
@@ -428,6 +469,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return super.leaveCall(DesugarLogPredMethodDecl((ESJLogPredMethodDecl)n));
 	} else if (n instanceof ESJEnsuredMethodDecl) {
 	    return super.leaveCall(DesugarEnsuredMethodDecl((ESJEnsuredMethodDecl)n));
+	} else if (n instanceof ESJComprehensionExpr) {
+	    return super.leaveCall(DesugarComprehensionExpr((ESJComprehensionExpr)n));
 	} else if (n instanceof ESJQuantifyExpr) {
 	    return super.leaveCall(DesugarQuantifyExpr((ESJQuantifyExpr)n));
 	} else if (n instanceof ESJQuantifyTypeExpr) {
@@ -462,21 +505,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 	}
     }
 
-    /*
-    public Node instVarGet_log(Receiver target, String name, Type t) throws SemanticException {
-	t = t.isPrimitive() ? ts.typeForName("polyglot.ext.esj.primitives.ESJInteger") : t; //FIXME
-	TypeNode tn = nf.CanonicalTypeNode(null, t);
-	List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
-	List args2 = new TypedList(new LinkedList(), Expr.class, false);
-	List args3 = new TypedList(new LinkedList(), Expr.class, false);
-	args3.add((Receiver) toLogicExpr(target));
-	args3.add(nf.StringLit(null, name));
-	args2.add(nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), t.isReference() ? "objInstVarStr_log" : "intInstVarStr_log", args3));
-	args2.add(nf.ClassLit(null, tn));
-	instVarGetArgs.add(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2, null, new TypedList(new LinkedList(), TypeNode.class, false)));
-	//return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), t.isReference() ? "objInstVar_log" : "intInstVar_log", instVarGetArgs);
-	return nf.JL5New(null, tn, instVarGetArgs, null, new TypedList(new LinkedList(), TypeNode.class, false));
-	}*/
 
     // FIXME
     public Node instVarClosureGet_log(boolean isSimple, boolean isSetFieldsMap, Receiver target, List origArgs) throws SemanticException {

@@ -6,6 +6,7 @@ import polyglot.ext.jl.ast.*;
 import polyglot.ext.jl5.ast.*;
 import polyglot.util.*;
 import polyglot.types.*;
+import polyglot.ext.jl5.types.*;
 import polyglot.ext.esj.types.ESJTypeSystem;
 import polyglot.visit.*;
 
@@ -20,15 +21,17 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
     protected JL5MethodDecl parentMethod;
+    protected boolean isComprehension;
 
-    public ESJQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr) {
+    public ESJQuantifyExpr_c(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr, boolean isComprehension) {
 	super(pos);
-	this.id = (quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
+	this.id = (isComprehension ? "setComprehension_" : quantKind == FormulaBinary.ALL ? "univQuantify_": "existQuantify_") + Integer.toString(idCtr++);
 	this.quantKind = quantKind;
 	this.quantVarN = quantVarN;
 	this.quantVarD = quantVarD;
 	this.quantVarD2 = quantVarD2;
 	this.quantListExpr = quantListExpr;
+	this.isComprehension = isComprehension;
 	this.quantClauseExpr = new ESJQuantifyClauseExpr_c(pos, quantClauseExpr);
     }
 
@@ -64,6 +67,10 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
 
     public JL5MethodDecl parentMethod() {
 	return parentMethod;
+    }
+
+    public boolean isComprehension() {
+	return isComprehension;
     }
 
     public void parentMethod(JL5MethodDecl m) {
@@ -108,8 +115,18 @@ public class ESJQuantifyExpr_c extends Expr_c implements ESJQuantifyExpr {
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {
+	JL5TypeSystem ts = (JL5TypeSystem) tc.typeSystem();
 	ESJQuantifyExpr n = (ESJQuantifyExpr) super.typeCheck(tc);
-	n = (ESJQuantifyExpr)n.type(tc.typeSystem().Boolean()); //FIXME
+	if (isComprehension) {
+	    Type t = ts.typeForName("polyglot.ext.esj.primitives.ESJSet"); 
+	    ParameterizedType pt = ts.parameterizedType((JL5ParsedClassType) t);
+	    ArrayList<Type> at = new ArrayList<Type>();
+	    at.add(((LocalDecl) quantVarD.get(0)).declType());
+	    pt.typeArguments(at);
+	    n = (ESJQuantifyExpr)n.type(pt);
+	} else {
+	    n = (ESJQuantifyExpr)n.type(ts.Boolean());
+	}
 	return n;
     } 
 

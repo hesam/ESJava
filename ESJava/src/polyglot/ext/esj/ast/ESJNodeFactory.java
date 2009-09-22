@@ -37,7 +37,8 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					List paramTypes, String quantMtdId, 
 					FormulaBinary.Operator quantKind, String quantVarN, 
 					List quantVarD, Expr quantListExpr, 
-					ESJQuantifyClauseExpr quantClauseExpr);
+					ESJQuantifyClauseExpr quantClauseExpr,
+					boolean isComprehension);
 
     ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
 					      TypeNode returnType, String name,
@@ -52,9 +53,11 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					      List paramTypes, Expr ensuresExpr, 
 					      JL5Formal catchFormal, List modifiables);
 
-    ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr);
+    ESJComprehensionExpr ESJComprehensionExpr(Position pos, ESJQuantifyExpr quantExpr, String theType);
 
-    ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr, ESJLogPredMethodDecl parentMethod);
+    ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr, boolean isComprehension);
+
+    ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr, ESJLogPredMethodDecl parentMethod, boolean isComprehension);
 
     ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, String theType);
 

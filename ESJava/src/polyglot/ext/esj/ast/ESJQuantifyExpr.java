@@ -19,5 +19,6 @@ public interface ESJQuantifyExpr extends Expr {
     public JL5MethodDecl parentMethod();
     public void parentMethod(JL5MethodDecl m);
     public void quantVarD2(List quantVarD2);
+    public boolean isComprehension();
 }
 

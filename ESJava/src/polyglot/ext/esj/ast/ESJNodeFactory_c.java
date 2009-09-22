@@ -48,8 +48,10 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 					       List throwTypes, Block body, List paramTypes, 
 					       String quantMtdId, FormulaBinary.Operator quantKind, 
 					       String quantVarN, List quantVarD,
-					       Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {	
-    	return new ESJPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantMtdId, quantKind, quantVarN, quantVarD, quantListExpr, quantClauseExpr);
+					       Expr quantListExpr, 
+					       ESJQuantifyClauseExpr quantClauseExpr, 
+					       boolean isComprehension) {	
+    	return new ESJPredMethodDecl_c(pos, flags, returnType, name, formals, throwTypes, body, paramTypes, quantMtdId, quantKind, quantVarN, quantVarD, quantListExpr, quantClauseExpr, isComprehension);
     }
 
 
@@ -71,17 +73,25 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 
     }
 
-    public ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, 
+    public ESJComprehensionExpr ESJComprehensionExpr(Position pos, ESJQuantifyExpr quantExpr, String theType) {
+	return new ESJComprehensionExpr_c(pos, quantExpr, theType);
+    }
+
+    public ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, 
+					   String quantVarN, 
 					   List quantVarD, List quantVarD2, 
-					   Expr quantListExpr, Expr quantClauseExpr) {
-	return new ESJQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarD2, quantListExpr, quantClauseExpr);
+					   Expr quantListExpr, Expr quantClauseExpr,
+					   boolean isComprehension) {
+	return new ESJQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarD2, quantListExpr, quantClauseExpr, isComprehension);
     }
 
     public ESJLogQuantifyExpr ESJLogQuantifyExpr(Position pos, FormulaBinary.Operator quantKind,
 						 String quantVarN, List quantVarD, 
 						 List quantVarD2, Expr quantListExpr, 
-						 Expr quantClauseExpr, ESJLogPredMethodDecl parentMethod) {
-	return new ESJLogQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarD2, quantListExpr, quantClauseExpr, parentMethod);
+						 Expr quantClauseExpr, 
+						 ESJLogPredMethodDecl parentMethod, 
+						 boolean isComprehension) {
+	return new ESJLogQuantifyExpr_c(pos, quantKind, quantVarN, quantVarD, quantVarD2, quantListExpr, quantClauseExpr, parentMethod, isComprehension);
     }
 
     public ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, String theType) {

@@ -19,5 +19,7 @@ public interface ESJLogQuantifyExpr extends Expr {
     public ESJLogPredMethodDecl parentMethod();
     public void parentMethod(ESJLogPredMethodDecl m);
     public void quantVarD2(List quantVarD2);
+    public boolean isComprehension();
+
 }
 

@@ -26,13 +26,15 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     protected List quantVarD;
     protected Expr quantListExpr;
     protected ESJQuantifyClauseExpr quantClauseExpr;
-    
+    protected boolean isComprehension;
+
     public ESJPredMethodDecl_c(Position pos, FlagAnnotations flags,
 			       TypeNode returnType, String name,
 			       List formals,
 			       List throwTypes, Block body, List paramTypes, String quantMtdId,
 			       FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, 
-			       Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr) {
+			       Expr quantListExpr, ESJQuantifyClauseExpr quantClauseExpr, 
+			       boolean isComprehension) {
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
 	this.quantMtdId = quantMtdId;
 	this.quantKind = quantKind;
@@ -40,7 +42,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 	this.quantVarD = quantVarD;
 	this.quantListExpr = quantListExpr;
 	this.quantClauseExpr = quantClauseExpr;
-	
+	this.isComprehension = isComprehension;
     }
     
     public String id() {
@@ -65,6 +67,10 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 
     public ESJQuantifyClauseExpr quantClauseExpr() {
 	return quantClauseExpr;
+    }
+
+    public boolean isComprehension() {
+	return isComprehension;
     }
 
     public ESJPredMethodDecl quantVarD(List l) {
@@ -102,7 +108,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
     
     // Visit the children of the method. 
     public Node visitChildren(NodeVisitor v) {
-	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
+	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);	
 	List formals = visitList(this.formals, v);
 	List quantVarD = visitList(this.quantVarD, v);
 	Expr quantListExpr = (Expr) visitChild(this.quantListExpr, v);
@@ -114,7 +120,7 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 	    // findout what type is quantListExpr list of (can be a subtype a generic...)
-	    TypeSystem ts = tc.typeSystem();
+	JL5TypeSystem ts = (JL5TypeSystem) tc.typeSystem();
 	    Type t = (Type) quantListExpr().type();
 
 	    while (! ((JL5ParsedClassType) t).isGeneric()) {
@@ -128,8 +134,9 @@ public class ESJPredMethodDecl_c extends JL5MethodDecl_c
 		this.quantVarD = newVarD;
 	    }
 
+	    ESJPredMethodDecl n = (ESJPredMethodDecl) super.typeCheck(tc);	    
 
-	    return super.typeCheck(tc);
+	    return n;
     }
 
 
