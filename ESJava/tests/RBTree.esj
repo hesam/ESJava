@@ -3,24 +3,44 @@ import polyglot.ext.esj.tologic.*;
 
 import java.util.Random;
 
-public class BSTree 
-    ensures isBinarySearchTree()
+public class RBTree 
+    ensures isRBTree()
 {
 
     private static final int INDENT_STEP = 4;
 
     public Node root;
 
-    public BSTree() { root = null; }
+    public RBTree() { root = null; }
 
     public void root(Node r) { this.root = r; }
 
     function public ESJSet<Node> nodes() { root.*(left+right) }
 
+    function public ESJSet<Node> leaves() 
+    { { Node n : nodes() | (n.left == null || n.right == null) }  }
+
     function public ESJSet<Integer> nodeValues() { this.nodes().<value }
+
+    function public boolean isRBTree() {
+	isBinarySearchTree() && rootBlack() && redsChildren() && eqBlacks()
+    }
 
     function public boolean isBinarySearchTree() {
 	isAcyclic() && parentDef() && oneParent() && isValidBinarySearch() 
+    }
+
+    function public boolean rootBlack() { this.root == null || this.root.color == Color.BLACK }
+
+    function public boolean redsChildren() {
+	all Node n : nodes() | (n.color == Color.BLACK || 
+				all Node c : n.children() | c.color == Color.BLACK)
+    }
+
+    function public boolean eqBlacks() {
+	all Node l1 : leaves() | 
+	    all Node l2: leaves() |
+	        (l1 == l2 || l1.blackAncestors().size() == l2.blackAncestors().size())
     }
 
     function public boolean isAcyclic() { 
@@ -46,13 +66,13 @@ public class BSTree
     }
 
     public void insert(Node insertedNode)
-	modifies BSTree.root, Node.left, Node.right, Node.parent
+	modifies RBTree.root, Node.color, Node.left, Node.right, Node.parent
 	ensures this.nodes().equals(this.old.nodes().union(insertedNode)) {
 	// no implementation...
     }    
 
     public void delete(Integer key)
-	modifies BSTree.root, Node.left, Node.right, Node.parent
+	modifies RBTree.root, Node.color, Node.left, Node.right, Node.parent
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(key)) {
 	// no implementation...
     } 
@@ -73,11 +93,15 @@ public class BSTree
         }
         for (int i = 0; i < indent; i++)
             System.out.print(" "); 
+        if (n.color == Color.BLACK)
             System.out.println(n.value);
+        else
+            System.out.println("R" + n.value);
         if (n.left != null) {
             printHelper(n.left, indent + INDENT_STEP);
         }
     }
+
         
     public static void main(String[] args) {
 	//LogMap.SolverOpt_debug(true);
@@ -85,7 +109,7 @@ public class BSTree
 
 	Random rand = new Random(1111L);
 
-        BSTree t = new BSTree();
+        RBTree t = new RBTree();
         t.print();
 
 	// create an array of the given size
@@ -104,12 +128,11 @@ public class BSTree
 	    a[n] = a[i-1];
 	    t.insert(temp);
 	    t.print();
-	    }
+	}
 	for (int i = MAX_SIZE - 1; i>=0; --i) {
 	    t.delete(i);
 	    t.print();
 	}
-	
     }
     
 }

@@ -23,6 +23,7 @@ public class LogRelation extends Hashtable {
     protected boolean isUnknown;
     protected boolean isaList;
     protected boolean isaListInstVar;
+    protected boolean isRangeEnum;
 
     public LogRelation(String instVar, Class domain, Class range) {
 	this(instVar, domain, range, false, false, 0, false);
@@ -51,8 +52,9 @@ public class LogRelation extends Hashtable {
 	this.isaList = isaList;
 	this.isaListInstVar = isaListInstVar;
 	this.id = "r" + this.RelCtr++;
+	this.isRangeEnum = range.isEnum();
 	if (LogMap.SolverOpt_debug())
-	    System.out.println("new relation " + this.id + " " + instVar + " old: " + !isUnknown);
+	    System.out.println("new relation " + this.id + " " + instVar + " old: " + !isUnknown + " rangeEnum: " + this.isRangeEnum);
     }
 
     public String instVar() { return instVar; }
@@ -65,6 +67,7 @@ public class LogRelation extends Hashtable {
     public boolean isUnknown() { return isUnknown; }
     public boolean isaList() { return isaList; }
     public boolean isaListInstVar() { return isaListInstVar; }
+    public boolean isRangeEnum() { return isRangeEnum; }
     public boolean hasFixedSize() { return fixedSize != 0; }
     public void fixedSize(int s) { fixedSize = s; }
     public void incrFixedSize() { fixedSize++; }
@@ -80,7 +83,7 @@ public class LogRelation extends Hashtable {
 
     public String range_log(boolean isBoundsDef) { 
 	// have to add 'null' to the set of possible values for the ref field
-	return LogMap.bounds_log(range, true, isBoundsDef).string();
+	return LogMap.bounds_log(range, !isRangeEnum, isBoundsDef).string();
     }
 
     public String fullDomainRange() {

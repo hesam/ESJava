@@ -89,6 +89,8 @@ public class LogMap {
 	    ClassAtoms.put(c, new ArrayList());
 	    newAtoms(c, isEnum);
 	}
+	if (SolverOpt_debug)
+	    System.out.println(" JtoLog --> " + JtoLog);
     }
 
     public static void newAtoms(Class c, boolean isEnum) { // FIXME?
@@ -141,11 +143,11 @@ public class LogMap {
 
     public static int get1(Object key) {
 
-	if (SolverOpt_debug) {
+	/*if (SolverOpt_debug) {
 	    System.out.println("get1: " + key);
 	    System.out.println(" --> " + JtoLog.get(key));
 	    System.out.println(JtoLog);
-	}
+	    }*/
 	return (Integer) JtoLog.get(key);
     }
 

@@ -362,8 +362,13 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 argsW1a.add(nf.Local(null, "fN"));
 	 forLoop1Stmts.add(nf.JL5LocalDecl(null, emptyFlags, fldtn, "f", nf.Call(null, nf.Local(null, "c"), "getField", argsW1a)));
 	 argsW2a.add(nf.This(null));
-	 argsW1b.add(nf.JL5Cast(null, array(cl, 0), nf.Call(null, nf.Local(null, "f"), "get", argsW2a)));
-	 forLoop1Stmts.add(nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "add", argsW1b)));
+	 argsW1b.add(nf.Local(null, "n"));
+	 forLoop1Stmts.add(nf.JL5LocalDecl(null, emptyFlags, cl, "n", nf.JL5Cast(null, array(cl, 0), nf.Call(null, nf.Local(null, "f"), "get", argsW2a))));
+
+	 Expr forLoop2Ife1 = nf.Binary(null, nf.Local(null, "n"), Binary.NE, nf.NullLit(null));	 	 
+	 Stmt forLoop2Ife2 = nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "add", argsW1b)); 
+	 
+	 forLoop1Stmts.add(nf.JL5If(null, forLoop2Ife1, forLoop2Ife2, null));
 	 Stmt forLoop1Body = nf.Block(null, forLoop1Stmts);
 	 Stmt forLoop1 = nf.ExtendedFor(null, forLoop1VarD, nf.Local(null, "fieldNs"), forLoop1Body);			
 	 tryBody.add(forLoop1);

@@ -394,12 +394,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 				       }
 	}
 
-    // comprehension expr desugars to a method call
-    public Expr DesugarComprehensionExpr (ESJComprehensionExpr a) {
-	System.out.println("hi: " + a.quantExpr());
-	return DesugarQuantifyExpr(a.quantExpr());
-    }
-
     // quantify expr desugars to a method call (defined above)
     public Expr DesugarQuantifyExpr (ESJQuantifyExpr a) {
 
@@ -461,16 +455,12 @@ public class ESJJavaTranslator extends ContextVisitor {
     protected Node leaveCall(Node n) throws SemanticException {
 	//System.out.println("have: " + n.getClass() + " " + n);
 
-	/*if (n instanceof ESJLogVarClassDecl) {	  
-	    return super.leaveCall(DesugarLogVarClassDecl((ESJLogVarClassDecl) n));
-	    } else*/ if (n instanceof ESJPredMethodDecl) {	    
+	 if (n instanceof ESJPredMethodDecl) {	    
 	    return super.leaveCall(DesugarPredMethodDecl((ESJPredMethodDecl)n));
 	} else if (n instanceof ESJLogPredMethodDecl) {	    
 	    return super.leaveCall(DesugarLogPredMethodDecl((ESJLogPredMethodDecl)n));
 	} else if (n instanceof ESJEnsuredMethodDecl) {
 	    return super.leaveCall(DesugarEnsuredMethodDecl((ESJEnsuredMethodDecl)n));
-	} else if (n instanceof ESJComprehensionExpr) {
-	    return super.leaveCall(DesugarComprehensionExpr((ESJComprehensionExpr)n));
 	} else if (n instanceof ESJQuantifyExpr) {
 	    return super.leaveCall(DesugarQuantifyExpr((ESJQuantifyExpr)n));
 	} else if (n instanceof ESJQuantifyTypeExpr) {

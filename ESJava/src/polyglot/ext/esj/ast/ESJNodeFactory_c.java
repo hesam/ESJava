@@ -73,10 +73,6 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 
     }
 
-    public ESJComprehensionExpr ESJComprehensionExpr(Position pos, ESJQuantifyExpr quantExpr, String theType) {
-	return new ESJComprehensionExpr_c(pos, quantExpr, theType);
-    }
-
     public ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, 
 					   String quantVarN, 
 					   List quantVarD, List quantVarD2, 
