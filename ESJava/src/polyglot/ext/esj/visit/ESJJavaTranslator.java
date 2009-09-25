@@ -74,7 +74,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 	for (Formal f : (List<Formal>) methodDecl.formals()) {
 	    if (f.type().type().isReference() && !f.type().toString().equals("java.lang.Integer")) { //HACK FIXME		
 		extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,f.name()), "clone", new TypedList(new LinkedList(), Expr.class, false))));
-		extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,f.name()), "relationize", new TypedList(new LinkedList(), Expr.class, false))));
 	    }
 	}
 	extraMtdBody.addAll(methodDecl.body().statements());
@@ -85,6 +84,15 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
 	catchBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,"rte"), "printStackTrace",
 					      new TypedList(new LinkedList(), Expr.class, false))));
+	catchBody.add(nf.Eval(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "ObjToAtomMap", new TypedList(new LinkedList(), Expr.class, false))));
+	catchBody.add(nf.Eval(null, nf.Call(null, null, "relationize", new TypedList(new LinkedList(), Expr.class, false))));
+	for (Formal f : (List<Formal>) methodDecl.formals()) {
+	    if (f.type().type().isReference() && !f.type().toString().equals("java.lang.Integer")) { //HACK FIXME		
+		catchBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,f.name()), "relationize", new TypedList(new LinkedList(), Expr.class, false))));
+	    }
+	}
+
+
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	for (Formal f : (List<Formal>) methodDecl.formals())
 	    args.add(nf.Local(null,f.name()));

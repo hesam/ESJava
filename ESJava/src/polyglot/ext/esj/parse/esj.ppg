@@ -1177,8 +1177,8 @@ ensured_class_declaration ::=
 	      //if (!parser.currClassName.equals("MyList")) // HACK FIXME
 		  //initEM.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), "old"), Assign.ASSIGN, parser.nf.Call(null, null, "clone", parser.emptyArgs))));
 	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "clone", parser.emptyArgs)));
-	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "ObjToAtomMap", new TypedList(new LinkedList(), Expr.class, false))));
-	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "relationize", new TypedList(new LinkedList(), Expr.class, false))));
+	      //initEM.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "ObjToAtomMap", new TypedList(new LinkedList(), Expr.class, false))));
+	      //initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "relationize", new TypedList(new LinkedList(), Expr.class, false))));
 	      l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.array(parser.nf.CanonicalTypeNode(null, parser.ts.Void()), 0), "initEnsuredMethod", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, initEM), new TypedList(new LinkedList(), TypeNode.class, false)));
 
 	      l.addAll(parser.defineESJExtraMethods(invariantMtdDecl));	
