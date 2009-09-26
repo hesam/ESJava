@@ -3,11 +3,11 @@ import polyglot.ext.esj.tologic.*;
 
 public class Node
 {
-    public Integer value;
-    public Color color;
-    public Node left;
-    public Node right;
-    public Node parent;
+    spec public Integer value;
+    spec public Color color;
+    spec public Node left;
+    spec public Node right;
+    spec public Node parent;
 
     public Node(Integer value, Node left, Node right) {
 	this(value, Color.BLACK, left, right);

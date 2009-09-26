@@ -9,7 +9,7 @@ public class BSTree
 
     private static final int INDENT_STEP = 4;
 
-    public Node root;
+    spec public Node root;
 
     public BSTree() { root = null; }
 
@@ -51,9 +51,9 @@ public class BSTree
 	// no implementation...
     }    
 
-    public void delete(Integer key)
+    public void delete(Integer value)
 	modifies BSTree.root, Node.left, Node.right, Node.parent
-	ensures this.nodeValues().equals(this.old.nodeValues().minus(key)) {
+	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
     } 
 

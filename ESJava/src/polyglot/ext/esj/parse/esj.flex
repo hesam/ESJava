@@ -246,6 +246,7 @@ SingleCharacter = [^\r\n\'\\]
   "strictfp"                     { return key(sym.STRICTFP); }
   "assert"                       { return key(sym.ASSERT); }
   "enum"                         { return key(sym.ESJENUM); }
+  "spec"                         { return key(sym.SPEC); }
   "function"                     { return key(sym.FUNCTION); }
   "ensures"                      { return key(sym.ENSURES); }
   "modifies"                     { return key(sym.MODIFIES); }

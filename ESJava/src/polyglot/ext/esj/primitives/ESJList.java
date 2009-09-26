@@ -9,7 +9,18 @@ public class ESJList<E> extends ArrayList<E> {
     protected LogRelation rel_log;
     protected ESJList old;
 
+    public LogVar var_log;
+    public LogVar var_log() { return var_log; }
+
     // Constructor
+    public ESJList() { super(); }
+
+    public ESJList(LogVar dontcare, boolean isQuantifyVar) {
+	super();
+	if (isQuantifyVar)
+	    this.var_log =
+		dontcare;
+    }
 
 
     // keep my pre-state copy in old field and relationize it
