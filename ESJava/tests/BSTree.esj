@@ -47,7 +47,7 @@ public class BSTree
 
     public void insert(Node insertedNode)
 	modifies BSTree.root, Node.left, Node.right, Node.parent
-	ensures this.nodes().equals(this.old.nodes().union(insertedNode)) {
+	ensures this.nodes().equals(this.old.nodes().plus(insertedNode)) {
 	// no implementation...
     }    
 
@@ -80,7 +80,7 @@ public class BSTree
     }
         
     public static void main(String[] args) {
-	//LogMap.SolverOpt_debug(true);
+	//LogMap.SolverOpt_debugLevel(1);
 	int MAX_SIZE = 10;
 
 	Random rand = new Random(1111L);
@@ -92,7 +92,7 @@ public class BSTree
 	int[] a = new int[MAX_SIZE];
 	  	
 	for (int i = 0 ; i < MAX_SIZE; ++i) {
-	    a[i] = i;// * 5;
+	    a[i] = i;
 	}
 
 	// randomly shuffle the elements in the array and 

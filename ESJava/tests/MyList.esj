@@ -37,7 +37,7 @@ public class MyList extends ESJList<Integer> {
     
     public static void main(String[] args) {
 	
-	//LogMap.SolverOpt_debug(true);
+	LogMap.SolverOpt_debugLevel(1);
 
         MyList ta = new MyList();	
         MyList tb = new MyList();

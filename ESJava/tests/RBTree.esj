@@ -67,7 +67,7 @@ public class RBTree
 
     public void insert(Node insertedNode)
 	modifies RBTree.root, Node.color, Node.left, Node.right, Node.parent
-	ensures this.nodes().equals(this.old.nodes().union(insertedNode)) {
+	ensures this.nodes().equals(this.old.nodes().plus(insertedNode)) {
 	// no implementation...
     }    
 
@@ -104,7 +104,7 @@ public class RBTree
 
         
     public static void main(String[] args) {
-	//LogMap.SolverOpt_debug(true);
+	//LogMap.SolverOpt_debugLevel(1);
 	int MAX_SIZE = 10;
 
 	Random rand = new Random(1111L);

@@ -3,6 +3,7 @@ package polyglot.ext.esj.tologic;
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 
+import java.util.AbstractCollection;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Set;
@@ -27,8 +28,9 @@ public class LogMap {
     static int SolverOpt_Port = 9128;
     static String SolverOpt_Flatten = "false";
     static int SolverOpt_SymmetryBreaking = 10;
-    static boolean SolverOpt_debug = false;
-
+    static int SolverOpt_debugLevel = 0;
+    static boolean SolverOpt_debug1 = false, SolverOpt_debug2 = false;
+ 
     static HashMap JtoLog = new HashMap(); // Java Objs to Solver Atoms
     static HashMap LogtoJ = new HashMap(); 
     static HashMap ProblemRels = new HashMap(); // Holds relations for given problem  
@@ -51,9 +53,16 @@ public class LogMap {
 	JtoLog.put(null,AtomCtr++);
     }
 
-    public static boolean SolverOpt_debug() { return SolverOpt_debug; }
-    public static void SolverOpt_debug(boolean b) {
-	SolverOpt_debug = b;
+    public static int SolverOpt_debugLevel() { return SolverOpt_debugLevel; }
+    public static boolean SolverOpt_debug1() { return SolverOpt_debug1; }
+    public static boolean SolverOpt_debug2() { return SolverOpt_debug2; }
+
+    public static void SolverOpt_debugLevel(int l) {
+	SolverOpt_debugLevel = l;
+	if (l > 0)
+	    SolverOpt_debug1 = true;
+	if (l > 1)
+	    SolverOpt_debug2 = true;
     }
 
     public static int relationizerStep() { return relationizerStep; }
@@ -69,7 +78,7 @@ public class LogMap {
 
     public static void ObjToAtomMap() {
 
-	if (SolverOpt_debug)
+	if (SolverOpt_debug1)
 	    System.out.println("classes: " + ClassAtoms);
 
 	/*
@@ -89,12 +98,12 @@ public class LogMap {
 	    ClassAtoms.put(c, new ArrayList());
 	    newAtoms(c, isEnum);
 	}
-	if (SolverOpt_debug)
+	if (SolverOpt_debug1)
 	    System.out.println(" JtoLog --> " + JtoLog);
     }
 
     public static void newAtoms(Class c, boolean isEnum) { // FIXME?
-	if (SolverOpt_debug)
+	if (SolverOpt_debug1)
 	    System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")" + "\n" + ClassConstrs);
 	ArrayList classAs = (ArrayList) ClassAtoms.get(c);
 	try {
@@ -104,9 +113,9 @@ public class LogMap {
 	    args[1] = false;
 
 	    objs = isEnum ? (ArrayList) Enums.get(c) : ((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2();
-	    if (SolverOpt_debug)
+	    if (SolverOpt_debug1)
 		System.out.println(objs);
-	    if (SolverOpt_debug)
+	    if (SolverOpt_debug1)
 		System.out.println("objs: " + objs);
 
 	    for (Object obj : objs) {		
@@ -143,11 +152,11 @@ public class LogMap {
 
     public static int get1(Object key) {
 
-	/*if (SolverOpt_debug) {
+	if (SolverOpt_debug2) {
 	    System.out.println("get1: " + key);
 	    System.out.println(" --> " + JtoLog.get(key));
 	    System.out.println(JtoLog);
-	    }*/
+	    }
 	return (Integer) JtoLog.get(key);
     }
 
@@ -166,7 +175,7 @@ public class LogMap {
     // FIXME
     public static LogSet bounds_log(Class c, boolean addNull, boolean isBoundDef) {
 	//System.out.println(c.allInstances_log().string());
-	if (SolverOpt_debug) {
+	if (SolverOpt_debug1) {
 	    System.out.println(c);
 	    System.out.println(ClassAtoms);
 	}
@@ -184,7 +193,7 @@ public class LogMap {
 	}
     }
 
-    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, boolean isUnknown) {
+    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, boolean isCollection, boolean isUnknown) {
 	String k = instVar;
 	if (!isUnknown) {
 	    k += "_old";
@@ -208,83 +217,41 @@ public class LogMap {
 		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
 	    }
 	}
-	LogRelation r = new LogRelation(instVar, domain, range, false, isUnknown);
+	LogRelation r = new LogRelation(instVar, domain, range, isCollection, isUnknown);
 	if (!InstVarRels.containsKey(c))
 	    InstVarRels.put(c, new HashMap());
 	((HashMap) InstVarRels.get(c)).put(k,r);
-	//System.out.println(InstVarRels);
+	if (SolverOpt_debug1)
+	    System.out.println("InstVarRels:" + InstVarRels);
 	return r.id;
     }
 
-    // fixme? --> diff name or instanceof...
-    /*
-    public static LogRelation instVarRel_log(LogVar var, String instVar) {
-	return (LogRelation) ((HashMap) InstVarRels.get(var.logType())).get(instVar);
-	}*/
-
+    //FIXME
     public static LogRelation instVarRel_log(Object obj, String instVar) {
 	return (LogRelation) ((HashMap) InstVarRels.get(obj.getClass())).get(instVar);
     }
 
+    //FIXME
     public static LogRelation instVarRel_log(Class c, String instVar) {
 	return (LogRelation) ((HashMap) InstVarRels.get(c)).get(instVar);
     }
 
     public static LogRelation instVarRelOld_log(LogRelation r) {
 	return (LogRelation) ((HashMap) InstVarRels.get(r.domain())).get(r.instVar()+"_old");
-	//return r;
     }
 
-    /*
-    // fixme? --> diff name or instanceof...
-    public static LogIntAtom intInstVar_log(LogVar var, String instVar) {
-	System.out.println("instVar_log LogVar");
-	return new LogIntAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
-	}*/
-
-    /*
-    public static LogIntAtom intInstVar_log(Object obj, String instVar) {
-	System.out.println("instVar_log Object");
-	return new LogIntAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
-	}*/
-    
-    /*
-    public static String intInstVarStr_log(LogVar var, String instVar) {
-	System.out.println("instVarStr_log LogVar");
-	return "(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")";
-	}*/
-
-    /*
-    public static String intInstVarStr_log(Object obj, String instVar) {
-	System.out.println("instVarStr_log Object");
-	return "(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")";
-	}*/
-
-    
-    /*
-    public static LogObjAtom objInstVar_log(LogVar var, String instVar) {
-	System.out.println("instVar_log LogVar");
-	return new LogObjAtom("(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")");
-	}*/
 
     public static LogObjAtom objInstVar_log(Object obj, String instVar) {
 	//System.out.println("instVar_log Object " + obj.getClass());
 	return new LogObjAtom("(" + get1_log(obj) + "." + instVarRel_log(obj, instVar).id() + ")");
     }
 
-    /*
-    public static String objInstVarStr_log(LogVar var, String instVar) {
-	System.out.println("instVar_log LogVar");
-	return "(" + var.string() + "." + instVarRel_log(var, instVar).id() + ")";
-	}*/
-
     // FIXME
     public static String objInstVarStr_log(ESJObject obj, String instVar) {
-	if (SolverOpt_debug) {
+	if (SolverOpt_debug1) {
 	    System.out.println("instVarStr_log -> isVar: " + (obj.var_log() != null));
 	    System.out.println(instVar + " " + obj + " " + ((ESJObject)obj).old());
 	}
-	//return "(" + (obj.var_log() == null ? get1_log(obj) : obj.var_log().string()) + "." + instVarRel_log(obj, instVar).id() + ")";
 	return "(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + instVarRel_log(obj, instVar).id() + ")";
     }
 
@@ -294,7 +261,7 @@ public class LogMap {
 
     // FIXME
     public static LogSet instVarClosure_log(ESJObject obj, boolean isOld, boolean isSimple, boolean isReflexive, String... instVars) {
-	if (SolverOpt_debug)
+	if (SolverOpt_debug1)
 	    System.out.println("instVarClosure_log -> idOld: " + isOld + " isVar: " + (obj.var_log() != null));
 	String fA = isOld ? "_old" : "";
 	String fNs = instVarRel_log(obj, instVars[0]+fA).id();
@@ -330,7 +297,7 @@ public class LogMap {
 	String spacer = "\n";
 
 	//getProblemRels(obj);
-	if (SolverOpt_debug)
+	if (SolverOpt_debug1)
 	    System.out.println("problem involves rels: " + ProblemRels);
 
 	problem.append("solver: " + SolverOpt_Solver + spacer);
@@ -352,7 +319,7 @@ public class LogMap {
 	
 	//ch.append(csq);
 	//ch.flush();
-	if (SolverOpt_debug)
+	if (SolverOpt_debug1)
 	    System.out.println(problem.toString());
 	String solution = Kodkodi.ESJCallSolver(problem.toString());
 	SolverOutputParser parser = null;
@@ -371,7 +338,7 @@ public class LogMap {
 	    boolean satisfiable = (Boolean) model.get(0);
 
 	    if (satisfiable) {
-		if (SolverOpt_debug)
+		if (SolverOpt_debug1)
 		    System.out.println(model);
 		commitModel(obj, unknowns, model);
 		return true;
