@@ -791,7 +791,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   public static String intBounds_log() {
 	  CharArrayWriter res = new CharArrayWriter();
 	  res.append("int_bounds: " + MIN_VALUE + ": [");
-	  for(int i=MIN_VALUE;i<=MAX_VALUE;i++) {
+	  for(int i=MIN_VALUE;i<MAX_VALUE;i++) {
 	      res.append("{A" + log(i) + "},");
 	  }
 	  res.append("{A" + log(MAX_VALUE) + "}]");
@@ -819,13 +819,14 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + new LogInt(o2.toString()).sumValue_log() + ")");
   }
 
-
+  //FIXME:
   public LogSet arithOp(String o, LogObject o2) {
       return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
   }
 
-  public LogSet arithOp(String o, ESJObject o2) {
-      return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
+  //FIXME:
+  public LogInt arithOp(String o, ESJObject o2) {
+      return new LogInt("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
   }
 
   public static void main(String[] args) {

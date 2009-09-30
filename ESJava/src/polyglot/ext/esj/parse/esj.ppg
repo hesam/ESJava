@@ -218,7 +218,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    }
 	    l.add(d1);
 	    l.add(d2);
-	    l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args2)));
+	    //l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args2)));
 	    l.add(nf.JL5Assert(null, nf.Local(null,"isSatisfiable"), nf.StringLit(null, "Formula UNSAT! Recovery failed...")));
 	    l.add(nf.Return(null, nf.Local(null,"isSatisfiable")));
 	    List frms = new TypedList(new LinkedList(), Formal.class, false); 
