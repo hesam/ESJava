@@ -12,5 +12,6 @@ public interface ESJObject {
     public boolean isQuantifyVar();
     public ESJObject old();
     public boolean isOld();
+    public void relationize();
     //public ESJSet fieldsClosure(boolean isReflexive, java.lang.String ... fieldNs);
 }

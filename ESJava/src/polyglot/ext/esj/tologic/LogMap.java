@@ -81,18 +81,6 @@ public class LogMap {
 	if (SolverOpt_debug1)
 	    System.out.println("classes: " + ClassAtoms);
 
-	/*
-	for (Class c : (Set<Class>) Enums.keySet()) {
-	    EnumAtoms.put(c, new ArrayList());
-	    ArrayList classAs = (ArrayList) EnumAtoms.get(c);
-	    Enum[] es = (Enum[]) Enums.get(c);
-	    for (Enum e : es) {
-		classAs.add(AtomCtr);
-		LogtoJ.put(AtomCtr,e);
-		JtoLog.put(e,AtomCtr++);
-		}      
-		}*/
-
 	for (Class c : (Set<Class>) ClassAtoms.keySet()) {
 	    boolean isEnum = c.isEnum();
 	    ClassAtoms.put(c, new ArrayList());
@@ -130,21 +118,6 @@ public class LogMap {
 	    }
 	} catch (Exception e) { System.out.println("oops " + e); System.exit(1); }
     }
-
-    /*
-    public static void newAtom(Object key) { // FIXME?
-	if (!JtoLog.containsKey(key)) {
-	    System.out.println("newAtom: " + key);
-	    Class c = key.getClass();	
-	    //if (!ClassAtoms.containsKey(c))
-	        //ClassAtoms.put(c, new ArrayList());
-	    ((ArrayList) ClassAtoms.get(c)).add(AtomCtr);
-	    System.out.println(ClassAtoms);
-	    LogtoJ.put(AtomCtr,key);
-	    JtoLog.put(key,AtomCtr++);
-	}
-    }
-    */
 
     public static void put1(Object key, int value) { 
 	JtoLog.put(key,value);
@@ -193,7 +166,7 @@ public class LogMap {
 	}
     }
 
-    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, boolean isCollection, boolean isUnknown) {
+    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, boolean isCollection, boolean isaList, boolean isUnknown) {
 	String k = instVar;
 	if (!isUnknown) {
 	    k += "_old";
@@ -217,7 +190,7 @@ public class LogMap {
 		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
 	    }
 	}
-	LogRelation r = new LogRelation(instVar, domain, range, isCollection, isUnknown);
+	LogRelation r = new LogRelation(instVar, domain, range, isCollection, isaList, isUnknown);
 	if (!InstVarRels.containsKey(c))
 	    InstVarRels.put(c, new HashMap());
 	((HashMap) InstVarRels.get(c)).put(k,r);
@@ -253,6 +226,11 @@ public class LogMap {
 	    System.out.println(instVar + " " + obj + " " + ((ESJObject)obj).old());
 	}
 	return "(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + instVarRel_log(obj, instVar).id() + ")";
+    }
+
+    public static LogSet objInstVarSet_log(ESJObject obj, String instVar) {
+	LogRelation r = instVarRel_log(obj, instVar);
+	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + r.id() + ")", 0, r.isaListInstVar());
     }
 
     public static LogObjAtom null_log() {
@@ -307,9 +285,11 @@ public class LogMap {
 	problem.append("univ: u" + AtomCtr + spacer);
 	for (Object k : ProblemRels.keySet() ) {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
-	    String rBound = (!r.isUnknown() || r.isModifiable(modifiableFields)) ? r.log() : instVarRelOld_log(r).log();
+	    boolean isModifiable = r.isModifiable(modifiableFields);
+	    boolean isUnknown = r.isUnknown() && isModifiable;
+	    String rBound = (!r.isUnknown() || isModifiable) ? r.log() : instVarRelOld_log(r).log();
 	    problem.append("bounds " + k + ": " + rBound + spacer);
-	    if (r.isUnknown()) {
+	    if (isUnknown) {
 		unknowns.add(r);
 		funDefs.append(r.funDef_log());
 	    }
@@ -362,26 +342,6 @@ public class LogMap {
 	LogRelation r = instVarRel_log(obj, instVar);
 	ProblemRels.put(r.id(),r);
     }
-
-    /*
-    public static void getProblemRels(Object obj) {
-
-	if (obj instanceof ArrayList) {
-	    ESJList<Integer> o = (ESJList<Integer>) obj;
-
-	    ProblemRels.put(o.rel_log().id(),o.rel_log());
-	    ProblemRels.put(o.old_log().rel_log().id(),o.old_log().rel_log());
-	} else {
-	    HashMap classInstVarRels = (HashMap) InstVarRels.get(obj.getClass().getName());
-	    System.out.println(classInstVarRels);
-	    for (Object k : classInstVarRels.keySet() ) {
-		LogRelation r =  (LogRelation) classInstVarRels.get(k);
-		ProblemRels.put(r.id(),r);
-	    }
-	}
-	System.out.println(ProblemRels);
-
-	}*/
 
     public static void commitModel(Object obj, ArrayList unknowns, ArrayList model) {
 	HashMap modelRels = (HashMap) model.get(1);

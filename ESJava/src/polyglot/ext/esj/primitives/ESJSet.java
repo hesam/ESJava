@@ -13,9 +13,6 @@ public class ESJSet<E> extends HashSet<E> {
     public ESJSet<E> old;
     int clonerStep = 0;
     
-    boolean isRelationized() { return this.relationizerStep == LogMap.relationizerStep(); }
-    boolean isCloned() { return this.clonerStep == LogMap.clonerStep(); }
-
     public ESJSet(LogVar dontcare, boolean isQuantifyVar) {
 	super();
     }
@@ -24,6 +21,10 @@ public class ESJSet<E> extends HashSet<E> {
 	super();
     }
 
+    boolean isRelationized() { return this.relationizerStep == LogMap.relationizerStep(); }
+    boolean isCloned() { return this.clonerStep == LogMap.clonerStep(); }
+    public ESJSet<E> old() { return old; }
+
     public ESJSet<E> clone() {
 	ESJSet<E> res = (ESJSet<E>) super.clone();
 	this.old = res;
@@ -31,15 +32,19 @@ public class ESJSet<E> extends HashSet<E> {
     }
 
     public void relationize() { 
-	//if (!isRelationized()) { 
-	    //this.relationizerStep++;
-	    //relationizeOld(); 
-	    //} 
+	if (!isRelationized()) { 
+	    this.relationizerStep++;
+	    // FIXME
+	    for (Object e : (ESJSet<Object>) this)
+		if (e instanceof ESJObject)
+		    ((ESJObject) e).relationize();
+	    relationizeOld(); 
+	} 
     }
     
     public void relationizeOld() { 
-	;
     }
+
 
     public ESJSet<E> plus(E e) {
 	add(e);
@@ -50,17 +55,6 @@ public class ESJSet<E> extends HashSet<E> {
 	remove(e);
 	return this;
     }
-
-    /*
-    public LogFormula quantifyOp(boolean quantKindIsaOneOrLone, String quantKind, LogObject quantVarN, LogFormula quantClauseExpr) {
-	if (size() == 0)
-	    return new LogFormula("true");
-	else {
-	    String p =  " [" + quantVarN + ": one " + "??" + "] | " + quantClauseExpr.string();
-	    String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
-	    return new LogFormula("(" + quantKind + q + ")");
-	}
-	}*/
 
 
 }

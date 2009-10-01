@@ -47,6 +47,7 @@ public class MyList extends ESJList<Integer> {
 	    ta.add(new Integer(a[i]));
 	    tb.add(new Integer(b[i]));
 	}
+
 	System.out.print("A=");
         System.out.println(ta);
 	System.out.print("A sorted: ");
@@ -63,7 +64,6 @@ public class MyList extends ESJList<Integer> {
         System.out.println(tb);
 	System.out.print("now B sorted: ");
 	System.out.println(tb.isSorted());
-
 
     }
 

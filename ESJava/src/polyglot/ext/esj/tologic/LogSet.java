@@ -47,17 +47,17 @@ public class LogSet extends LogObject {
 	if (isEmpty())
 	    return new LogFormula("true");
 	else {
-	    String p =  " [" + quantVarN + ": one " + string + "] | " + quantClauseExpr.string();
+	    String p =  " [" + quantVarN + ": one " + string + (isaListInstVar ? "[1]" : "") + "] | " + quantClauseExpr.string();
 	    String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
 	    return new LogFormula("(" + quantKind + q + ")");
 	}
-    }
+			   }
 
-    public LogSet setComprehensionOp(LogObject quantVarN, LogFormula quantClauseExpr) {
+	    public LogSet setComprehensionOp(LogObject quantVarN, LogFormula quantClauseExpr) {
 	if (isEmpty())
 	    return new LogSet("u0");
 	else {
-	    String p =  " [" + quantVarN + ": one " + string + "] | " + quantClauseExpr.string();
+	    String p =  " [" + quantVarN + ": one " + string + (isaListInstVar ? "[1]" : "") + "] | " + quantClauseExpr.string();
 	    String q = " {" + p + "} ";
 	    return new LogSet(q);
 	}

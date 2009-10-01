@@ -8,6 +8,8 @@ public class ESJList<E> extends ArrayList<E> {
 
     protected LogRelation rel_log;
     protected ESJList old;
+    int relationizerStep = 0;    
+    int clonerStep = 0;
 
     public LogVar var_log;
     public LogVar var_log() { return var_log; }
@@ -23,22 +25,42 @@ public class ESJList<E> extends ArrayList<E> {
     }
 
 
-    // keep my pre-state copy in old field and relationize it
+    // keep my pre-state copy in old field 
     public ESJList<E> clone() {
-	ESJList<E> res = copy(0,size()-1);
+	ESJList<E> res = (ESJList<E>) super.clone();
 	this.old = res;
 	return res;
     }
 
-    // relationize me
+    boolean isRelationized() { return this.relationizerStep == LogMap.relationizerStep(); }
+    boolean isCloned() { return this.clonerStep == LogMap.clonerStep(); }
+
+
+
+    // relationize me and my old
     public void relationize() {
-	this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, true, size());
+	if (!isRelationized()) { 
+	    this.relationizerStep++;
+	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, true, size());
+	    old.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, false, size());
+	    int i = 0;
+	    // FIXME
+	    for (Object e : (ESJList<Object>) this) {
+		if (e instanceof ESJObject)
+		    ((ESJObject) e).relationize();
+		rel_log.put_log(i, e);
+		old.rel_log.put_log(i, e);
+		i++;
+	    }
+	}
     }
+
+    public void relationizeOld() { 
+    }
+
 
     public ESJList<E> old() { return old; }
     
-    //public ESJList<E> old_log() { return old; }
-
     public LogRelation rel_log() {
 	return rel_log;
     }
@@ -86,18 +108,26 @@ public class ESJList<E> extends ArrayList<E> {
     }
 
     // copies obj plus its relation
-    public ESJList<E> copy(int from, int to) { ESJList<E> res = new ESJList<E>();
-	                                    res.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, size());
-                                            for (int i = from; i <= to; i++) {
-						E itm = get(i);
-						res.add(itm); 
-						res.rel_log.put_log(i, itm);
-					    }
-                                            return res; }
-    
+
+    /*
+    public ESJList<E> copy(int from, int to) { 
+	ESJList<E> res = new ESJList<E>();
+	res.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, true, false, size());
+	for (int i = from; i <= to; i++) {
+	    E itm = get(i);
+	    res.add(itm); 
+	    res.rel_log.put_log(i, itm);
+	}
+	return res; }    
+    */
+
     public ESJList<Integer> indices() { return ESJInteger.range(0, size() - 1); }
     
-    public ESJList<E> allButLast() { return copy(0, size() - 2); }
+    public ESJList<E> allButLast() { 
+	ESJList<E> res = clone();
+	res.remove(size()-1);
+	return res;
+    }
     
     public int count(E e) { int ct = 0;
                                  for (int i = 0; i < size(); i++) if (e.equals(get(i))) ct++;

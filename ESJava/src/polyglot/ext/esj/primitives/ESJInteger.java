@@ -754,6 +754,10 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return old == null;
   }
 
+  public void relationize() { 
+
+  }
+
   public static int BoundsSize() {
       return  MAX_VALUE - MIN_VALUE + 1;
   }
@@ -774,6 +778,10 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
   public static int log(int num) {
       return num - MIN_VALUE;
+  }
+
+  public static String log_str(int num) {
+      return "A" + (num - MIN_VALUE);
   }
 
   public static LogSet atom_log(int num) {
