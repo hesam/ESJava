@@ -1,4 +1,4 @@
-// $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SolverOutput.g 2009-08-19 19:47:45
+// $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SolverOutput.g 2009-10-01 15:28:25
 
 package polyglot.ext.esj.tologic;
 
@@ -47,7 +47,6 @@ public class SolverOutputParser extends Parser {
     // delegators
     static ArrayList models;
     public ArrayList models() { return models; }
-
 
         public SolverOutputParser(TokenStream input) {
             this(input, new RecognizerSharedState());
@@ -134,7 +133,6 @@ public class SolverOutputParser extends Parser {
         }
         finally {
         }
-
     }
     // $ANTLR end "solutions"
 
@@ -595,64 +593,55 @@ public class SolverOutputParser extends Parser {
 
 
     // $ANTLR start "name"
-    // SolverOutput.g:86:1: name returns [String n] : spaces (a= ( LOWER | '_' ) )+ d= number ;
+    // SolverOutput.g:86:1: name returns [String n] : spaces (a= LOWER | a= LOWER d1= number '_' ) d= number ;
     public final String name() throws RecognitionException {
         String n = null;
 
         Token a=null;
+        String d1 = null;
+
         String d = null;
 
 
         try {
-            // SolverOutput.g:86:25: ( spaces (a= ( LOWER | '_' ) )+ d= number )
-            // SolverOutput.g:87:6: spaces (a= ( LOWER | '_' ) )+ d= number
+            // SolverOutput.g:86:25: ( spaces (a= LOWER | a= LOWER d1= number '_' ) d= number )
+            // SolverOutput.g:87:6: spaces (a= LOWER | a= LOWER d1= number '_' ) d= number
             {
             pushFollow(FOLLOW_spaces_in_name503);
             spaces();
 
             state._fsp--;
 
-            // SolverOutput.g:87:15: (a= ( LOWER | '_' ) )+
-            int cnt6=0;
-            loop6:
-            do {
-                int alt6=2;
-                int LA6_0 = input.LA(1);
+            // SolverOutput.g:87:13: (a= LOWER | a= LOWER d1= number '_' )
+            int alt6=2;
+            alt6 = dfa6.predict(input);
+            switch (alt6) {
+                case 1 :
+                    // SolverOutput.g:87:14: a= LOWER
+                    {
+                    a=(Token)match(input,LOWER,FOLLOW_LOWER_in_name510); 
+                     n = a.getText(); 
 
-                if ( (LA6_0==LOWER||LA6_0==28) ) {
-                    alt6=1;
-                }
+                    }
+                    break;
+                case 2 :
+                    // SolverOutput.g:87:49: a= LOWER d1= number '_'
+                    {
+                    a=(Token)match(input,LOWER,FOLLOW_LOWER_in_name520); 
+                    pushFollow(FOLLOW_number_in_name526);
+                    d1=number();
 
+                    state._fsp--;
 
-                switch (alt6) {
-            	case 1 :
-            	    // SolverOutput.g:87:15: a= ( LOWER | '_' )
-            	    {
-            	    a=(Token)input.LT(1);
-            	    if ( input.LA(1)==LOWER||input.LA(1)==28 ) {
-            	        input.consume();
-            	        state.errorRecovery=false;
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        throw mse;
-            	    }
+                    match(input,28,FOLLOW_28_in_name528); 
+                     n = a.getText() + d1 + "_"; 
 
+                    }
+                    break;
 
-            	    }
-            	    break;
+            }
 
-            	default :
-            	    if ( cnt6 >= 1 ) break loop6;
-                        EarlyExitException eee =
-                            new EarlyExitException(6, input);
-                        throw eee;
-                }
-                cnt6++;
-            } while (true);
-
-             n = a.getText(); 
-            pushFollow(FOLLOW_number_in_name531);
+            pushFollow(FOLLOW_number_in_name548);
             d=number();
 
             state._fsp--;
@@ -685,7 +674,7 @@ public class SolverOutputParser extends Parser {
             // SolverOutput.g:90:29: (l= list )
             // SolverOutput.g:91:6: l= list
             {
-            pushFollow(FOLLOW_list_in_value556);
+            pushFollow(FOLLOW_list_in_value573);
             l=list();
 
             state._fsp--;
@@ -745,8 +734,8 @@ public class SolverOutputParser extends Parser {
                 case 1 :
                     // SolverOutput.g:95:6: LBRACKET RBRACKET
                     {
-                    match(input,LBRACKET,FOLLOW_LBRACKET_in_list586); 
-                    match(input,RBRACKET,FOLLOW_RBRACKET_in_list588); 
+                    match(input,LBRACKET,FOLLOW_LBRACKET_in_list603); 
+                    match(input,RBRACKET,FOLLOW_RBRACKET_in_list605); 
                      l = new ArrayList(); 
 
                     }
@@ -754,13 +743,13 @@ public class SolverOutputParser extends Parser {
                 case 2 :
                     // SolverOutput.g:97:6: LBRACKET is= listItems RBRACKET
                     {
-                    match(input,LBRACKET,FOLLOW_LBRACKET_in_list606); 
-                    pushFollow(FOLLOW_listItems_in_list612);
+                    match(input,LBRACKET,FOLLOW_LBRACKET_in_list623); 
+                    pushFollow(FOLLOW_listItems_in_list629);
                     is=listItems();
 
                     state._fsp--;
 
-                    match(input,RBRACKET,FOLLOW_RBRACKET_in_list614); 
+                    match(input,RBRACKET,FOLLOW_RBRACKET_in_list631); 
                      l = is; 
 
                     }
@@ -793,7 +782,7 @@ public class SolverOutputParser extends Parser {
             // SolverOutput.g:100:33: (a= listItem ( COMMA b= listItem )* )
             // SolverOutput.g:101:6: a= listItem ( COMMA b= listItem )*
             {
-            pushFollow(FOLLOW_listItem_in_listItems646);
+            pushFollow(FOLLOW_listItem_in_listItems663);
             a=listItem();
 
             state._fsp--;
@@ -814,8 +803,8 @@ public class SolverOutputParser extends Parser {
             	case 1 :
             	    // SolverOutput.g:102:10: COMMA b= listItem
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_listItems660); 
-            	    pushFollow(FOLLOW_listItem_in_listItems666);
+            	    match(input,COMMA,FOLLOW_COMMA_in_listItems677); 
+            	    pushFollow(FOLLOW_listItem_in_listItems683);
             	    b=listItem();
 
             	    state._fsp--;
@@ -864,7 +853,7 @@ public class SolverOutputParser extends Parser {
                 case 1 :
                     // SolverOutput.g:105:8: a= binaryTuple
                     {
-                    pushFollow(FOLLOW_binaryTuple_in_listItem699);
+                    pushFollow(FOLLOW_binaryTuple_in_listItem716);
                     a=binaryTuple();
 
                     state._fsp--;
@@ -875,7 +864,7 @@ public class SolverOutputParser extends Parser {
                 case 2 :
                     // SolverOutput.g:105:26: a= ternaryTuple
                     {
-                    pushFollow(FOLLOW_ternaryTuple_in_listItem707);
+                    pushFollow(FOLLOW_ternaryTuple_in_listItem724);
                     a=ternaryTuple();
 
                     state._fsp--;
@@ -916,19 +905,19 @@ public class SolverOutputParser extends Parser {
             // SolverOutput.g:108:34: ( LBRACKET a= atom COMMA b= atom RBRACKET )
             // SolverOutput.g:109:6: LBRACKET a= atom COMMA b= atom RBRACKET
             {
-            match(input,LBRACKET,FOLLOW_LBRACKET_in_binaryTuple737); 
-            pushFollow(FOLLOW_atom_in_binaryTuple743);
+            match(input,LBRACKET,FOLLOW_LBRACKET_in_binaryTuple754); 
+            pushFollow(FOLLOW_atom_in_binaryTuple760);
             a=atom();
 
             state._fsp--;
 
-            match(input,COMMA,FOLLOW_COMMA_in_binaryTuple745); 
-            pushFollow(FOLLOW_atom_in_binaryTuple751);
+            match(input,COMMA,FOLLOW_COMMA_in_binaryTuple762); 
+            pushFollow(FOLLOW_atom_in_binaryTuple768);
             b=atom();
 
             state._fsp--;
 
-            match(input,RBRACKET,FOLLOW_RBRACKET_in_binaryTuple753); 
+            match(input,RBRACKET,FOLLOW_RBRACKET_in_binaryTuple770); 
              t = new ArrayList();
                       t.add(a); t.add(b); 
 
@@ -962,25 +951,25 @@ public class SolverOutputParser extends Parser {
             // SolverOutput.g:113:35: ( LBRACKET a= atom COMMA b= atom COMMA c= atom RBRACKET )
             // SolverOutput.g:114:6: LBRACKET a= atom COMMA b= atom COMMA c= atom RBRACKET
             {
-            match(input,LBRACKET,FOLLOW_LBRACKET_in_ternaryTuple783); 
-            pushFollow(FOLLOW_atom_in_ternaryTuple789);
+            match(input,LBRACKET,FOLLOW_LBRACKET_in_ternaryTuple800); 
+            pushFollow(FOLLOW_atom_in_ternaryTuple806);
             a=atom();
 
             state._fsp--;
 
-            match(input,COMMA,FOLLOW_COMMA_in_ternaryTuple791); 
-            pushFollow(FOLLOW_atom_in_ternaryTuple797);
+            match(input,COMMA,FOLLOW_COMMA_in_ternaryTuple808); 
+            pushFollow(FOLLOW_atom_in_ternaryTuple814);
             b=atom();
 
             state._fsp--;
 
-            match(input,COMMA,FOLLOW_COMMA_in_ternaryTuple799); 
-            pushFollow(FOLLOW_atom_in_ternaryTuple805);
+            match(input,COMMA,FOLLOW_COMMA_in_ternaryTuple816); 
+            pushFollow(FOLLOW_atom_in_ternaryTuple822);
             c=atom();
 
             state._fsp--;
 
-            match(input,RBRACKET,FOLLOW_RBRACKET_in_ternaryTuple807); 
+            match(input,RBRACKET,FOLLOW_RBRACKET_in_ternaryTuple824); 
              t = new ArrayList();
                       t.add(a); t.add(b); t.add(c); 
 
@@ -1010,13 +999,13 @@ public class SolverOutputParser extends Parser {
             // SolverOutput.g:118:21: ( spaces 'A' d= number )
             // SolverOutput.g:119:6: spaces 'A' d= number
             {
-            pushFollow(FOLLOW_spaces_in_atom834);
+            pushFollow(FOLLOW_spaces_in_atom851);
             spaces();
 
             state._fsp--;
 
-            match(input,29,FOLLOW_29_in_atom836); 
-            pushFollow(FOLLOW_number_in_atom842);
+            match(input,29,FOLLOW_29_in_atom853); 
+            pushFollow(FOLLOW_number_in_atom859);
             d=number();
 
             state._fsp--;
@@ -1096,7 +1085,7 @@ public class SolverOutputParser extends Parser {
             	case 1 :
             	    // SolverOutput.g:125:24: d= DIGIT
             	    {
-            	    d=(Token)match(input,DIGIT,FOLLOW_DIGIT_in_number894); 
+            	    d=(Token)match(input,DIGIT,FOLLOW_DIGIT_in_number911); 
             	     n = n + d.getText(); 
 
             	    }
@@ -1148,7 +1137,7 @@ public class SolverOutputParser extends Parser {
             	case 1 :
             	    // SolverOutput.g:127:10: SPACE
             	    {
-            	    match(input,SPACE,FOLLOW_SPACE_in_spaces908); 
+            	    match(input,SPACE,FOLLOW_SPACE_in_spaces925); 
 
             	    }
             	    break;
@@ -1176,6 +1165,7 @@ public class SolverOutputParser extends Parser {
 
 
     protected DFA2 dfa2 = new DFA2(this);
+    protected DFA6 dfa6 = new DFA6(this);
     protected DFA9 dfa9 = new DFA9(this);
     static final String DFA2_eotS =
         "\7\uffff";
@@ -1232,6 +1222,59 @@ public class SolverOutputParser extends Parser {
             return "55:12: (o= unsatOutcome | o= satOutcome sol= instance )";
         }
     }
+    static final String DFA6_eotS =
+        "\5\uffff";
+    static final String DFA6_eofS =
+        "\5\uffff";
+    static final String DFA6_minS =
+        "\1\17\1\21\1\11\2\uffff";
+    static final String DFA6_maxS =
+        "\1\17\1\21\1\34\2\uffff";
+    static final String DFA6_acceptS =
+        "\3\uffff\1\1\1\2";
+    static final String DFA6_specialS =
+        "\5\uffff}>";
+    static final String[] DFA6_transitionS = {
+            "\1\1",
+            "\1\2",
+            "\1\3\7\uffff\1\2\12\uffff\1\4",
+            "",
+            ""
+    };
+
+    static final short[] DFA6_eot = DFA.unpackEncodedString(DFA6_eotS);
+    static final short[] DFA6_eof = DFA.unpackEncodedString(DFA6_eofS);
+    static final char[] DFA6_min = DFA.unpackEncodedStringToUnsignedChars(DFA6_minS);
+    static final char[] DFA6_max = DFA.unpackEncodedStringToUnsignedChars(DFA6_maxS);
+    static final short[] DFA6_accept = DFA.unpackEncodedString(DFA6_acceptS);
+    static final short[] DFA6_special = DFA.unpackEncodedString(DFA6_specialS);
+    static final short[][] DFA6_transition;
+
+    static {
+        int numStates = DFA6_transitionS.length;
+        DFA6_transition = new short[numStates][];
+        for (int i=0; i<numStates; i++) {
+            DFA6_transition[i] = DFA.unpackEncodedString(DFA6_transitionS[i]);
+        }
+    }
+
+    class DFA6 extends DFA {
+
+        public DFA6(BaseRecognizer recognizer) {
+            this.recognizer = recognizer;
+            this.decisionNumber = 6;
+            this.eot = DFA6_eot;
+            this.eof = DFA6_eof;
+            this.min = DFA6_min;
+            this.max = DFA6_max;
+            this.accept = DFA6_accept;
+            this.special = DFA6_special;
+            this.transition = DFA6_transition;
+        }
+        public String getDescription() {
+            return "87:13: (a= LOWER | a= LOWER d1= number '_' )";
+        }
+    }
     static final String DFA9_eotS =
         "\13\uffff";
     static final String DFA9_eofS =
@@ -1241,7 +1284,7 @@ public class SolverOutputParser extends Parser {
     static final String DFA9_maxS =
         "\1\12\2\35\2\21\2\35\2\21\2\uffff";
     static final String DFA9_acceptS =
-        "\11\uffff\1\2\1\1";
+        "\11\uffff\1\1\1\2";
     static final String DFA9_specialS =
         "\13\uffff}>";
     static final String[] DFA9_transitionS = {
@@ -1253,7 +1296,7 @@ public class SolverOutputParser extends Parser {
             "\1\6\12\uffff\1\7",
             "\1\6\12\uffff\1\7",
             "\1\10",
-            "\1\11\2\uffff\1\12\5\uffff\1\10",
+            "\1\12\2\uffff\1\11\5\uffff\1\10",
             "",
             ""
     };
@@ -1318,46 +1361,49 @@ public class SolverOutputParser extends Parser {
     public static final BitSet FOLLOW_26_in_instance368 = new BitSet(new long[]{0x0000000008040000L});
     public static final BitSet FOLLOW_spaces_in_instance370 = new BitSet(new long[]{0x0000000008000000L});
     public static final BitSet FOLLOW_27_in_instance372 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_LBRACE_in_instance374 = new BitSet(new long[]{0x0000000010048000L});
+    public static final BitSet FOLLOW_LBRACE_in_instance374 = new BitSet(new long[]{0x0000000000048000L});
     public static final BitSet FOLLOW_relations_in_instance380 = new BitSet(new long[]{0x0000000000002000L});
     public static final BitSet FOLLOW_RBRACE_in_instance382 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_relation_in_relations417 = new BitSet(new long[]{0x0000000000000102L});
-    public static final BitSet FOLLOW_COMMA_in_relations431 = new BitSet(new long[]{0x0000000010048000L});
+    public static final BitSet FOLLOW_COMMA_in_relations431 = new BitSet(new long[]{0x0000000000048000L});
     public static final BitSet FOLLOW_relation_in_relations437 = new BitSet(new long[]{0x0000000000000102L});
     public static final BitSet FOLLOW_name_in_relation465 = new BitSet(new long[]{0x0000000000000200L});
     public static final BitSet FOLLOW_EQUALS_in_relation467 = new BitSet(new long[]{0x0000000000000400L});
     public static final BitSet FOLLOW_value_in_relation473 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_spaces_in_name503 = new BitSet(new long[]{0x0000000010008000L});
-    public static final BitSet FOLLOW_set_in_name509 = new BitSet(new long[]{0x0000000010028000L});
-    public static final BitSet FOLLOW_number_in_name531 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_list_in_value556 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACKET_in_list586 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_RBRACKET_in_list588 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACKET_in_list606 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_listItems_in_list612 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_RBRACKET_in_list614 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_listItem_in_listItems646 = new BitSet(new long[]{0x0000000000000102L});
-    public static final BitSet FOLLOW_COMMA_in_listItems660 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_listItem_in_listItems666 = new BitSet(new long[]{0x0000000000000102L});
-    public static final BitSet FOLLOW_binaryTuple_in_listItem699 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ternaryTuple_in_listItem707 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACKET_in_binaryTuple737 = new BitSet(new long[]{0x0000000020040000L});
-    public static final BitSet FOLLOW_atom_in_binaryTuple743 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_COMMA_in_binaryTuple745 = new BitSet(new long[]{0x0000000020040000L});
-    public static final BitSet FOLLOW_atom_in_binaryTuple751 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_RBRACKET_in_binaryTuple753 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACKET_in_ternaryTuple783 = new BitSet(new long[]{0x0000000020040000L});
-    public static final BitSet FOLLOW_atom_in_ternaryTuple789 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_COMMA_in_ternaryTuple791 = new BitSet(new long[]{0x0000000020040000L});
-    public static final BitSet FOLLOW_atom_in_ternaryTuple797 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_COMMA_in_ternaryTuple799 = new BitSet(new long[]{0x0000000020040000L});
-    public static final BitSet FOLLOW_atom_in_ternaryTuple805 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_RBRACKET_in_ternaryTuple807 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_spaces_in_atom834 = new BitSet(new long[]{0x0000000020000000L});
-    public static final BitSet FOLLOW_29_in_atom836 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_number_in_atom842 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_spaces_in_name503 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_LOWER_in_name510 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_LOWER_in_name520 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_number_in_name526 = new BitSet(new long[]{0x0000000010000000L});
+    public static final BitSet FOLLOW_28_in_name528 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_number_in_name548 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_list_in_value573 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACKET_in_list603 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_RBRACKET_in_list605 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACKET_in_list623 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_listItems_in_list629 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_RBRACKET_in_list631 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_listItem_in_listItems663 = new BitSet(new long[]{0x0000000000000102L});
+    public static final BitSet FOLLOW_COMMA_in_listItems677 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_listItem_in_listItems683 = new BitSet(new long[]{0x0000000000000102L});
+    public static final BitSet FOLLOW_binaryTuple_in_listItem716 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ternaryTuple_in_listItem724 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACKET_in_binaryTuple754 = new BitSet(new long[]{0x0000000020040000L});
+    public static final BitSet FOLLOW_atom_in_binaryTuple760 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_COMMA_in_binaryTuple762 = new BitSet(new long[]{0x0000000020040000L});
+    public static final BitSet FOLLOW_atom_in_binaryTuple768 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_RBRACKET_in_binaryTuple770 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACKET_in_ternaryTuple800 = new BitSet(new long[]{0x0000000020040000L});
+    public static final BitSet FOLLOW_atom_in_ternaryTuple806 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_COMMA_in_ternaryTuple808 = new BitSet(new long[]{0x0000000020040000L});
+    public static final BitSet FOLLOW_atom_in_ternaryTuple814 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_COMMA_in_ternaryTuple816 = new BitSet(new long[]{0x0000000020040000L});
+    public static final BitSet FOLLOW_atom_in_ternaryTuple822 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_RBRACKET_in_ternaryTuple824 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_spaces_in_atom851 = new BitSet(new long[]{0x0000000020000000L});
+    public static final BitSet FOLLOW_29_in_atom853 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_number_in_atom859 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_letter0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DIGIT_in_number894 = new BitSet(new long[]{0x0000000000020002L});
-    public static final BitSet FOLLOW_SPACE_in_spaces908 = new BitSet(new long[]{0x0000000000040002L});
+    public static final BitSet FOLLOW_DIGIT_in_number911 = new BitSet(new long[]{0x0000000000020002L});
+    public static final BitSet FOLLOW_SPACE_in_spaces925 = new BitSet(new long[]{0x0000000000040002L});
 
 }

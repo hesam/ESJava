@@ -17,23 +17,24 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 	this.dots = new ESJList<Dot>();
     }
     
+    static int Grid = 10;
     spec ESJList<Dot> dots;
 
     function public boolean distributed() { 
 	all Dot d1 : this.dots | 
 	    all Dot d2 : this.dots | (d1 == d2 || 
-				 (d1.x >= d2.x && d1.x - d2.x > 50) || 
-				 (d2.x >= d1.x && d2.x - d1.x > 50) ||
-				 (d1.y >= d2.y && d1.y - d2.y > 50) ||  
-				 (d2.y >= d1.y && d2.y - d1.y > 50))
+				 (d1.x >= d2.x && d1.x - d2.x > 5) || 
+				 (d2.x >= d1.x && d2.x - d1.x > 5) ||
+				 (d1.y >= d2.y && d1.y - d2.y > 5) ||  
+				 (d2.y >= d1.y && d2.y - d1.y > 5))
     }
 
     function public boolean unperturbed() { 
 	all Dot d : this.dots |
-	    (((d.old.x >= d.x && d.old.x - d.x < 25) || 
-	     (d.x >= d.old.x && d.x - d.old.x < 25)) && 
-	     ((d.old.y >= d.y && d.old.y - d.y < 25) || 
-	      (d.y >= d.old.y && d.y - d.old.y < 25)))
+	    (((d.old.x >= d.x && d.old.x - d.x < 5) || 
+	     (d.x >= d.old.x && d.x - d.old.x < 5)) && 
+	     ((d.old.y >= d.y && d.old.y - d.y < 5) || 
+	      (d.y >= d.old.y && d.y - d.old.y < 5)))
     }
 
     public void mousePressed( MouseEvent e ) { ; }    
@@ -44,7 +45,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     public void mouseMoved( MouseEvent e ) { ; }
     
     public void mouseReleased( MouseEvent e ) {
-	int x = e.getX(), y = e.getY();
+	int x = (int) Math.floor(e.getX() / Grid), y = (int) Math.floor(e.getY() / Grid);
 	Dot d = new Dot(x, y);
 	dots.add(d);
 	addDot(d);
@@ -68,7 +69,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 	g.setColor(c);
 	paint(g); // clears canvas
 	for (Dot d : this.dots) {
-	    g.fillOval(d.x, d.y, 20, 20);
+	    g.fillOval(d.x * Grid, d.y * Grid, 20, 20);
 	    c = c.brighter();
 	    g.setColor(c);
 	}
@@ -76,7 +77,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     
     public static void main( String[] args ) {
 	LogMap.SolverOpt_debugLevel(1);
-	ESJInteger.setBounds(0,500);
+	ESJInteger.setBounds(0,60);
 	Frame myFrame = new Frame( "Distributed Dots" );
 	Dots myCanvas = new Dots();
 	myCanvas.addMouseListener( myCanvas );

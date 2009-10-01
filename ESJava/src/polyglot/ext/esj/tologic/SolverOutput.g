@@ -84,7 +84,7 @@ relation returns [String rn, ArrayList rv] :
         { $rn = $n.n; $rv = $v.v; } ;
 
 name returns [String n] : 
-     spaces a = (LOWER|'_')+ { $n = $a.getText(); } 
+     spaces (a = LOWER { $n = $a.getText(); } | a = LOWER d1 = number '_' { $n = $a.getText() + $d1.n + "_"; } )  
         d = number { $n = $n + $d.n; } ;
 
 value returns [ArrayList v] : 
