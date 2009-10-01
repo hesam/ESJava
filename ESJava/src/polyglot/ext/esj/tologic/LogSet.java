@@ -47,7 +47,8 @@ public class LogSet extends LogObject {
 	if (isEmpty())
 	    return new LogFormula("true");
 	else {
-	    String p =  " [" + quantVarN + ": one " + string + (isaListInstVar ? "[1]" : "") + "] | " + quantClauseExpr.string();
+	    String s = string + (isaListInstVar ? "[1]" : "");
+	    String p =  " [" + quantVarN + ": one " + s + "] | " + quantClauseExpr.string();
 	    String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
 	    return new LogFormula("(" + quantKind + q + ")");
 	}
@@ -57,7 +58,8 @@ public class LogSet extends LogObject {
 	if (isEmpty())
 	    return new LogSet("u0");
 	else {
-	    String p =  " [" + quantVarN + ": one " + string + (isaListInstVar ? "[1]" : "") + "] | " + quantClauseExpr.string();
+	    String s = string + (isaListInstVar ? "[1]" : "");
+	    String p =  " [" + quantVarN + ": one " + s + "] | " + quantClauseExpr.string();
 	    String q = " {" + p + "} ";
 	    return new LogSet(q);
 	}

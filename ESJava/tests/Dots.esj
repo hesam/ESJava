@@ -1,0 +1,93 @@
+import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.tologic.LogMap;
+  
+import java.awt.*;
+import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+
+public class Dots extends Canvas implements MouseListener, MouseMotionListener {
+    
+    public Dots() { 
+	super(); 
+	this.dots = new ESJList<Dot>();
+    }
+    
+    spec ESJList<Dot> dots;
+
+    function public boolean distributed() { 
+	all Dot d1 : this.dots | 
+	    all Dot d2 : this.dots | (d1 == d2 || 
+				 (d1.x >= d2.x && d1.x - d2.x > 50) || 
+				 (d2.x >= d1.x && d2.x - d1.x > 50) ||
+				 (d1.y >= d2.y && d1.y - d2.y > 50) ||  
+				 (d2.y >= d1.y && d2.y - d1.y > 50))
+    }
+
+    function public boolean unperturbed() { 
+	all Dot d : this.dots |
+	    (((d.old.x >= d.x && d.old.x - d.x < 25) || 
+	     (d.x >= d.old.x && d.x - d.old.x < 25)) && 
+	     ((d.old.y >= d.y && d.old.y - d.y < 25) || 
+	      (d.y >= d.old.y && d.y - d.old.y < 25)))
+    }
+
+    public void mousePressed( MouseEvent e ) { ; }    
+    public void mouseDragged( MouseEvent e ) { ; }
+    public void mouseClicked( MouseEvent e ) { ; }
+    public void mouseEntered( MouseEvent e ) { ; }
+    public void mouseExited( MouseEvent e ) { ; }
+    public void mouseMoved( MouseEvent e ) { ; }
+    
+    public void mouseReleased( MouseEvent e ) {
+	int x = e.getX(), y = e.getY();
+	Dot d = new Dot(x, y);
+	dots.add(d);
+	addDot(d);
+	draw();
+    }
+
+    public void addDot(Dot d) 
+	modifies Dot.x, Dot.y
+	ensures distributed() && unperturbed() {
+	System.out.println(Dot.allInstances());
+	System.out.println(dots);
+	for (Dot d1 : this.dots)
+	    System.out.println(d1 + " " + d1.old);
+	System.out.println("distributed: " + distributed());
+	System.out.println("unperturbed: " + unperturbed());
+    }
+
+    public void draw() {
+	Graphics g = getGraphics();
+	Color c = new Color(100,100,100);
+	g.setColor(c);
+	paint(g); // clears canvas
+	for (Dot d : this.dots) {
+	    g.fillOval(d.x, d.y, 20, 20);
+	    c = c.brighter();
+	    g.setColor(c);
+	}
+    }
+    
+    public static void main( String[] args ) {
+	LogMap.SolverOpt_debugLevel(1);
+	ESJInteger.setBounds(0,500);
+	Frame myFrame = new Frame( "Distributed Dots" );
+	Dots myCanvas = new Dots();
+	myCanvas.addMouseListener( myCanvas );
+	myCanvas.addMouseMotionListener( myCanvas );
+	myFrame.add( myCanvas );
+	myFrame.setSize( 600, 600 );
+	myFrame.addWindowListener( new WindowAdapter() {
+		public void windowClosing( WindowEvent we ) {
+		    System.exit( 0 );
+		}
+	    } );
+	myFrame.setVisible(true);
+    }
+}
