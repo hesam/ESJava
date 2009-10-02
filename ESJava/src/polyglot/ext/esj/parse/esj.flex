@@ -249,7 +249,8 @@ SingleCharacter = [^\r\n\'\\]
   "spec"                         { return key(sym.SPEC); }
   "function"                     { return key(sym.FUNCTION); }
   "ensures"                      { return key(sym.ENSURES); }
-  "modifies"                     { return key(sym.MODIFIES); }
+  "modifies fields"              { return key(sym.MODIFIESFIELDS); }
+  "modifies objects"             { return key(sym.MODIFIESOBJECTS); }
   "all"                          { return key(sym.ALL); }
   "some"                         { return key(sym.SOME); }
   "no"                           { return key(sym.NO); }

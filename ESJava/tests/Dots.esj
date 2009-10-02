@@ -15,27 +15,42 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     public Dots() { 
 	super(); 
 	this.dots = new ESJList<Dot>();
+	this.minDistance = 5;
+	this.maxWiggleRoom = 4;
     }
     
-    static int Grid = 10;
+    static int grid = 10;
+    static int canvasSize = 600;
+    static int minDistance = 5;
+    static int maxWiggleRoom = 4;
+    static int dotSize = 20;
     static Color[] colors = {Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray, Color.green, Color.lightGray, Color.magenta, Color.orange, Color.pink, Color.red , Color.yellow};
+
     spec ESJList<Dot> dots;
+    Graphics g;
 
     function public boolean distributed() { 
 	all Dot d1 : this.dots | 
 	    all Dot d2 : this.dots | (d1 == d2 || 
-				 (d1.x >= d2.x && d1.x - d2.x > 5) || 
-				 (d2.x >= d1.x && d2.x - d1.x > 5) ||
-				 (d1.y >= d2.y && d1.y - d2.y > 5) ||  
-				 (d2.y >= d1.y && d2.y - d1.y > 5))
+				 (d1.x >= d2.x && d1.x - d2.x > Dots.minDistance) || 
+				 (d2.x >= d1.x && d2.x - d1.x > Dots.minDistance) ||
+				 (d1.y >= d2.y && d1.y - d2.y > Dots.minDistance) ||  
+				 (d2.y >= d1.y && d2.y - d1.y > Dots.minDistance))
     }
 
     function public boolean unperturbed() { 
 	all Dot d : this.dots |
-	    (((d.xOrig >= d.x && d.xOrig - d.x < 4) || 
-	     (d.x >= d.xOrig && d.x - d.xOrig < 4)) && 
-	     ((d.yOrig >= d.y && d.yOrig - d.y < 4) || 
-	      (d.y >= d.yOrig && d.y - d.yOrig < 4)))
+	    (((d.xOrig >= d.x && d.xOrig - d.x < Dots.maxWiggleRoom) || 
+	     (d.x >= d.xOrig && d.x - d.xOrig < Dots.maxWiggleRoom)) && 
+	     ((d.yOrig >= d.y && d.yOrig - d.y < Dots.maxWiggleRoom) || 
+	      (d.y >= d.yOrig && d.y - d.yOrig < Dots.maxWiggleRoom)))
+    }
+
+    function public ESJSet<Dot> surrounds(Dot d) {
+	{ Dot d1 | (((d1.x >= d.x && d1.x - d.x <= Dots.minDistance) ||
+		     (d.x >= d1.x && d.x - d1.x <= Dots.minDistance)) &&
+		    ((d1.y >= d.y && d1.y - d.y <= Dots.minDistance) ||
+		     (d.y >= d1.y && d.y - d1.y <= Dots.minDistance))) }
     }
 
     public void mousePressed( MouseEvent e ) { ; }    
@@ -46,53 +61,76 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     public void mouseMoved( MouseEvent e ) { ; }
     
     public void mouseReleased( MouseEvent e ) {
-	int x = (int) Math.floor(e.getX() / Grid), y = (int) Math.floor(e.getY() / Grid);
+	int x = (int) Math.floor(e.getX() / grid), y = (int) Math.floor(e.getY() / grid);
 	Dot d = new Dot(x, y);
 	dots.add(d);
+	System.out.println("surroundings: " + surroundsTransitiveClosure(d));
 	addDot(d);
-	System.out.println("now distributed: " + distributed());
-	System.out.println("now unperturbed: " + unperturbed());
 	draw();
     }
 
     public void addDot(Dot d) 
-	modifies Dot.x, Dot.y
+	modifies fields Dot.x, Dot.y
+	modifies objects surroundsTransitiveClosure(d)
 	ensures distributed() && unperturbed() {
 	System.out.println(Dot.allInstances());
 	System.out.println(dots);
-	//for (Dot d1 : this.dots)
-	//System.out.println(d1 + " " + d1.old);
 	System.out.println("distributed: " + distributed());
 	System.out.println("unperturbed: " + unperturbed());
     }
 
     public void draw() {
 	int i = 0;
-	Graphics g = getGraphics();
-	paint(g); // clears canvas
+	int m = maxWiggleRoom * 2 * grid;
+	paint(g);
 	for (Dot d : this.dots) {
 	    g.setColor(colors[i++]);
-	    g.fillOval(d.x * Grid, d.y * Grid, 20, 20);
-	    g.drawRect((d.xOrig - 4) * Grid, (d.yOrig - 4) * Grid, 8 * Grid, 8 * Grid);
+	    g.fillOval(d.x * grid, d.y * grid, dotSize, dotSize);
+	    g.drawRect((d.xOrig - maxWiggleRoom) * grid, (d.yOrig - maxWiggleRoom) * grid, m, m);
 	    if (i == colors.length)
 		i = 0;
 	}
     }
+
+    public void init() {
+	this.g = getGraphics();
+	paint(g);
+    }
+
+    public ESJSet<Dot> surroundsTransitiveClosure(Dot d) {
+	int x = d.x, y = d.y;
+	
+	ESJSet<Dot> res = new ESJSet<Dot>();
+        ESJSet<Dot> unExpanded = new ESJSet<Dot>();
+
+        unExpanded.add(d);
+	Dot n;
+	while (unExpanded.size() > 0) {
+	    System.out.println(unExpanded);
+	    n = unExpanded.iterator().next();
+	    res.add(n);            
+	    unExpanded.addAll(surrounds(n));
+	    for (Dot d1 : res)
+		unExpanded.remove(d1);
+	}
+        return res;	
+    }
     
     public static void main( String[] args ) {
-	LogMap.SolverOpt_debugLevel(1);
-	ESJInteger.setBounds(0,500/Grid);
+	//LogMap.SolverOpt_debugLevel(1);
+	ESJInteger.setBounds(0,(canvasSize-100)/grid);
 	Frame myFrame = new Frame( "Distributed Dots" );
 	Dots myCanvas = new Dots();
 	myCanvas.addMouseListener( myCanvas );
 	myCanvas.addMouseMotionListener( myCanvas );
 	myFrame.add( myCanvas );
-	myFrame.setSize( 600, 600 );
+	myFrame.setSize( canvasSize, canvasSize );
+	myFrame.setVisible(true);
+	myCanvas.init();
 	myFrame.addWindowListener( new WindowAdapter() {
 		public void windowClosing( WindowEvent we ) {
 		    System.exit( 0 );
 		}
 	    } );
-	myFrame.setVisible(true);
     }
 }

@@ -758,6 +758,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
   }
 
+  public ESJInteger clone() { return this; }
+
   public static int BoundsSize() {
       return  MAX_VALUE - MIN_VALUE + 1;
   }

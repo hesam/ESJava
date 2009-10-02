@@ -66,13 +66,13 @@ public class RBTree
     }
 
     public void insert(Node insertedNode)
-	modifies RBTree.root, Node.color, Node.left, Node.right, Node.parent
+	modifies fields RBTree.root, Node.color, Node.left, Node.right, Node.parent
 	ensures this.nodes().equals(this.old.nodes().plus(insertedNode)) {
 	// no implementation...
     }    
 
     public void delete(Integer value)
-	modifies RBTree.root, Node.color, Node.left, Node.right, Node.parent
+	modifies fields RBTree.root, Node.color, Node.left, Node.right, Node.parent
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
     } 
