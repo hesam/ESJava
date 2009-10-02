@@ -3,20 +3,15 @@ import polyglot.ext.esj.tologic.LogMap;
 
 public class Dot
 {
-    spec public Integer x, y;
+    spec public Integer x, y, xOrig, yOrig;
 
     public Dot(Integer x, Integer y) {
-        this.x = x;
-        this.y = y;
+        this.x = this.xOrig = x;
+        this.y = this.yOrig = y;
     }
 
     public void x(Integer x) { this.x = x; }
     public void y(Integer y) { this.y = y; }
-
-    public boolean equals(Object n) { 
-	return n instanceof Dot && x == ((Dot)n).x && y == ((Dot)n).y; }
-
-    public int hashCode() { return 600*x+y; } // FIXME
 
     public String toString() { 
 	return "(" + x + ", " + y + ")";

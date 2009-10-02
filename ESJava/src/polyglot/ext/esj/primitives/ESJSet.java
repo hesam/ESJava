@@ -27,6 +27,9 @@ public class ESJSet<E> extends HashSet<E> {
 
     public ESJSet<E> clone() {
 	ESJSet<E> res = (ESJSet<E>) super.clone();
+	for (Object e : (ESJSet<Object>) this)
+	    if (e instanceof ESJObject)
+		((ESJObject)e).clone();
 	this.old = res;
 	return res;
     }

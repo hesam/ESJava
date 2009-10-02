@@ -18,6 +18,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     }
     
     static int Grid = 10;
+    static Color[] colors = {Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray, Color.green, Color.lightGray, Color.magenta, Color.orange, Color.pink, Color.red , Color.yellow};
     spec ESJList<Dot> dots;
 
     function public boolean distributed() { 
@@ -31,10 +32,10 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 
     function public boolean unperturbed() { 
 	all Dot d : this.dots |
-	    (((d.old.x >= d.x && d.old.x - d.x < 5) || 
-	     (d.x >= d.old.x && d.x - d.old.x < 5)) && 
-	     ((d.old.y >= d.y && d.old.y - d.y < 5) || 
-	      (d.y >= d.old.y && d.y - d.old.y < 5)))
+	    (((d.xOrig >= d.x && d.xOrig - d.x < 4) || 
+	     (d.x >= d.xOrig && d.x - d.xOrig < 4)) && 
+	     ((d.yOrig >= d.y && d.yOrig - d.y < 4) || 
+	      (d.y >= d.yOrig && d.y - d.yOrig < 4)))
     }
 
     public void mousePressed( MouseEvent e ) { ; }    
@@ -49,6 +50,8 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 	Dot d = new Dot(x, y);
 	dots.add(d);
 	addDot(d);
+	System.out.println("now distributed: " + distributed());
+	System.out.println("now unperturbed: " + unperturbed());
 	draw();
     }
 
@@ -57,27 +60,28 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 	ensures distributed() && unperturbed() {
 	System.out.println(Dot.allInstances());
 	System.out.println(dots);
-	for (Dot d1 : this.dots)
-	    System.out.println(d1 + " " + d1.old);
+	//for (Dot d1 : this.dots)
+	//System.out.println(d1 + " " + d1.old);
 	System.out.println("distributed: " + distributed());
 	System.out.println("unperturbed: " + unperturbed());
     }
 
     public void draw() {
+	int i = 0;
 	Graphics g = getGraphics();
-	Color c = new Color(100,100,100);
-	g.setColor(c);
 	paint(g); // clears canvas
 	for (Dot d : this.dots) {
+	    g.setColor(colors[i++]);
 	    g.fillOval(d.x * Grid, d.y * Grid, 20, 20);
-	    c = c.brighter();
-	    g.setColor(c);
+	    g.drawRect((d.xOrig - 4) * Grid, (d.yOrig - 4) * Grid, 8 * Grid, 8 * Grid);
+	    if (i == colors.length)
+		i = 0;
 	}
     }
     
     public static void main( String[] args ) {
 	LogMap.SolverOpt_debugLevel(1);
-	ESJInteger.setBounds(0,60);
+	ESJInteger.setBounds(0,500/Grid);
 	Frame myFrame = new Frame( "Distributed Dots" );
 	Dots myCanvas = new Dots();
 	myCanvas.addMouseListener( myCanvas );

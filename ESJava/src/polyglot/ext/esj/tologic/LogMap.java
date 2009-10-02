@@ -7,6 +7,7 @@ import java.util.AbstractCollection;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.Collection;
 
 import java.io.CharArrayWriter;
 import java.io.ByteArrayInputStream;
@@ -82,7 +83,14 @@ public class LogMap {
 	    System.out.println("classes: " + ClassAtoms);
 
 	for (Class c : (Set<Class>) ClassAtoms.keySet()) {
+
+	    // make atoms from objs
 	    boolean isEnum = c.isEnum();
+	    // reset rels FIXME
+	    if (!isEnum) 
+		for (LogRelation r : (Collection<LogRelation>) ((HashMap) InstVarRels.get(c)).values())
+		    r.clear();
+
 	    ClassAtoms.put(c, new ArrayList());
 	    newAtoms(c, isEnum);
 	}
@@ -221,10 +229,10 @@ public class LogMap {
 
     // FIXME
     public static String objInstVarStr_log(ESJObject obj, String instVar) {
-	if (SolverOpt_debug1) {
+	/*if (SolverOpt_debug1) {
 	    System.out.println("instVarStr_log -> isVar: " + (obj.var_log() != null));
 	    System.out.println(instVar + " " + obj + " " + ((ESJObject)obj).old());
-	}
+	    }*/
 	return "(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + instVarRel_log(obj, instVar).id() + ")";
     }
 

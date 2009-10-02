@@ -117,8 +117,6 @@ public class LogRelation extends Hashtable {
 
     public String lowerBound_log() {
 	CharArrayWriter o = new CharArrayWriter();
-	if (isaListInstVar)
-	    System.out.println("relation " + this.id + " " + this.isaListInstVar);
 	o.append("{");
 	Set s = keySet();
 	Iterator itr = s.iterator();
@@ -129,7 +127,7 @@ public class LogRelation extends Hashtable {
 		if (isaListInstVar) {
 		    ArrayList lv = (ArrayList) v;
 		    int lvs = lv.size() - 1;
-		    for(int c = 0; c < lvs; c++)
+		    for(int c = 0; c <= lvs; c++)
 			o.append("[A" + k + ", A" + ESJInteger.log(c) + ", A" + lv.get(c) + "], ");
 		} else {
 		    for(Object e : (ArrayList) v)
@@ -145,9 +143,8 @@ public class LogRelation extends Hashtable {
 		ArrayList lv = (ArrayList) v;
 		int lvs = lv.size() - 1;
 		if (isaListInstVar) {
-		    for(int c = 0; c < lvs; c++) {
+		    for(int c = 0; c < lvs; c++)
 			o.append("[A" + k + ", A" + ESJInteger.log(c) + ", A" + lv.get(c) + "],");
-		    }
 		    o.append("[A" + k + ", A" + ESJInteger.log(lvs) + ", A" + lv.get(lvs) + "]");
 		} else {
 		    for(int c = 0; c < lvs; c++) {

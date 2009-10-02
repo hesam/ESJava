@@ -28,6 +28,9 @@ public class ESJList<E> extends ArrayList<E> {
     // keep my pre-state copy in old field 
     public ESJList<E> clone() {
 	ESJList<E> res = (ESJList<E>) super.clone();
+	for (Object e : (ESJList<Object>) this)
+	    if (e instanceof ESJObject)
+		((ESJObject)e).clone();
 	this.old = res;
 	return res;
     }
