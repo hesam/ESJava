@@ -49,10 +49,17 @@ public class LogMap {
                                             // updated.
     static int clonerStep = 0; //FIXME (should be same as relationizerStep)
 
+    /*
     // insert mappings for null and enums
     static {
 	LogtoJ.put(AtomCtr,null);
 	JtoLog.put(null,AtomCtr++);
+    }
+    */
+
+    public static void setNullAtomAt(int i) {
+	LogtoJ.put(i,null);
+	JtoLog.put(null,i);
     }
 
     public static int SolverOpt_debugLevel() { return SolverOpt_debugLevel; }
@@ -87,7 +94,7 @@ public class LogMap {
 
 	    // make atoms from objs
 	    boolean isEnum = c.isEnum();
-	    // reset rels FIXME
+	    // reset rels FIXME	   
 	    if (!isEnum) 
 		for (LogRelation r : (Collection<LogRelation>) ((HashMap) InstVarRels.get(c)).values())
 		    r.clear();
@@ -291,10 +298,11 @@ public class LogMap {
 	String spacer = "\n";
 
 	//getProblemRels(obj);
-	if (SolverOpt_debug1)
+	if (SolverOpt_debug1) {
 	    System.out.println("problem involves rels: " + ProblemRels);
-	if (SolverOpt_debug1)
-	    System.out.println("well modifiable objs: " + modifiableObjects);
+	    if (modifiableObjects != null)
+		System.out.println("modifiable objs: " + modifiableObjects);
+	}
 
 	problem.append("solver: " + SolverOpt_Solver + spacer);
 	problem.append("symmetry_breaking: " + SolverOpt_SymmetryBreaking + spacer);

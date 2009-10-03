@@ -717,11 +717,13 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   public static void setBounds(int min, int max) {
       MIN_VALUE = min;
       MAX_VALUE = max;
-      for(int i=min;i<=max;i++) {
+      int i;
+      for(i=min;i<=max;i++) {
 	  int i_log = log(i);
 	  LogMap.put1(i,i_log);
 	  LogMap.put2(i_log,i);
       }
+      LogMap.setNullAtomAt(i);
   }
 
   // ESJInteger class init

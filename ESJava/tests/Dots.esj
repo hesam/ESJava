@@ -118,7 +118,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     }
     
     public static void main( String[] args ) {
-	LogMap.SolverOpt_debugLevel(1);
+	//LogMap.SolverOpt_debugLevel(1);
 	ESJInteger.setBounds(0,(canvasSize-100)/grid);
 	Frame myFrame = new Frame( "Distributed Dots" );
 	Dots myCanvas = new Dots();

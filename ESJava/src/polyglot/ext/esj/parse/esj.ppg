@@ -989,7 +989,7 @@ modifiableFields_list ::=
 	   :};
 
 modifiableObjects ::=
-        MODIFIESOBJECTS method_invocation:a 
+    MODIFIESOBJECTS primary_no_new_array:a
            {:  
               RESULT = a;  
 	   :};

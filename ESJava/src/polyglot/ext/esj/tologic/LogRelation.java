@@ -124,11 +124,12 @@ public class LogRelation extends Hashtable {
 		return "{}";	    
 	    filterObjects = true;
 	    r = LogMap.instVarRelOld_log(this);
-	    s = r.keySet();
-	    for (Object o : modifiableObjects)
-		s.remove(o);
+	    HashSet sNew = new HashSet();
+	    for (Object k : r.keySet())
+		if (!modifiableObjects.contains(k))
+		    sNew.add(k);
+	    s = sNew;
 	}
-
 	CharArrayWriter o = new CharArrayWriter();
 	o.append("{");
 	Iterator itr = s.iterator();

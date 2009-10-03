@@ -1,6 +1,7 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
+import java.util.HashSet;
 import java.util.Random;
 
 public class BSTree 
@@ -45,17 +46,82 @@ public class BSTree
 	insert(insertedNode);
     }
 
-    public void insert(Node insertedNode)
+    public void insert(Node node)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-	ensures this.nodes().equals(this.old.nodes().plus(insertedNode)) {
+	modifies objects getNewNodeParentToBe(node)
+	ensures this.nodes().equals(this.old.nodes().plus(node)) {
 	// no implementation...
     }    
-
+    
     public void delete(Integer value)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
+	modifies objects getParentAndChildren(value)
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
-    } 
+    }
+
+    public HashSet<Object> getNewNodeParentToBe(Node node) {
+	HashSet<Object> res = new HashSet<Object>();
+	res.add(node);
+	if (root == null) {
+	    res.add(this);
+	    return res;
+	}	    
+	Node n = root;
+	Integer value = node.value;
+	while (true) {
+	    int compResult = value.compareTo(n.value);
+	    if (compResult == 0) {
+		break;
+	    } else if (compResult < 0) {
+		if (n.left == null) {		   
+		    break;
+		} else {
+		    n = n.left;
+		}
+	    } else {
+		assert compResult > 0;
+		if (n.right == null) {		    
+		    break;
+		} else {
+		    n = n.right;
+		}
+	    }
+	}
+	res.add(n);
+	return res;
+    }
+
+
+    public HashSet<Object> getParentAndChildren(Integer value) {
+	HashSet<Object> res = new HashSet<Object>();
+	Node node = lookupNode(value);
+	res.add(node);	
+	if (root == node)
+	    res.add(this);
+	else
+	    res.add(node.parent);
+	if (node.left != null)
+	    res.add(node.left);
+	if (node.right != null)
+	    res.add(node.right);
+	return res;
+    }
+
+    private Node lookupNode(Integer value) {
+        Node n = root;
+        while (n != null) {
+            int compResult = value.compareTo(n.value);
+            if (compResult == 0) {
+                return n;
+            } else if (compResult < 0) {
+                n = n.left;
+            } else {
+                n = n.right;
+            }
+        }
+        return n;
+    }
 
     public void print() {
         printHelper(root, 0);
@@ -81,8 +147,9 @@ public class BSTree
         
     public static void main(String[] args) {
 	//LogMap.SolverOpt_debugLevel(1);
-	int MAX_SIZE = 10;
-
+	//ESJInteger.setBounds(0,39);
+	int MAX_SIZE = 20;
+	boolean testDelete = true;
 	Random rand = new Random(1111L);
 
         BSTree t = new BSTree();
@@ -105,9 +172,11 @@ public class BSTree
 	    t.insert(temp);
 	    t.print();
 	    }
-	for (int i = MAX_SIZE - 1; i>=0; --i) {
-	    t.delete(i);
-	    t.print();
+	if (testDelete) {
+	    for (int i = MAX_SIZE - 1; i>=0; --i) {
+		t.delete(i);
+		t.print();
+	    }
 	}
 	
     }
