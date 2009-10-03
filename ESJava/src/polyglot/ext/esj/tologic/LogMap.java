@@ -305,7 +305,7 @@ public class LogMap {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
 	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
-	    String rBound = (!r.isUnknown() || isModifiableRelation) ? r.log(isUnknown ? LogMap.get1s(modifiableObjects) : null) : instVarRelOld_log(r).log(null);
+	    String rBound = (!r.isUnknown() || isModifiableRelation) ? r.log(isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null) : instVarRelOld_log(r).log(null);
 	    problem.append("bounds " + k + ": " + rBound + spacer);
 	    if (isUnknown) {
 		unknowns.add(r);
