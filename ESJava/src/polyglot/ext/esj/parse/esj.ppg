@@ -191,6 +191,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    args3.add(nf.This(null));
 	    args3.add(nf.Local(null,"problem"));
 	    args3.add(modifiableFields == null ? nf.NullLit(null) : nf.Local(null,"modifiableFields"));
+	    args3.add(modifiableObjects == null ? nf.NullLit(null) : modifiableObjects);
 	    List l = new TypedList(new LinkedList(), Stmt.class, false);
 	    LocalDecl d2 = nf.LocalDecl(null, fl.classicFlags(), nf.CanonicalTypeNode(null, ts.Boolean()), "isSatisfiable", nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "solve", args3));
 	    l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args)));

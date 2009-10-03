@@ -115,14 +115,26 @@ public class LogRelation extends Hashtable {
     }
     */
 
-    public String lowerBound_log() {
+    public String lowerBound_log(HashSet<?> modifiableObjects) {
+	LogRelation r = this;
+	boolean filterObjects = false;
+	Set s = r.keySet();
+	if (isUnknown) {
+	    if (modifiableObjects == null)
+		return "{}";	    
+	    filterObjects = true;
+	    r = LogMap.instVarRelOld_log(this);
+	    s = r.keySet();
+	    for (Object o : modifiableObjects)
+		s.remove(o);
+	}
+
 	CharArrayWriter o = new CharArrayWriter();
 	o.append("{");
-	Set s = keySet();
 	Iterator itr = s.iterator();
 	for (int i=0;i<s.size()-1;i++) {
 	    Object k = itr.next();
-	    Object v = get(k);
+	    Object v = r.get(k);
 	    if (v instanceof ArrayList) {
 		if (isaListInstVar) {
 		    ArrayList lv = (ArrayList) v;
@@ -138,7 +150,7 @@ public class LogRelation extends Hashtable {
 	}
 	if (itr.hasNext()) {
 	    Object k = itr.next();
-	    Object v = get(k);
+	    Object v = r.get(k);
 	    if (v instanceof ArrayList) {
 		ArrayList lv = (ArrayList) v;
 		int lvs = lv.size() - 1;
@@ -159,8 +171,8 @@ public class LogRelation extends Hashtable {
 	return o.toString();
     }
 
-    public String log() {
-	String lower = lowerBound_log();
+    public String log(HashSet<?> modifiableObjects) {
+	String lower = lowerBound_log(modifiableObjects);
 	if (isUnknown()) {
 	    CharArrayWriter o = new CharArrayWriter();
 	    o.append("[" + lower + ", " + fullDomainRange() + "]");

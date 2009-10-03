@@ -6,6 +6,7 @@ import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 import java.util.AbstractCollection;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Collection;
 
@@ -139,6 +140,13 @@ public class LogMap {
 	    System.out.println(JtoLog);
 	    }
 	return (Integer) JtoLog.get(key);
+    }
+
+    public static HashSet<Integer> get1s(HashSet<?> s) {
+	HashSet<Integer> res = new HashSet<Integer>();
+	for (Object o : s)
+	    res.add(get1(o));
+	return res;		    
     }
 
     public static String get1_log(Object key) { 
@@ -275,7 +283,7 @@ public class LogMap {
     }
 
 
-    public static boolean solve(Object obj, Object formula, HashMap<String,String> modifiableFields) {
+    public static boolean solve(Object obj, Object formula, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects) {
 
 	CharArrayWriter problem = new CharArrayWriter();
 	CharArrayWriter funDefs = new CharArrayWriter();
@@ -285,6 +293,8 @@ public class LogMap {
 	//getProblemRels(obj);
 	if (SolverOpt_debug1)
 	    System.out.println("problem involves rels: " + ProblemRels);
+	if (SolverOpt_debug1)
+	    System.out.println("well modifiable objs: " + modifiableObjects);
 
 	problem.append("solver: " + SolverOpt_Solver + spacer);
 	problem.append("symmetry_breaking: " + SolverOpt_SymmetryBreaking + spacer);
@@ -293,9 +303,9 @@ public class LogMap {
 	problem.append("univ: u" + AtomCtr + spacer);
 	for (Object k : ProblemRels.keySet() ) {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
-	    boolean isModifiable = r.isModifiable(modifiableFields);
-	    boolean isUnknown = r.isUnknown() && isModifiable;
-	    String rBound = (!r.isUnknown() || isModifiable) ? r.log() : instVarRelOld_log(r).log();
+	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
+	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
+	    String rBound = (!r.isUnknown() || isModifiableRelation) ? r.log(isUnknown ? LogMap.get1s(modifiableObjects) : null) : instVarRelOld_log(r).log(null);
 	    problem.append("bounds " + k + ": " + rBound + spacer);
 	    if (isUnknown) {
 		unknowns.add(r);
