@@ -48,14 +48,14 @@ public class BSTree
 
     public void insert(Node node)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-	modifies objects getNewNodeParentToBe(node)
+    //modifies objects getNewNodeParentToBe(node)
 	ensures this.nodes().equals(this.old.nodes().plus(node)) {
 	// no implementation...
     }    
-    
+
     public void delete(Integer value)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-	modifies objects getParentAndChildren(value)
+    //modifies objects getParentAndChildren(value)
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
     }

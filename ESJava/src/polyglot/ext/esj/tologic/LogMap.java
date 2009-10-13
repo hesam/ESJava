@@ -325,9 +325,13 @@ public class LogMap {
 	
 	//ch.append(csq);
 	//ch.flush();
-	if (SolverOpt_debug1)
+	if (SolverOpt_debug1) {
 	    System.out.println(problem.toString());
+	}
+	System.out.println("waiting for solver...");
 	String solution = Kodkodi.ESJCallSolver(problem.toString());
+	//if (SolverOpt_debug1)
+	System.out.println("solver done.");
 	SolverOutputParser parser = null;
 	try {
 	    ByteArrayInputStream solutionStream = new ByteArrayInputStream(solution.getBytes("UTF-8"));

@@ -25,7 +25,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     static int minDistance = 5;
     static int maxWiggleRoom = 4;
     static int dotSize = 20;
-    static Color[] colors = {Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray, Color.green, Color.lightGray, Color.magenta, Color.orange, Color.pink, Color.red , Color.yellow};
+    static Color[] colors = {Color.black, Color.blue, Color.darkGray, Color.gray, Color.red, Color.magenta, Color.orange, Color.pink, Color.yellow};
 
     spec ESJList<Dot> dots;
     Graphics g;

@@ -1,6 +1,7 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
+import java.util.HashSet;
 import java.util.Random;
 
 public class RBTree 
@@ -67,6 +68,7 @@ public class RBTree
 
     public void insert(Node insertedNode)
 	modifies fields RBTree.root, Node.color, Node.left, Node.right, Node.parent
+    //modifies objects getAffectedNodesOnInsert(insertedNode);
 	ensures this.nodes().equals(this.old.nodes().plus(insertedNode)) {
 	// no implementation...
     }    
@@ -76,6 +78,152 @@ public class RBTree
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
     } 
+
+    private HashSet<Object> getAffectedNodesOnInsert(Node node) {
+	HashSet<Object> res = new HashSet<Object>();
+	getAffectedNodesOnInsert1(node, res);
+	return res;
+    }
+
+    private void getAffectedNodesOnInsert1(Node n, HashSet<Object> affectedNodes) {
+	System.out.println("case1");
+        if (n.parent == null)
+            affectedNodes.add(n.value);
+        else
+            getAffectedNodesOnInsert2(n, affectedNodes);
+    }
+
+    private void getAffectedNodesOnInsert2(Node n, HashSet<Object> affectedNodes) {
+	System.out.println("case2");
+        if (n.parent.color == Color.BLACK) {
+	    affectedNodes.add(n.parent.value);
+            return; // Tree is still valid
+	} else
+            getAffectedNodesOnInsert3(n, affectedNodes);
+    }
+
+    void getAffectedNodesOnInsert3(Node n, HashSet<Object> affectedNodes) {
+        if (n.uncle().color == Color.RED) {
+	    System.out.println("case3.1");
+	    affectedNodes.add(n.parent.value);
+	    affectedNodes.add(n.uncle().value);
+	    affectedNodes.add(n.grandparent().value);
+            getAffectedNodesOnInsert1(n.grandparent(), affectedNodes);
+        } else {
+	    System.out.println("case3.2");
+            getAffectedNodesOnInsert4(n, affectedNodes);
+        }
+    }
+
+    void getAffectedNodesOnInsert4(Node n, HashSet<Object> affectedNodes) {
+	if (n.parent != null) 
+	    affectedNodes.add(n.parent.value);
+	if (n.grandparent() != null) 
+	    affectedNodes.add(n.grandparent().value);
+	if (n.parent.grandparent() != null) 
+	    affectedNodes.add(n.parent.grandparent().value);
+        if (n == n.parent.right && n.parent == n.grandparent().left) {
+	    affectedNodes.add(n.parent.left.value);
+	    if (n.left != null) 
+		affectedNodes.add(n.left.value);
+	    if (n.right != null) 
+		affectedNodes.add(n.right.value);
+        } else if (n == n.parent.left && n.parent == n.grandparent().right) {
+	    affectedNodes.add(n.parent.right.value);
+	    if (n.left != null) 
+		affectedNodes.add(n.left.value);
+	    if (n.right != null) 
+		affectedNodes.add(n.right.value);            
+        }
+    }
+
+    private HashSet<Object> getAffectedNodesOnDelete(Node node) {
+	HashSet<Object> res = new HashSet<Object>();
+	getAffectedNodesOnDelete1(node, res);
+	return res;
+    }
+
+    private void getAffectedNodesOnDelete1(Node n) {
+        if (n.parent == null)
+            return;
+        else
+            getAffectedNodesOnDelete2(n);
+    }
+
+    private void getAffectedNodesOnDelete2(Node n) {
+        if (n.sibling().color == Color.RED) {
+            n.parent.color = Color.RED;
+            n.sibling().color = Color.BLACK;
+            if (n == n.parent.left)
+                rotateLeft(n.parent);
+            else
+                rotateRight(n.parent);
+        }
+        getAffectedNodesOnDelete3(n);
+    }
+
+    private void getAffectedNodesOnDelete3(Node n) {
+        if (n.parent.color) == Color.BLACK &&
+            n.sibling().color == Color.BLACK &&
+            n.sibling().left.color == Color.BLACK &&
+            n.sibling().right.color == Color.BLACK)
+        {
+            n.sibling().color = Color.RED;
+            getAffectedNodesOnDelete1(n.parent);
+        }
+        else
+            getAffectedNodesOnDelete4(n);
+    }
+
+    private void getAffectedNodesOnDelete4(Node n) {
+        if (n.parent) == Color.RED &&
+            n.sibling().color == Color.BLACK &&
+            n.sibling().left.color == Color.BLACK &&
+            n.sibling().right.color == Color.BLACK)
+        {
+            n.sibling().color = Color.RED;
+            n.parent.color = Color.BLACK;
+        }
+        else
+            getAffectedNodesOnDelete5(n);
+    }
+
+    private void getAffectedNodesOnDelete5(Node n) {
+        if (n == n.parent.left &&
+            n.sibling().color == Color.BLACK &&
+            n.sibling().left.color == Color.RED &&
+            n.sibling().right.color == Color.BLACK)
+        {
+            n.sibling().color = Color.RED;
+            n.sibling().left.color = Color.BLACK;
+            rotateRight(n.sibling());
+        }
+        else if (n == n.parent.right &&
+                 n.sibling().color == Color.BLACK &&
+                 n.sibling().right.color == Color.RED &&
+                 n.sibling().left.color == Color.BLACK)
+        {
+            n.sibling().color = Color.RED;
+            n.sibling().right.color = Color.BLACK;
+            rotateLeft(n.sibling());
+        }
+        getAffectedNodesOnDelete6(n);
+    }
+
+    private void getAffectedNodesOnDelete6(Node n) {
+        n.sibling().color = n.parent;
+        n.parent.color = Color.BLACK;
+        if (n == n.parent.left) {
+            n.sibling().right.color = Color.BLACK;
+            rotateLeft(n.parent);
+        }
+        else
+        {
+            n.sibling().left.color = Color.BLACK;
+            rotateRight(n.parent);
+        }
+    }
+
 
     public void print() {
         printHelper(root, 0);
@@ -105,7 +253,7 @@ public class RBTree
         
     public static void main(String[] args) {
 	//LogMap.SolverOpt_debugLevel(1);
-	int MAX_SIZE = 10;
+	int MAX_SIZE = 20;
 
 	Random rand = new Random(1111L);
 

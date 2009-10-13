@@ -45,6 +45,29 @@ public class Node
 	{ Node n : thisAndAncestors() | n.color == Color.BLACK }
     }
 
+
+
+    public Node grandparent() {
+        assert parent != null; // Not the root node
+        assert parent.parent != null; // Not child of root
+        return parent.parent;
+    }
+
+    public Node sibling() {
+        assert parent != null; // Root node has no sibling
+        if (this == parent.left)
+            return parent.right;
+        else
+            return parent.left;
+    }
+
+    public Node uncle() {
+        assert parent != null; // Root node has no uncle
+        assert parent.parent != null; // Children of root have no uncle
+        return parent.sibling();
+    }
+
+
     public boolean equals(Object n) { return n instanceof Node &&  value == ((Node)n).value; }
 
     public int hashCode() { return value; }
