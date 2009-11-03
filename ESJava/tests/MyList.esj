@@ -1,15 +1,17 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
+import java.util.Random;
+
 public class MyList extends ESJList<Integer> {
 			    //ensures (no int e : this | e < 0) {
 
-    // FUNCTION METHODS    
-    function public boolean isSorted() {
+    // ALLOY METHODS    
+    alloy public boolean isSorted() {
 	all int i : indices().allButLast() | get(i) <= get(i+1)
     }
     
-    function public boolean isPermutationOf(ESJList<Integer> l) {
+    alloy public boolean isPermutationOf(ESJList<Integer> l) {
 	all int i | count(i) == l.count(i)
     }
 
@@ -18,7 +20,7 @@ public class MyList extends ESJList<Integer> {
 	ensures (this.isPermutationOf(this.old()) && this.isSorted()) {
 	System.out.println();
 
-	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
+	int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED
 	for(int i=size()-1;i>0;i--) {
 	    //for(int i=size()-2;i>0;i--) { // <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
 	    for(int j=0;j<i;j++) {
@@ -41,23 +43,40 @@ public class MyList extends ESJList<Integer> {
 
         MyList ta = new MyList();	
         MyList tb = new MyList();
-	int [] a = {1,2,3,4,4,5};
-	int [] b = {4,3,2,4,5,1};
-	for(int i=0;i<a.length;i++) {
-	    ta.add(new Integer(a[i]));
-	    tb.add(new Integer(b[i]));
+
+	Random rand = new Random(1111L);
+	int MAX_SIZE = 10;
+	ESJInteger.setBounds(0,MAX_SIZE-1);
+	// create an array of the given size
+	int[] a = new int[MAX_SIZE];
+	  	
+	for (int i = 0 ; i < MAX_SIZE; ++i)
+	    a[i] = i;
+	for (int i = MAX_SIZE; i>0; --i) {
+	    int n = rand.nextInt(i);
+	    int temp = a[n];
+	    a[n] = a[i-1];
+	    tb.add(new Integer(temp));
 	}
 
-	System.out.print("A=");
-        System.out.println(ta);
-	System.out.print("A sorted: ");
-	System.out.println(ta.isSorted());
+
+	//int [] a = {1,2,3,4,4,5};
+	//int [] b = {4,3,2,4,5,1};
+	//for(int i=0;i<a.length;i++) {
+	    //ta.add(new Integer(a[i]));
+	    //tb.add(new Integer(b[i]));
+	//}
+
+	//System.out.print("A=");
+        //System.out.println(ta);
+	//System.out.print("A sorted: ");
+	//System.out.println(ta.isSorted());
 	System.out.print("B=");
         System.out.println(tb);
 	System.out.print("B sorted: ");
 	System.out.println(tb.isSorted());
-	System.out.print("permutations: ");
-	System.out.println(ta.isPermutationOf(tb));
+	//System.out.print("permutations: ");
+	//System.out.println(ta.isPermutationOf(tb));
 	System.out.println("sorting B...");
 	tb.bubbleSort();
 	System.out.print("B=");

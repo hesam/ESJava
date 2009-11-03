@@ -9,6 +9,8 @@ public class BSTree
 {
 
     private static final int INDENT_STEP = 4;
+    private static int MAX_SIZE = 0;
+    private static boolean TEST_DELETE = false;
 
     spec public Node root;
 
@@ -16,27 +18,25 @@ public class BSTree
 
     public void root(Node r) { this.root = r; }
 
-    function public ESJSet<Node> nodes() { root.*(left+right) }
+    alloy public ESJSet<Node> nodes() { root.*(left+right) }
 
-    function public ESJSet<Integer> nodeValues() { this.nodes().<value }
+    alloy public ESJSet<Integer> nodeValues() { this.nodes().<value }
 
-    function public boolean isBinarySearchTree() {
-	isAcyclic() && parentDef() && oneParent() && isValidBinarySearch() 
+    alloy public boolean isBinarySearchTree() {
+	isAcyclic() && parentDef() && isValidBinarySearch() 
     }
 
-    function public boolean isAcyclic() { 
-	no Node n | (n.descendants().contains(n) || n.ancestors().contains(n)) 
+    alloy public boolean isAcyclic() { 
+	no Node n | n.descendants().contains(n) //|| n.ancestors().contains(n)) 
     }
 
-    function public boolean parentDef() {
-	all Node n | all Node p | (!p.children().contains(n) || n.parent == p)
+    alloy public boolean parentDef() {
+	all Node n | all Node p | 
+	    (((!p.children().contains(n) || n.parent == p)) &&
+	     (n.parent != p || p.children().contains(n)))
     }
 
-    function public boolean oneParent() {
-	(root == null) ? true : all Node n : this.root.descendants() | one Node p | n.parent == p
-    }
-
-    function public boolean isValidBinarySearch() {
+    alloy public boolean isValidBinarySearch() {
        all Node n | ((n.left == null  || all Node lc : n.leftDescendants()  | lc.value < n.value) &&
         	     (n.right == null || all Node rc : n.rightDescendants() | rc.value > n.value))
     }
@@ -48,14 +48,24 @@ public class BSTree
 
     public void insert(Node node)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-    //modifies objects getNewNodeParentToBe(node)
-	ensures this.nodes().equals(this.old.nodes().plus(node)) {
+	modifies objects getNewNodeParentToBe(node)
+	ensures this.nodes().equals(this.old.nodes().plus(node)) {	
 	// no implementation...
+	if (!TEST_DELETE)
+	    assert nodes().size() != MAX_SIZE - 1;
+
+	if (root == null) {
+	    root = node;
+	} else {
+	    Node n = getNewNodeParent(node);
+	    node.parent = n;
+	}
+
     }    
 
     public void delete(Integer value)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-    //modifies objects getParentAndChildren(value)
+	modifies objects getParentAndChildren(value)
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
     }
@@ -144,12 +154,52 @@ public class BSTree
             printHelper(n.left, indent + INDENT_STEP);
         }
     }
+
+    ///
+
+    public Node getNewNodeParent(Node insertedNode) {
+
+	Node n = root;
+	Integer value = insertedNode.value;
+	while (true) {
+	    int compResult = value.compareTo(n.value);
+	    if (compResult == 0) {
+		if (insertedNode != null) {
+		    n.value = value;
+		}
+		return n;
+	    } else if (compResult < 0) {
+		if (n.left == null) {
+		    if (insertedNode != null) {
+			n.left = insertedNode;
+		    }
+		    break;
+		} else {
+		    n = n.left;
+		}
+	    } else {
+		assert compResult > 0;
+		if (n.right == null) {
+		    if (insertedNode != null) {
+			n.right = insertedNode;
+		    }
+		    break;
+		} else {
+		    n = n.right;
+		}
+	    }
+	}
+	return n;
+    }
+
+
+    ///
         
     public static void main(String[] args) {
-	//LogMap.SolverOpt_debugLevel(1);
-	//ESJInteger.setBounds(0,39);
-	int MAX_SIZE = 20;
-	boolean testDelete = true;
+	LogMap.SolverOpt_debugLevel(1);
+	MAX_SIZE = 30;
+	ESJInteger.setBounds(0,MAX_SIZE-1);
+	TEST_DELETE = true;
 	Random rand = new Random(1111L);
 
         BSTree t = new BSTree();
@@ -158,10 +208,9 @@ public class BSTree
 	// create an array of the given size
 	int[] a = new int[MAX_SIZE];
 	  	
-	for (int i = 0 ; i < MAX_SIZE; ++i) {
+	for (int i = 0 ; i < MAX_SIZE; ++i)
 	    a[i] = i;
-	}
-
+	
 	// randomly shuffle the elements in the array and 
 	// insert them in the tree	
 	// then remove all from top
@@ -172,10 +221,11 @@ public class BSTree
 	    t.insert(temp);
 	    t.print();
 	    }
-	if (testDelete) {
+	if (TEST_DELETE) {
 	    for (int i = MAX_SIZE - 1; i>=0; --i) {
 		t.delete(i);
 		t.print();
+		i = 0; /// fixme
 	    }
 	}
 	

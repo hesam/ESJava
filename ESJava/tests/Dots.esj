@@ -30,7 +30,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     spec ESJList<Dot> dots;
     Graphics g;
 
-    function public boolean distributed() { 
+    alloy public boolean distributed() { 
 	all Dot d1 : this.dots | 
 	    all Dot d2 : this.dots | (d1 == d2 || 
 				 (d1.x >= d2.x && d1.x - d2.x > Dots.minDistance) || 
@@ -39,7 +39,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 				 (d2.y >= d1.y && d2.y - d1.y > Dots.minDistance))
     }
 
-    function public boolean unperturbed() { 
+    alloy public boolean unperturbed() { 
 	all Dot d : this.dots |
 	    (((d.xOrig >= d.x && d.xOrig - d.x < Dots.maxWiggleRoom) || 
 	     (d.x >= d.xOrig && d.x - d.xOrig < Dots.maxWiggleRoom)) && 
@@ -47,7 +47,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 	      (d.y >= d.yOrig && d.y - d.yOrig < Dots.maxWiggleRoom)))
     }
 
-    function public ESJSet<Dot> surrounds(Dot d) {
+    alloy public ESJSet<Dot> surrounds(Dot d) {
 	{ Dot d1 | (((d1.x >= d.x && d1.x - d.x <= Dots.minDistance) ||
 		     (d.x >= d1.x && d.x - d1.x <= Dots.minDistance)) &&
 		    ((d1.y >= d.y && d1.y - d.y <= Dots.minDistance) ||
@@ -118,7 +118,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     }
     
     public static void main( String[] args ) {
-	//LogMap.SolverOpt_debugLevel(1);
+	LogMap.SolverOpt_debugLevel(1);
 	ESJInteger.setBounds(0,(canvasSize-100)/grid);
 	Frame myFrame = new Frame( "Distributed Dots" );
 	Dots myCanvas = new Dots();

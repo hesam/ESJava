@@ -29,19 +29,19 @@ public class Node
     public void right(Node r) { this.right = r; }
     public void parent(Node p) { this.parent = p; }
 
-    function public ESJSet<Node> children() { this.(left+right) }
+    alloy public ESJSet<Node> children() { this.(left+right) }
 
-    function public ESJSet<Node> descendants() { this.^(left+right) }
+    alloy public ESJSet<Node> descendants() { this.^(left+right) }
 
-    function public ESJSet<Node> leftDescendants() { this.left.*(left+right) }
+    alloy public ESJSet<Node> leftDescendants() { this.left.*(left+right) }
 
-    function public ESJSet<Node> rightDescendants() { this.right.*(left+right) }
+    alloy public ESJSet<Node> rightDescendants() { this.right.*(left+right) }
 
-    function public ESJSet<Node> ancestors() { this.^parent }
+    alloy public ESJSet<Node> ancestors() { this.^parent }
 
-    function public ESJSet<Node> thisAndAncestors() { this.*parent }
+    alloy public ESJSet<Node> thisAndAncestors() { this.*parent }
 
-    function public ESJSet<Node> blackAncestors() { 
+    alloy public ESJSet<Node> blackAncestors() { 
 	{ Node n : thisAndAncestors() | n.color == Color.BLACK }
     }
 
@@ -73,7 +73,8 @@ public class Node
     public int hashCode() { return value; }
 
     public String toString() { 
-	return "(" + left + " <--- " + (color == Color.RED ? "[R]" : "") + "Node(" + value + ") ---> " + right + ")";
+	//return "(" + left + " <--- " + (color == Color.RED ? "[R]" : "") + "Node(" + value + ") ---> " + right + ")";
+	return (color == Color.RED ? "[R]" : "") + "Node(" + value + ")";
     }
 
 }

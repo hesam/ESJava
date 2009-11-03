@@ -94,7 +94,7 @@ public class LogRelation extends Hashtable {
     }
    
     public void put_log(Object key, Object value) {
-	if (LogMap.SolverOpt_debug1())
+	if (LogMap.SolverOpt_debug2())
 	    System.out.println("trying put key " + key + " value " + value + " ");
 	if (value instanceof AbstractCollection) {
 	    ArrayList l = new ArrayList();
@@ -105,7 +105,7 @@ public class LogRelation extends Hashtable {
 	} else {
 	    put(LogMap.get1(key), LogMap.get1(value));
 	}
-	if (LogMap.SolverOpt_debug1())
+	if (LogMap.SolverOpt_debug2())
 	    System.out.println("id: " + id + " contents: " + this);
     }
 

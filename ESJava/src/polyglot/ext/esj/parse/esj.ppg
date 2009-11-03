@@ -533,7 +533,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
 terminal Token ESJENUM;
 terminal Token SPEC;
-terminal Token FUNCTION;
+terminal Token ALLOY;
 terminal Token ENSURES;
 terminal Token ENSURED;
 terminal Token MODIFIESFIELDS;
@@ -639,7 +639,7 @@ fn_method_declaration ::=
 	   ;
 
 fn_method_header ::=
-        FUNCTION:z modifiers_or_annotations_opt:a type:b IDENTIFIER:c LPAREN 
+        ALLOY:z modifiers_or_annotations_opt:a type:b IDENTIFIER:c LPAREN 
     formal_parameter_list_opt:d RPAREN:g dims_opt:e throws_opt:f
             {: RESULT = parser.nf.ESJMethodDecl(null, a, b, c.getIdentifier(), d, f, null, new TypedList(new LinkedList(), TypeNode.class, false), b.toString().equals("boolean"));
             :}
