@@ -1,0 +1,48 @@
+/*
+ * @(#)ESJButton.java	1.97 03/12/19
+ *
+ * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
+package myjavax.swing;
+
+import javax.swing.*;
+public class ESJButton extends JButton {
+
+    spec protected Integer x,y,w,h;
+
+    public Integer x() { return this.x; }
+    public Integer y() { return this.y; }
+    public Integer w() { return this.w; }
+    public Integer h() { return this.h; }
+
+    public ESJButton() {
+        this(null, null);
+    }
+    
+    public ESJButton(Icon icon) {
+        this(null, icon);
+    }
+
+    public ESJButton(String text) {
+        this(text, null);
+    }
+    
+    public ESJButton(Action a) {
+        this();
+	setAction(a);
+    }
+
+    public void setBounds(int x, int y, int width, int height) {
+	reshape(x, y, width, height);
+	this.x = x;
+	this.y = y;
+	this.w = width;
+	this.h = height;
+    }
+
+    public ESJButton(String text, Icon icon) {
+	super(text,icon);
+    }
+	
+}

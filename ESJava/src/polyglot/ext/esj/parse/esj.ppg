@@ -1076,7 +1076,7 @@ ensured_class_declaration ::=
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isOld", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,isOldExpr)), new TypedList(new LinkedList(), TypeNode.class, false)));
 
 		  // add a var_log field when obj is being used a quantify var
-		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")),"var_log", null));
+		  l.add(parser.nf.JL5FieldDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")),"var_log", null));
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), "var_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Field(null, parser.nf.This(null), "var_log"))), new TypedList(new LinkedList(), TypeNode.class, false))); 
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isQuantifyVar", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), Binary.NE, parser.nf.NullLit(null)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 
@@ -1245,7 +1245,9 @@ esj_field_declaration ::=
 			  rExp = isEnumFd ? nExpr : parser.nf.JL5New(null, b2, instVarGetArgs, null, new TypedList(new LinkedList(), TypeNode.class, false));			  
 		      }
 		      instVarGetBody.add(parser.nf.JL5Return(null, rExp));
-		      l.add(parser.nf.JL5MethodDecl(null, a, ivgRT, d.name+"_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, instVarGetBody), new TypedList(new LinkedList(), TypeNode.class, false)));		     
+		      List<Flags> fs = new ArrayList<Flags>();
+		      fs.add(Flags.PUBLIC);
+		      l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs), ivgRT, d.name+"_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, instVarGetBody), new TypedList(new LinkedList(), TypeNode.class, false)));		     
 		      
 		      //TypedList relDefBodyArgsP = TypedList.copy(relDefBodyArgs, Expr.class, false);
 		      relDefBodyArgs.set(6,parser.nf.BooleanLit(null, false));
