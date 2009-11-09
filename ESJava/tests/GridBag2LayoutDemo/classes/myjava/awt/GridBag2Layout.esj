@@ -766,9 +766,10 @@ public class GridBag2Layout implements LayoutManager2,
 	   GridBag2Constraints constraints = lookupConstraints(comp);
 	   System.out.print("x="+comp.getX() + " y=" + comp.getY() + " w=" + comp.getWidth() + " h=" + comp.getHeight());
 	   System.out.print(" tx="+constraints.tempX + " ty=" + constraints.tempY + " tw=" + constraints.tempWidth + " th=" + constraints.tempHeight);
-	   System.out.print(" gx="+constraints.gridx + " gy=" + constraints.gridy + " gw=" + constraints.gridwidth + " gh=" + constraints.gridheight);
+	   System.out.print(/*" gx="+constraints.gridx + " gy=" + constraints.gridy + */" gw=" + constraints.gridwidth + " gh=" + constraints.gridheight);
 	   System.out.print(" mw="+constraints.minWidth + " mh="+constraints.minHeight);
 	   System.out.print(" ew="+((ESJButton) comp).ew() + " eh="+((ESJButton) comp).eh()); 
+	   System.out.print(" gx="+((ESJButton) comp).gx() + " gy="+((ESJButton) comp).gy()); 
 	   System.out.println(" iright="+((ESJButton) comp).iright() + " itop="+((ESJButton) comp).itop()); 
        }
      }
@@ -1219,6 +1220,8 @@ public class GridBag2Layout implements LayoutManager2,
 	ESJButton b = (ESJButton) comp;
 	b.ew(constraints.gridwidth*r.minWidth[constraints.gridx]);
 	b.eh(constraints.gridheight*r.minHeight[constraints.gridy]);
+	b.gx(constraints.gridx);
+	b.gy(constraints.gridy);
 	b.iright(constraints.insets.right);
 	b.itop(constraints.insets.top);
 	//HS END
@@ -1399,19 +1402,37 @@ public class GridBag2Layout implements LayoutManager2,
 
     transient boolean rightToLeft = false;
 
+    alloy protected boolean boundsValid(ESJButton c1) {
+	c1.x() >= 0 && c1.y() >= 0 && c1.w() > 0 && c1.h() > 0 &&
+	    c1.x() + c1.w() <= this.maxX &&
+	    c1.y() + c1.h() <= this.maxY &&
+	    c1.w() == c1.ew() - c1.iright() &&
+	    c1.h() == c1.eh() - c1.itop() 
+    }
+
+    alloy protected boolean noOverlaps(ESJButton c1, ESJButton c2) {
+	(c2.x() >= c1.x() && c2.x() >= c1.x() + c1.w()) ||
+	    (c2.x() <= c1.x() && c2.x() + c2.w() <= c1.x()) ||
+	    (c2.y() >= c1.y() && c2.y() >= c1.y() + c1.h()) ||
+	    (c2.y() <= c1.y() && c2.y() + c2.h() <= c1.y())
+    }
+
+    alloy protected boolean relPositionsValid(ESJButton c1, ESJButton c2) {
+	(c1.gy() != c2.gy() || 
+	 (c2.gx() > c1.gx() && c2.x() >= c1.x() + c1.w()) ||
+	 (c2.gx() < c1.gx() && c2.x() + c2.w() <= c1.x())) &&
+	    (c1.gy() == c2.gy() || 
+	     (c2.gy() > c1.gy() && c2.y() >= c1.y() + c1.h()) ||
+	     (c2.gy() < c1.gy() && c2.y() + c2.h() <= c1.y()))
+   }
+
     alloy protected boolean gridLayoutValid() { 
 	all myjavax.swing.ESJButton c1 : this.comps |
-	    (c1.x() >= 0 && c1.y() >= 0 && c1.w() > 0 && c1.h() > 0 &&
-	     c1.x() + c1.w() <= this.maxX &&
-	     c1.y() + c1.h() <= this.maxY &&
-	     c1.w() == c1.ew() - c1.iright() &&
-	     c1.h() == c1.eh() - c1.itop() &&
+	    (boundsValid(c1) &&
 	     all myjavax.swing.ESJButton c2 : this.comps | 
 	       (c1 == c2  ||
-	        ((c2.x() >= c1.x() && c2.x() >= c1.x() + c1.w()) ||
-	         (c2.x() <= c1.x() && c2.x() + c2.w() <= c1.x()) ||
-	         (c2.y() >= c1.y() && c2.y() >= c1.y() + c1.h()) ||
-	         (c2.y() <= c1.y() && c2.y() + c2.h() <= c1.y()))))
+	        (noOverlaps(c1,c2) &&
+		 relPositionsValid(c1,c2))))
     }
 
     /**
@@ -1450,7 +1471,7 @@ public class GridBag2Layout implements LayoutManager2,
     GridBag2LayoutInfo info;
     
     //System.out.println("parent="+parent);
-
+    
     rightToLeft = !parent.getComponentOrientation().isLeftToRight();
 
     ///
@@ -1484,6 +1505,7 @@ public class GridBag2Layout implements LayoutManager2,
     this.maxY = d.height;
     //HS END
     ///
+
      // DEBUG
      //
     System.out.println("Orig:");
@@ -1630,6 +1652,8 @@ public class GridBag2Layout implements LayoutManager2,
 	}
       }
     }
+
+    //int z = 1/0;
 
     // DEBUG
     //
