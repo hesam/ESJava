@@ -300,6 +300,8 @@ public class LogMap {
 	//getProblemRels(obj);
 	if (SolverOpt_debug1) {
 	    System.out.println("problem involves rels: " + ProblemRels);
+	    if (modifiableFields != null)
+		System.out.println("modifiable fields: " + modifiableFields);
 	    if (modifiableObjects != null)
 		System.out.println("modifiable objs: " + modifiableObjects);
 	}

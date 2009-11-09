@@ -10,11 +10,23 @@ import javax.swing.*;
 public class ESJButton extends JButton {
 
     spec protected Integer x,y,w,h;
+    spec protected Integer ew,eh;
+
 
     public Integer x() { return this.x; }
     public Integer y() { return this.y; }
     public Integer w() { return this.w; }
     public Integer h() { return this.h; }
+
+    public Integer ew() { return this.ew; }
+    public Integer eh() { return this.eh; }
+
+    public void x(Integer x) { this.x = x; setBounds(x,y,w,h); }
+    public void y(Integer y) { this.y = y; setBounds(x,y,w,h); }
+    public void w(Integer w) { this.w = w; setBounds(x,y,w,h); }
+    public void h(Integer h) { this.h = h; setBounds(x,y,w,h); }
+    public void ew(Integer w) { this.ew = w; this.w = w; }
+    public void eh(Integer h) { this.eh = h; this.h = h; }
 
     public ESJButton() {
         this(null, null);

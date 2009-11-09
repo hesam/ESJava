@@ -39,6 +39,10 @@ public class LogSet extends LogObject {
 	return new LogIntAtom(LogObject.join_log(index.intValue_log().string(),string));
     }                              
 
+    public LogIntAtom get_log(ESJInteger index) {
+	return new LogIntAtom(LogObject.join_log(index.var_log().intValue_log().string(),string));
+    }                              
+
     public LogSet arithOp(String o, LogObject o2) {
 	return new LogSet("(" + string + " " + o + " " + o2.string() + ")");
     }

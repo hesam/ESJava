@@ -66,4 +66,9 @@ public class LogObject  {
 	return new LogFormula("(" + sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
     }
 
+    public LogFormula cmpOp(String o, ESJObject o2) {
+	return new LogFormula("(" + sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
+    }
+
+
 }

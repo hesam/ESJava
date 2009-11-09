@@ -1097,7 +1097,8 @@ ensured_class_declaration ::=
 		 l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs2), atn, "allInstances", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Field(null, cl, "allInstances"))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		 List<Flags> fs1 = new ArrayList<Flags>();
 		 fs1.add(Flags.PUBLIC);
-		 l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs1), atn, "allInstances2", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Field(null, cl, "allInstances"))), new TypedList(new LinkedList(), TypeNode.class, false)));
+		 FlagAnnotations fl1 = parser.makeFlagAnnotations(fs1);
+		 l.add(parser.nf.JL5MethodDecl(null, fl1, atn, "allInstances2", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Field(null, cl, "allInstances"))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		 List args2 = new TypedList(new LinkedList(), Expr.class, false);	   
 		 args2.add(parser.nf.ClassLit(null, cl));
 		 args2.add(parser.nf.BooleanLit(null, false));
@@ -1113,10 +1114,10 @@ ensured_class_declaration ::=
 		 lfArgs.add(parser.nf.Call(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), "string", parser.emptyArgs));
 		 lfArgs.add(parser.nf.Local(null,"o"));	     
 		 lfArgs.add(parser.nf.Call(null, parser.nf.Call(null, parser.nf.Local(null,"o2"), "var_log", parser.emptyArgs), "string", parser.emptyArgs));
-		 l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
+		 l.add(parser.nf.JL5MethodDecl(null, fl1, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		 frms.set(1,parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogObject")), "o2"));
 		 lfArgs.set(2,parser.nf.Call(null, parser.nf.Local(null,"o2"), "string", parser.emptyArgs));
-		 l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
+		 l.add(parser.nf.JL5MethodDecl(null, fl1, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		 				 
 	      	 // define relationize() and relationizeOld() and clone()...
 	      	 List args = new TypedList(new LinkedList(), Expr.class, false);

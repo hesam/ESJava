@@ -23,7 +23,10 @@ class GridBag2LayoutInfo implements java.io.Serializable {
   int minHeight[];		/* largest minHeight in each row */
   double weightX[];		/* largest weight in each column */
   double weightY[];		/* largest weight in each row */
-  Component components[]; //HS
+
+  //HS
+  Component components[]; 
+  //HS END
 
   GridBag2LayoutInfo () {
       /* fix for 5055696 (avoiding AIOOBE by enlarging sizes) */
@@ -309,9 +312,10 @@ public class GridBag2Layout implements LayoutManager2,
      */
   protected Hashtable<Component,GridBag2Constraints> comptable;
 
-    //HS
-    spec protected ESJSet<ESJButton> comps;
-
+  //HS
+  spec protected ESJSet<ESJButton> comps;
+  spec protected Integer maxX,maxY;
+  
     /**
      * This field holds a gridbag constraints instance
      * containing the default values, so if a component
@@ -759,7 +763,12 @@ public class GridBag2Layout implements LayoutManager2,
 	   Component comp = s.components[compindex];
 	   if (!comp.isVisible())
 	       continue;
-	   System.out.println(comp.getX() + " " + comp.getY() + " " + comp.getWidth() + " " + comp.getHeight());
+	   GridBag2Constraints constraints = lookupConstraints(comp);
+	   System.out.print("x="+comp.getX() + " y=" + comp.getY() + " w=" + comp.getWidth() + " h=" + comp.getHeight());
+	   System.out.print(" tx="+constraints.tempX + " ty=" + constraints.tempY + " tw=" + constraints.tempWidth + " th=" + constraints.tempHeight);
+	   System.out.print(" gx="+constraints.gridx + " gy=" + constraints.gridy + " gw=" + constraints.gridwidth + " gh=" + constraints.gridheight);
+	   System.out.print(" mw="+constraints.minWidth + " mh="+constraints.minHeight);
+	   System.out.println(" ew="+((ESJButton) comp).ew() + " eh="+((ESJButton) comp).eh()); 
        }
      }
    
@@ -1203,6 +1212,14 @@ public class GridBag2Layout implements LayoutManager2,
 	else if (constraints.tempHeight > i &&
 		 constraints.tempHeight < nextSize)
 	  nextSize = constraints.tempHeight;
+
+
+	//HS
+	ESJButton b = (ESJButton) comp;
+	b.ew(constraints.gridwidth*r.minWidth[constraints.gridx]);
+	b.eh(constraints.gridheight*r.minHeight[constraints.gridy]);
+	//HS END
+
       }
     }
     r.components = components; //HS
@@ -1380,11 +1397,18 @@ public class GridBag2Layout implements LayoutManager2,
     transient boolean rightToLeft = false;
 
     alloy protected boolean gridLayoutValid() { 
-	all ESJButton c1 : this.comps |
-	    (c1.x() >= 0 && c1.y() >= 0 && c1.w() > 0 && c1.h() > 0)
-	    /*
-	    all ESJButton c2 : this.comps | (c1 == c2 || 
-				 ())*/
+	all myjavax.swing.ESJButton c1 : this.comps |
+	    (c1.x() >= 0 && c1.y() >= 0 && c1.w() > 0 && c1.h() > 0 &&
+	     c1.x() <= this.maxX && c1.x() + c1.w() <= this.maxX &&
+	     c1.y() <= this.maxY && c1.y() + c1.h() <= this.maxY &&
+	     //c1.w() == c1.ew() &&
+	     //c1.h() == c1.eh() &&
+	     all myjavax.swing.ESJButton c2 : this.comps | 
+	       (c1 == c2  ||
+	        ((c2.x() >= c1.x() && c2.x() >= c1.x() + c1.w()) ||
+	         (c2.x() <= c1.x() && c2.x() + c2.w() <= c1.x()) ||
+	         (c2.y() >= c1.y() && c2.y() >= c1.y() + c1.h()) ||
+	         (c2.y() <= c1.y() && c2.y() + c2.h() <= c1.y()))))
     }
 
     /**
@@ -1396,7 +1420,7 @@ public class GridBag2Layout implements LayoutManager2,
      * @since 1.4
      */
     protected void arrangeGrid(Container parent) {
-	//System.out.println(comps);
+	//System.out.println(comps);	   
         ArrangeGrid(parent);
     }
 
@@ -1409,10 +1433,11 @@ public class GridBag2Layout implements LayoutManager2,
      * parameter.
      */
   protected void ArrangeGrid(Container parent) 
+      modifies fields myjavax.swing.ESJButton.x,myjavax.swing.ESJButton.y,myjavax.swing.ESJButton.w,myjavax.swing.ESJButton.h
       ensures gridLayoutValid() {
     Component comp;
     int compindex;
-    GridBag2Constraints constraints;
+    GridBag2Constraints constraints; 
     Insets insets = parent.getInsets();
     Component components[] = parent.getComponents();
     Dimension d;
@@ -1451,7 +1476,10 @@ public class GridBag2Layout implements LayoutManager2,
     layoutInfo = info;
     r.width = d.width;
     r.height = d.height;
-
+    //HS
+    this.maxX = d.width;
+    this.maxY = d.height;
+    //HS END
     ///
      // DEBUG
      //
