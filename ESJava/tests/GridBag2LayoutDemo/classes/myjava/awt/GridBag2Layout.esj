@@ -768,7 +768,8 @@ public class GridBag2Layout implements LayoutManager2,
 	   System.out.print(" tx="+constraints.tempX + " ty=" + constraints.tempY + " tw=" + constraints.tempWidth + " th=" + constraints.tempHeight);
 	   System.out.print(" gx="+constraints.gridx + " gy=" + constraints.gridy + " gw=" + constraints.gridwidth + " gh=" + constraints.gridheight);
 	   System.out.print(" mw="+constraints.minWidth + " mh="+constraints.minHeight);
-	   System.out.println(" ew="+((ESJButton) comp).ew() + " eh="+((ESJButton) comp).eh()); 
+	   System.out.print(" ew="+((ESJButton) comp).ew() + " eh="+((ESJButton) comp).eh()); 
+	   System.out.println(" iright="+((ESJButton) comp).iright() + " itop="+((ESJButton) comp).itop()); 
        }
      }
    
@@ -1218,6 +1219,8 @@ public class GridBag2Layout implements LayoutManager2,
 	ESJButton b = (ESJButton) comp;
 	b.ew(constraints.gridwidth*r.minWidth[constraints.gridx]);
 	b.eh(constraints.gridheight*r.minHeight[constraints.gridy]);
+	b.iright(constraints.insets.right);
+	b.itop(constraints.insets.top);
 	//HS END
 
       }
@@ -1399,10 +1402,10 @@ public class GridBag2Layout implements LayoutManager2,
     alloy protected boolean gridLayoutValid() { 
 	all myjavax.swing.ESJButton c1 : this.comps |
 	    (c1.x() >= 0 && c1.y() >= 0 && c1.w() > 0 && c1.h() > 0 &&
-	     c1.x() <= this.maxX && c1.x() + c1.w() <= this.maxX &&
-	     c1.y() <= this.maxY && c1.y() + c1.h() <= this.maxY &&
-	     //c1.w() == c1.ew() &&
-	     //c1.h() == c1.eh() &&
+	     c1.x() + c1.w() <= this.maxX &&
+	     c1.y() + c1.h() <= this.maxY &&
+	     c1.w() == c1.ew() - c1.iright() &&
+	     c1.h() == c1.eh() - c1.itop() &&
 	     all myjavax.swing.ESJButton c2 : this.comps | 
 	       (c1 == c2  ||
 	        ((c2.x() >= c1.x() && c2.x() >= c1.x() + c1.w()) ||
@@ -1623,7 +1626,7 @@ public class GridBag2Layout implements LayoutManager2,
       else {
 	if (comp.getX() != r.x || comp.getY() != r.y ||
 	    comp.getWidth() != r.width || comp.getHeight() != r.height) {
-	  comp.setBounds(r.x, r.y, r.width, r.height);
+	  comp.setBounds(r.x, 2*r.y, r.width, r.height);
 	}
       }
     }
@@ -1634,36 +1637,6 @@ public class GridBag2Layout implements LayoutManager2,
     DumpLayoutInfo(info);
     ///
 
-    //HS    
-    /*
-    boolean doAssert = true;
-    if (doAssert)
-	for (int compindex1 = 0 ; compindex1 < components.length ; compindex1++) {
-	    Component comp1 = components[compindex1];
-	    int x1 = comp1.getX();
-	    int y1 = comp1.getY();
-	    int w1 = comp1.getWidth();
-	    int h1 = comp1.getHeight();
-	    assert(x1>=0);
-	    assert(y1>=0);
-	    assert(w1>0);
-	    assert(h1>0);
-	    for (int compindex2 = 0 ; compindex2 < components.length ; compindex2++) {
-		Component comp2 = components[compindex2];
-		if (compindex1 == compindex2)
-		    continue;
-		int x2 = comp2.getX();
-		int y2 = comp2.getY();
-		int w2 = comp2.getWidth();
-		int h2 = comp2.getHeight();
-		assert(x2>=0);
-		assert(y2>=0);
-		assert(w2>0);
-		assert(h2>0);
-		assert(x2>=x1+w1 || x2+w2<=x1 || y2>=y1+h1 || y2+h2<=y1);
-	    }
-	}
-    */
   }
     
 

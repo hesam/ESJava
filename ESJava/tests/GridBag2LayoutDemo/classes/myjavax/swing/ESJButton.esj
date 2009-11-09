@@ -10,7 +10,7 @@ import javax.swing.*;
 public class ESJButton extends JButton {
 
     spec protected Integer x,y,w,h;
-    spec protected Integer ew,eh;
+    spec protected Integer ew,eh,iright,itop;
 
 
     public Integer x() { return this.x; }
@@ -20,6 +20,8 @@ public class ESJButton extends JButton {
 
     public Integer ew() { return this.ew; }
     public Integer eh() { return this.eh; }
+    public Integer iright() { return this.iright; }
+    public Integer itop() { return this.itop; }
 
     public void x(Integer x) { this.x = x; setBounds(x,y,w,h); }
     public void y(Integer y) { this.y = y; setBounds(x,y,w,h); }
@@ -27,6 +29,8 @@ public class ESJButton extends JButton {
     public void h(Integer h) { this.h = h; setBounds(x,y,w,h); }
     public void ew(Integer w) { this.ew = w; this.w = w; }
     public void eh(Integer h) { this.eh = h; this.h = h; }
+    public void iright(Integer x) { this.iright = x; }
+    public void itop(Integer y) { this.itop = y; }
 
     public ESJButton() {
         this(null, null);
