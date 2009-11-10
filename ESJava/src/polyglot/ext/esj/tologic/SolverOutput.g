@@ -52,14 +52,16 @@ solutions returns [ArrayList models] :
       ( s = solution { $models.add($s.model); } )+ ;
 
 solution returns [ArrayList model] : 
-    header ( o = unsatOutcome | o = satOutcome sol = instance ) stats
-        { $model = new ArrayList(); $model.add($o.o); $model.add($sol.rels); } ;
+    header ( o = unsatOutcome | o = satOutcome sol = instance ) st = stats end
+        { $model = new ArrayList(); 
+          $model.add($o.o); $model.add($sol.rels); $model.add($st.st); } ;
 
 header : spaces '*** PROBLEM 1 ***' ;
 
-end : '*** END ***' spaces ;
+end : spaces '*** END ***' ;
 
-stats : spaces '---STATS---' VCHAR* ;
+stats returns [String st] : 
+    spaces '---STATS---' t = statText { $st = $t.st; } ;
 
 unsatOutcome returns [boolean o] : 
     outcome 'UNSATISFIABLE' 
@@ -124,7 +126,14 @@ letter : LOWER | UPPER ;
 number returns [String n] :
         { $n = ""; } ( d = DIGIT { $n = $n + $d.getText(); } )+ ;
 
+statText returns [String st] :
+        ns+ 'primary variables: ' number 'parsing time: ' number
+        ns+ 'translation time: ' n = number { $st = "translation time: " + $n.n + " ms "; }
+        ns+ 'solving time: ' n = number { $st = $st + "\tsolving time: " + $n.n + " ms"; } ns+ ;
+
 spaces : SPACE* ;
+
+ns : ~('*') ;
 
 /*------------------------------------------------------------------
  * LEXER RULES
@@ -137,7 +146,5 @@ DIGIT	: '0'..'9' ;
 LOWER : 'a'..'z' ;
 
 UPPER : 'A'..'Z' ;
-
-VCHAR	: 'A'..'Z' | 'a'..'z' | DIGIT | ':' | '=' | SPACE ;
 
 

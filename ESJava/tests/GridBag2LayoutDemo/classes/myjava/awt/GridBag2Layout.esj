@@ -1648,7 +1648,7 @@ public class GridBag2Layout implements LayoutManager2,
       else {
 	if (comp.getX() != r.x || comp.getY() != r.y ||
 	    comp.getWidth() != r.width || comp.getHeight() != r.height) {
-	  comp.setBounds(r.x, 2*r.y, r.width, r.height);
+	  comp.setBounds(r.x, r.y, r.width, r.height);
 	}
       }
     }

@@ -345,8 +345,10 @@ public class LogMap {
 	}
 	try {
 	    parser.solutions();
-	    ArrayList models = parser.models();
+	    ArrayList models = parser.models();	
 	    ArrayList model = ((ArrayList<ArrayList>) models).get(0);
+	    if (SolverOpt_debug1)
+		System.out.println("Runtime: [ " + model.get(2) + " ]");
 	    boolean satisfiable = (Boolean) model.get(0);
 
 	    if (satisfiable) {
