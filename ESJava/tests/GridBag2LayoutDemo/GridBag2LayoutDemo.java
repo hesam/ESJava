@@ -45,6 +45,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 
 public class GridBag2LayoutDemo {
+
+    //HS
+    final static int SPEC_GRID = 5; 
+    static { ESJButton.setSpecGrid(SPEC_GRID); }
+    //HS END
+    
     final static boolean shouldFill = true;
     final static boolean shouldWeightX = true;
     final static boolean RIGHT_TO_LEFT = false;
@@ -55,7 +61,7 @@ public class GridBag2LayoutDemo {
         }
 
         ESJButton button;
-	pane.setLayout(new GridBag2Layout());
+	pane.setLayout(new GridBag2Layout(SPEC_GRID));
 	GridBag2Constraints c = new GridBag2Constraints();
 	if (shouldFill) {
 	//natural height, maximum width
@@ -126,7 +132,7 @@ public class GridBag2LayoutDemo {
 
     public static void main(String[] args) {
 	LogMap.SolverOpt_debugLevel(1);
-	ESJInteger.setBounds(0,300);
+	ESJInteger.setBounds(0,300/SPEC_GRID);
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {

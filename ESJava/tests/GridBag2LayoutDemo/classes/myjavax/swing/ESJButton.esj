@@ -9,14 +9,16 @@ package myjavax.swing;
 import javax.swing.*;
 public class ESJButton extends JButton {
 
-    spec protected Integer x,y,w,h;
+    static int SPEC_GRID;
+    spec protected Integer xp,yp,wp,hp;
     spec protected Integer ew,eh,gx,gy,iright,itop;
 
+    static public void setSpecGrid(int specGrid) { SPEC_GRID = specGrid; }
 
-    public Integer x() { return this.x; }
-    public Integer y() { return this.y; }
-    public Integer w() { return this.w; }
-    public Integer h() { return this.h; }
+    public Integer xp() { return this.xp; }
+    public Integer yp() { return this.yp; }
+    public Integer wp() { return this.wp; }
+    public Integer hp() { return this.hp; }
 
     public Integer ew() { return this.ew; }
     public Integer eh() { return this.eh; }
@@ -25,12 +27,17 @@ public class ESJButton extends JButton {
     public Integer iright() { return this.iright; }
     public Integer itop() { return this.itop; }
 
-    public void x(Integer x) { this.x = x; setBounds(x,y,w,h); }
-    public void y(Integer y) { this.y = y; setBounds(x,y,w,h); }
-    public void w(Integer w) { this.w = w; setBounds(x,y,w,h); }
-    public void h(Integer h) { this.h = h; setBounds(x,y,w,h); }
-    public void ew(Integer w) { this.ew = w; this.w = w; }
-    public void eh(Integer h) { this.eh = h; this.h = h; }
+    public void xpSet(Integer xp) { this.xp = xp; }
+    public void ypSet(Integer yp) { this.yp = yp; }
+    public void wpSet(Integer wp) { this.wp = wp; }
+    public void hpSet(Integer hp) { this.hp = hp; }
+
+    public void xp(Integer xp) { this.xp = xp; setBounds(xp*SPEC_GRID,getY(),getWidth(),getHeight()); }
+    public void yp(Integer yp) { this.yp = yp; setBounds(getX(),yp*SPEC_GRID,getWidth(),getHeight()); }
+    public void wp(Integer wp) { this.wp = wp; setBounds(getX(),getY(),wp*SPEC_GRID,getHeight()); }
+    public void hp(Integer hp) { this.hp = hp; setBounds(getX(),getY(),getWidth(),hp*SPEC_GRID); }
+    public void ew(Integer w) { this.ew = w; this.wp = w; }
+    public void eh(Integer h) { this.eh = h; this.hp = h; }
     public void gx(Integer x) { this.gx = x; }
     public void gy(Integer y) { this.gy = y; }
     public void iright(Integer x) { this.iright = x; }
@@ -55,10 +62,10 @@ public class ESJButton extends JButton {
 
     public void setBounds(int x, int y, int width, int height) {
 	reshape(x, y, width, height);
-	this.x = x;
-	this.y = y;
-	this.w = width;
-	this.h = height;
+	this.xp = x/SPEC_GRID;
+	this.yp = y/SPEC_GRID;
+	this.wp = width/SPEC_GRID;
+	this.hp = height/SPEC_GRID;
     }
 
     public ESJButton(String text, Icon icon) {

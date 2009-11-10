@@ -313,6 +313,7 @@ public class GridBag2Layout implements LayoutManager2,
   protected Hashtable<Component,GridBag2Constraints> comptable;
 
   //HS
+  protected int SPEC_GRID;
   spec protected ESJSet<ESJButton> comps;
   spec protected Integer maxX,maxY;
   
@@ -406,7 +407,8 @@ public class GridBag2Layout implements LayoutManager2,
   /**
    * Creates a grid bag layout manager.
    */
-  public GridBag2Layout () {
+  public GridBag2Layout (int specGrid) {
+      SPEC_GRID = specGrid;
     comptable = new Hashtable<Component,GridBag2Constraints>();
     comps = new ESJSet<ESJButton>();
     defaultConstraints = new GridBag2Constraints();
@@ -1218,12 +1220,16 @@ public class GridBag2Layout implements LayoutManager2,
 
 	//HS
 	ESJButton b = (ESJButton) comp;
-	b.ew(constraints.gridwidth*r.minWidth[constraints.gridx]);
-	b.eh(constraints.gridheight*r.minHeight[constraints.gridy]);
+	b.xpSet(b.getX()/SPEC_GRID);
+	b.ypSet(b.getY()/SPEC_GRID);
+	b.wpSet(b.getWidth()/SPEC_GRID);
+	b.hpSet(b.getHeight()/SPEC_GRID);
+	b.ew(constraints.gridwidth*r.minWidth[constraints.gridx]/SPEC_GRID);
+	b.eh(constraints.gridheight*r.minHeight[constraints.gridy]/SPEC_GRID);
 	b.gx(constraints.gridx);
 	b.gy(constraints.gridy);
-	b.iright(constraints.insets.right);
-	b.itop(constraints.insets.top);
+	b.iright(constraints.insets.right/SPEC_GRID);
+	b.itop(constraints.insets.top/SPEC_GRID);
 	//HS END
 
       }
@@ -1403,27 +1409,27 @@ public class GridBag2Layout implements LayoutManager2,
     transient boolean rightToLeft = false;
 
     alloy protected boolean boundsValid(ESJButton c1) {
-	c1.x() >= 0 && c1.y() >= 0 && c1.w() > 0 && c1.h() > 0 &&
-	    c1.x() + c1.w() <= this.maxX &&
-	    c1.y() + c1.h() <= this.maxY &&
-	    c1.w() == c1.ew() - c1.iright() &&
-	    c1.h() == c1.eh() - c1.itop() 
+	c1.xp() >= 0 && c1.yp() >= 0 && c1.wp() > 0 && c1.hp() > 0 &&
+	    c1.xp() + c1.wp() <= this.maxX &&
+	    c1.yp() + c1.hp() <= this.maxY &&
+	    c1.wp() == c1.ew() - c1.iright() &&
+	    c1.hp() == c1.eh() - c1.itop() 
     }
 
     alloy protected boolean noOverlaps(ESJButton c1, ESJButton c2) {
-	(c2.x() >= c1.x() && c2.x() >= c1.x() + c1.w()) ||
-	    (c2.x() <= c1.x() && c2.x() + c2.w() <= c1.x()) ||
-	    (c2.y() >= c1.y() && c2.y() >= c1.y() + c1.h()) ||
-	    (c2.y() <= c1.y() && c2.y() + c2.h() <= c1.y())
+	(c2.xp() >= c1.xp() && c2.xp() >= c1.xp() + c1.wp()) ||
+	    (c2.xp() <= c1.xp() && c2.xp() + c2.wp() <= c1.xp()) ||
+	    (c2.yp() >= c1.yp() && c2.yp() >= c1.yp() + c1.hp()) ||
+	    (c2.yp() <= c1.yp() && c2.yp() + c2.hp() <= c1.yp())
     }
 
     alloy protected boolean relPositionsValid(ESJButton c1, ESJButton c2) {
 	(c1.gy() != c2.gy() || 
-	 (c2.gx() > c1.gx() && c2.x() >= c1.x() + c1.w()) ||
-	 (c2.gx() < c1.gx() && c2.x() + c2.w() <= c1.x())) &&
+	 (c2.gx() > c1.gx() && c2.xp() >= c1.xp() + c1.wp()) ||
+	 (c2.gx() < c1.gx() && c2.xp() + c2.wp() <= c1.xp())) &&
 	    (c1.gy() == c2.gy() || 
-	     (c2.gy() > c1.gy() && c2.y() >= c1.y() + c1.h()) ||
-	     (c2.gy() < c1.gy() && c2.y() + c2.h() <= c1.y()))
+	     (c2.gy() > c1.gy() && c2.yp() >= c1.yp() + c1.hp()) ||
+	     (c2.gy() < c1.gy() && c2.yp() + c2.hp() <= c1.yp()))
    }
 
     alloy protected boolean gridLayoutValid() { 
@@ -1457,7 +1463,7 @@ public class GridBag2Layout implements LayoutManager2,
      * parameter.
      */
   protected void ArrangeGrid(Container parent) 
-      modifies fields myjavax.swing.ESJButton.x,myjavax.swing.ESJButton.y,myjavax.swing.ESJButton.w,myjavax.swing.ESJButton.h
+      modifies fields myjavax.swing.ESJButton.xp, myjavax.swing.ESJButton.yp, myjavax.swing.ESJButton.wp, myjavax.swing.ESJButton.hp
       ensures gridLayoutValid() {
     Component comp;
     int compindex;
@@ -1501,8 +1507,8 @@ public class GridBag2Layout implements LayoutManager2,
     r.width = d.width;
     r.height = d.height;
     //HS
-    this.maxX = d.width;
-    this.maxY = d.height;
+    this.maxX = d.width / SPEC_GRID;
+    this.maxY = d.height / SPEC_GRID;
     //HS END
     ///
 
@@ -1653,7 +1659,7 @@ public class GridBag2Layout implements LayoutManager2,
       }
     }
 
-    //int z = 1/0;
+    int z = 1/0;
 
     // DEBUG
     //
