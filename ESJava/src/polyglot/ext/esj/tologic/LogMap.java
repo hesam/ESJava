@@ -299,7 +299,11 @@ public class LogMap {
 
 	//getProblemRels(obj);
 	if (SolverOpt_debug1) {
-	    System.out.println("problem involves rels: " + ProblemRels);
+	    System.out.println("problem involves rels: ");
+	    for (Object k : ProblemRels.keySet() ) {
+		LogRelation r =  (LogRelation) ProblemRels.get(k);
+		System.out.println(r.id() + ": " + r.instVar());
+	    }
 	    if (modifiableFields != null)
 		System.out.println("modifiable fields: " + modifiableFields);
 	    if (modifiableObjects != null)

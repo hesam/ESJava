@@ -134,7 +134,7 @@ public class GridBag2LayoutDemo {
     public static void main(String[] args) {
 	fallbackOn = args.length > 0;
 	LogMap.SolverOpt_debugLevel(1);
-	ESJInteger.setBounds(0,300/SPEC_GRID); //Math.min(100,300/SPEC_GRID));
+	//ESJInteger.setBounds(0,Math.max(100,600/SPEC_GRID));
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
