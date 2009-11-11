@@ -11,7 +11,7 @@ public class ESJButton extends JButton {
 
     static int SPEC_GRID;
     spec protected Integer xp,yp,wp,hp;
-    spec protected Integer ew,eh,gx,gy,iright,itop;
+    spec protected Integer gw,gh,ew,eh,gx,gy,iright,itop,rowSize;
 
     static public void setSpecGrid(int specGrid) { SPEC_GRID = specGrid; }
 
@@ -24,8 +24,11 @@ public class ESJButton extends JButton {
     public Integer eh() { return this.eh; }
     public Integer gx() { return this.gx; }
     public Integer gy() { return this.gy; }
+    public Integer gw() { return this.gw; }
+    public Integer gh() { return this.gh; }
     public Integer iright() { return this.iright; }
     public Integer itop() { return this.itop; }
+    public Integer rowSize() { return this.rowSize; }
 
     public void xpSet(Integer xp) { this.xp = xp; }
     public void ypSet(Integer yp) { this.yp = yp; }
@@ -40,8 +43,11 @@ public class ESJButton extends JButton {
     public void eh(Integer h) { this.eh = h; this.hp = h; }
     public void gx(Integer x) { this.gx = x; }
     public void gy(Integer y) { this.gy = y; }
+    public void gw(Integer w) { this.gw = w; }
+    public void gh(Integer h) { this.gh = h; }
     public void iright(Integer x) { this.iright = x; }
     public void itop(Integer y) { this.itop = y; }
+    public void rowSize(Integer s) { this.rowSize = s; }
 
     public ESJButton() {
         this(null, null);

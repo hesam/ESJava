@@ -47,6 +47,7 @@ import javax.swing.JFrame;
 public class GridBag2LayoutDemo {
 
     //HS
+    static boolean fallbackOn;
     final static int SPEC_GRID = 5; 
     static { ESJButton.setSpecGrid(SPEC_GRID); }
     //HS END
@@ -61,7 +62,7 @@ public class GridBag2LayoutDemo {
         }
 
         ESJButton button;
-	pane.setLayout(new GridBag2Layout(SPEC_GRID));
+	pane.setLayout(new GridBag2Layout(fallbackOn, SPEC_GRID));
 	GridBag2Constraints c = new GridBag2Constraints();
 	if (shouldFill) {
 	//natural height, maximum width
@@ -131,8 +132,9 @@ public class GridBag2LayoutDemo {
     }
 
     public static void main(String[] args) {
+	fallbackOn = args.length > 0;
 	LogMap.SolverOpt_debugLevel(1);
-	ESJInteger.setBounds(0,300/SPEC_GRID);
+	ESJInteger.setBounds(0,300/SPEC_GRID); //Math.min(100,300/SPEC_GRID));
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {

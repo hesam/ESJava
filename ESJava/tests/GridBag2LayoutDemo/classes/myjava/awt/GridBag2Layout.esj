@@ -313,10 +313,12 @@ public class GridBag2Layout implements LayoutManager2,
   protected Hashtable<Component,GridBag2Constraints> comptable;
 
   //HS
-  protected int SPEC_GRID;
+    protected int SPEC_GRID;
+    protected boolean FALLBACK;
   spec protected ESJSet<ESJButton> comps;
   spec protected Integer maxX,maxY;
-  
+  spec protected Integer parentW,parentH;
+
     /**
      * This field holds a gridbag constraints instance
      * containing the default values, so if a component
@@ -407,11 +409,12 @@ public class GridBag2Layout implements LayoutManager2,
   /**
    * Creates a grid bag layout manager.
    */
-  public GridBag2Layout (int specGrid) {
-      SPEC_GRID = specGrid;
-    comptable = new Hashtable<Component,GridBag2Constraints>();
-    comps = new ESJSet<ESJButton>();
-    defaultConstraints = new GridBag2Constraints();
+    public GridBag2Layout (boolean fallbackOn, int specGrid) {
+	FALLBACK = fallbackOn;
+	SPEC_GRID = specGrid;
+	comptable = new Hashtable<Component,GridBag2Constraints>();
+	comps = new ESJSet<ESJButton>();
+	defaultConstraints = new GridBag2Constraints();
   }
 
   /**
@@ -768,11 +771,12 @@ public class GridBag2Layout implements LayoutManager2,
 	   GridBag2Constraints constraints = lookupConstraints(comp);
 	   System.out.print("x="+comp.getX() + " y=" + comp.getY() + " w=" + comp.getWidth() + " h=" + comp.getHeight());
 	   System.out.print(" tx="+constraints.tempX + " ty=" + constraints.tempY + " tw=" + constraints.tempWidth + " th=" + constraints.tempHeight);
-	   System.out.print(/*" gx="+constraints.gridx + " gy=" + constraints.gridy + */" gw=" + constraints.gridwidth + " gh=" + constraints.gridheight);
+	   System.out.print(/*" gx="+constraints.gridx + " gy=" + constraints.gridy + */" gw=" +  ((ESJButton) comp).gw() + " gh=" + ((ESJButton) comp).gh());
 	   System.out.print(" mw="+constraints.minWidth + " mh="+constraints.minHeight);
 	   System.out.print(" ew="+((ESJButton) comp).ew() + " eh="+((ESJButton) comp).eh()); 
 	   System.out.print(" gx="+((ESJButton) comp).gx() + " gy="+((ESJButton) comp).gy()); 
-	   System.out.println(" iright="+((ESJButton) comp).iright() + " itop="+((ESJButton) comp).itop()); 
+	   System.out.println(" iright="+((ESJButton) comp).iright() + " itop="+((ESJButton) comp).itop() + " rowsize=" + ((ESJButton) comp).rowSize()); 
+	   System.out.println("parentw: " + this.parentW + " parenth: " + this.parentH);
        }
      }
    
@@ -1224,6 +1228,9 @@ public class GridBag2Layout implements LayoutManager2,
 	b.ypSet(b.getY()/SPEC_GRID);
 	b.wpSet(b.getWidth()/SPEC_GRID);
 	b.hpSet(b.getHeight()/SPEC_GRID);
+	b.gw(constraints.gridwidth);
+	b.gh(constraints.gridheight);
+	b.rowSize(r.width);
 	b.ew(constraints.gridwidth*r.minWidth[constraints.gridx]/SPEC_GRID);
 	b.eh(constraints.gridheight*r.minHeight[constraints.gridy]/SPEC_GRID);
 	b.gx(constraints.gridx);
@@ -1413,6 +1420,7 @@ public class GridBag2Layout implements LayoutManager2,
 	    c1.xp() + c1.wp() <= this.maxX &&
 	    c1.yp() + c1.hp() <= this.maxY &&
 	    c1.wp() == c1.ew() - c1.iright() &&
+	    //c1.wp() == (this.parentW / c1.rowSize()) * c1.gw() &&
 	    c1.hp() == c1.eh() - c1.itop() 
     }
 
@@ -1451,9 +1459,32 @@ public class GridBag2Layout implements LayoutManager2,
      */
     protected void arrangeGrid(Container parent) {
 	//System.out.println(comps);	   
-        ArrangeGrid(parent);
+	
+	//HS
+	Dimension d;
+	layoutInfo = getLayoutInfo(parent, PREFERREDSIZE);
+	d = getMinSize(parent, layoutInfo);
+	
+	if (parent.getWidth() < d.width || parent.getHeight() < d.height) {
+	    layoutInfo = getLayoutInfo(parent, MINSIZE);
+	    d = getMinSize(parent, layoutInfo);
+	}	
+	this.maxX = d.width / SPEC_GRID;
+	this.maxY = d.height / SPEC_GRID;
+	this.parentW = parent.getWidth() / SPEC_GRID;
+	this.parentH = parent.getHeight() / SPEC_GRID;
+	//HS END
+	if (FALLBACK)
+	    ArrangeGridEnsured(parent, d);
+	else
+	    ArrangeGrid(parent, d);
     }
 
+    protected void ArrangeGridEnsured(Container parent, Dimension d) 
+      modifies fields myjavax.swing.ESJButton.xp, myjavax.swing.ESJButton.yp, myjavax.swing.ESJButton.wp, myjavax.swing.ESJButton.hp
+	ensures gridLayoutValid() {
+	ArrangeGrid(parent, d);
+    }
     /**
      * This method is obsolete and supplied for backwards
      * compatability only; new code should call {@link
@@ -1462,15 +1493,13 @@ public class GridBag2Layout implements LayoutManager2,
      * refer to <code>arrangeGrid</code> for details on the
      * parameter.
      */
-  protected void ArrangeGrid(Container parent) 
-      modifies fields myjavax.swing.ESJButton.xp, myjavax.swing.ESJButton.yp, myjavax.swing.ESJButton.wp, myjavax.swing.ESJButton.hp
-      ensures gridLayoutValid() {
+    protected void ArrangeGrid(Container parent, Dimension d) {
     Component comp;
     int compindex;
     GridBag2Constraints constraints; 
     Insets insets = parent.getInsets();
     Component components[] = parent.getComponents();
-    Dimension d;
+    //Dimension d; //HS
     Rectangle r = new Rectangle();
     int i, diffw, diffh;
     double weight;
@@ -1495,6 +1524,8 @@ public class GridBag2Layout implements LayoutManager2,
      // of space needed.
      ///
 
+    //HS
+    /* 
     info = getLayoutInfo(parent, PREFERREDSIZE);
     d = getMinSize(parent, info);
 
@@ -1502,15 +1533,15 @@ public class GridBag2Layout implements LayoutManager2,
       info = getLayoutInfo(parent, MINSIZE);
       d = getMinSize(parent, info);
     }
+    */
+    //HS END
+    //layoutInfo = info; //HS
+    info = layoutInfo; //HS
 
-    layoutInfo = info;
     r.width = d.width;
     r.height = d.height;
-    //HS
-    this.maxX = d.width / SPEC_GRID;
-    this.maxY = d.height / SPEC_GRID;
-    //HS END
-    ///
+
+    int z = FALLBACK ? 1/0 : 0;
 
      // DEBUG
      //
@@ -1658,8 +1689,6 @@ public class GridBag2Layout implements LayoutManager2,
 	}
       }
     }
-
-    int z = 1/0;
 
     // DEBUG
     //

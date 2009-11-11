@@ -832,6 +832,9 @@ multiplicative_predicate_expr ::=
    |    unary_predicate_expr:a MULT multiplicative_predicate_expr:b
 	   {: RESULT = parser.nf.Binary(parser.pos(a), a,
 	                                Binary.MUL, b); :}
+   |    unary_predicate_expr:a DIV multiplicative_predicate_expr:b
+	   {: RESULT = parser.nf.Binary(parser.pos(a), a,
+	                                Binary.DIV, b); :}
    ;
 
 unary_predicate_expr ::=
