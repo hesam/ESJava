@@ -68,7 +68,7 @@ public class RBTree
 
     public void insert(Node insertedNode)
 	modifies fields RBTree.root, Node.color, Node.left, Node.right, Node.parent
-	modifies objects getAffectedNodesOnInsert(insertedNode)
+    //modifies objects getAffectedNodesOnInsert(insertedNode)
 	ensures this.nodes().equals(this.old.nodes().plus(insertedNode)) {
 	// no implementation...
 	if (!TEST_DELETE)
@@ -85,7 +85,7 @@ public class RBTree
 
     public void delete(Integer value)
 	modifies fields RBTree.root, Node.color, Node.left, Node.right, Node.parent
-	modifies objects getAffectedNodesOnDelete(value)
+    //modifies objects getAffectedNodesOnDelete(value)
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
     } 
@@ -448,7 +448,7 @@ public class RBTree
         
     public static void main(String[] args) {
 	LogMap.SolverOpt_debugLevel(1);
-	MAX_SIZE = 60;
+	MAX_SIZE = 10;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 	TEST_DELETE = true;
 

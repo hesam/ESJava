@@ -18,8 +18,7 @@ public class ESJTypeSystem_c extends JL5TypeSystem_c
 
     protected void initFlags() {
         super.initFlags();
-        PURE = createNewFlag("pure",
-                             Public().Private().Protected().Static().Final());
+        PURE = createNewFlag("pure", Public().Private().Protected().Static().Final());
     }
 
     public Flags Pure() {
@@ -32,6 +31,19 @@ public class ESJTypeSystem_c extends JL5TypeSystem_c
             return false;
         return super.canOverride(mi, mj);
     }
+
+	// NOTE: This method is only added to handle a bug in
+	// Polyglot: it doesn't check that a method cannot be both
+	// abstract and private.  I reported the bug, so this method
+	// may later be unnecessary.
+    public void checkMethodFlags(Flags f) throws SemanticException {
+	super.checkMethodFlags(f.clear(PURE));
+	if (f.isAbstract() && f.isPrivate()) {
+	    throw new SemanticException(
+		"Cannot declare method that is both abstract and private.");
+	}
+    }
+
 
 }
 

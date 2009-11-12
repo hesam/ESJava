@@ -71,7 +71,8 @@ public class LogRelation extends Hashtable {
     public void incrFixedSize() { fixedSize++; }
 
     public boolean isModifiable(HashMap modifiableFields) {
-	return modifiableFields == null ? true : 
+	return modifiableFields == null ||
+	    instVar.equals("result") || //FIXME
 	    modifiableFields.containsKey(domain.getName() + "." + instVar);
     }
 

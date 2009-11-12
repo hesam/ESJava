@@ -65,6 +65,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 
     public JL5MethodDecl DesugarEnsuredMethodDecl (ESJEnsuredMethodDecl methodDecl) throws SemanticException {
 
+	boolean isVoid = methodDecl.returnType().type().isVoid();
 	List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 	Expr call1 = nf.Call(null, null, "verifyInvariants", 
 			     new TypedList(new LinkedList(), Expr.class, false));
@@ -76,8 +77,19 @@ public class ESJJavaTranslator extends ContextVisitor {
 		extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,f.name()), "clone", new TypedList(new LinkedList(), Expr.class, false))));
 	    }
 	}
-	extraMtdBody.addAll(methodDecl.body().statements());
-	extraMtdBody.add(nf.JL5Assert(null, assertExpr, null));
+	List stms = methodDecl.body().statements();
+	Stmt assrt = nf.JL5Assert(null, assertExpr, null);
+	if (isVoid) {
+	    extraMtdBody.addAll(stms);
+	    extraMtdBody.add(assrt);
+	} else {
+	    int j;
+	    for (j=0;j<stms.size()-1;j++)
+		extraMtdBody.add((Stmt) stms.get(j));
+	    extraMtdBody.add(nf.Eval(null, nf.Assign(null, nf.Local(null, "result"), Assign.ASSIGN, ((Return) stms.get(j)).expr())));
+	    extraMtdBody.add(assrt);
+	    extraMtdBody.add(nf.JL5Return(null, nf.Local(null, "result")));
+	}
 
 	List catches = new TypedList(new LinkedList(), Catch.class, false);
 	Block extraMtdBlock = nf.Block(null, extraMtdBody);
@@ -96,7 +108,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List args = new TypedList(new LinkedList(), Expr.class, false);
 	for (Formal f : (List<Formal>) methodDecl.formals())
 	    args.add(nf.Local(null,f.name()));
-	catchBody.add(nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback", args)));
+	Expr fbCall = nf.Call(null, null, methodDecl.name() + "_fallback", args);
+	catchBody.add(isVoid ? nf.Eval(null, fbCall) : nf.JL5Return(null, fbCall));
 	Block catchBlock = nf.Block(null,catchBody);
 	catches.add(nf.JL5Catch(null, methodDecl.catchFormal(), catchBlock));
 	List tryBody = new TypedList(new LinkedList(), Stmt.class, false);
@@ -296,7 +309,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName(((ESJQuantifyTypeExpr) r).theType())), "allInstances_log",new TypedList(new LinkedList(), Expr.class, false));
 	    
 	} else if (r instanceof Return) {
-	    return nf.JL5Return(null, (Expr) toLogicExpr(((Return) r).expr()));
+	    Expr e = ((Return) r).expr();
+	    Expr e2 = (e instanceof Field) && (((Field) e).name().equals("result")) ? e
+		: (Expr) toLogicExpr(e);
+	    return nf.JL5Return(null, e2);
 	} else if (r instanceof Eval) {
 	    return r;
 	} else if (r instanceof JL5Assert) {
