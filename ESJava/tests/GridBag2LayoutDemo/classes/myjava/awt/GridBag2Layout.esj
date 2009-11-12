@@ -310,11 +310,12 @@ public class GridBag2Layout implements LayoutManager2,
      * @serial
      * @see java.awt.GridBag2Constraints
      */
+    
   protected Hashtable<Component,GridBag2Constraints> comptable;
 
   //HS
-    protected int SPEC_GRID;
-    protected boolean FALLBACK;
+  protected int SPEC_GRID;
+  protected boolean FALLBACK;
   spec protected ESJSet<ESJButton> comps;
   spec protected Integer parentW,parentH;
 
@@ -1431,8 +1432,9 @@ public class GridBag2Layout implements LayoutManager2,
 
     alloy protected boolean relPositionsValid(ESJButton c1, ESJButton c2) {
 	(c1.gy() != c2.gy() || 
-	 (c2.gx() > c1.gx() && c2.xp() >= c1.xp() + c1.wp()) ||
-	 (c2.gx() < c1.gx() && c2.xp() + c2.wp() <= c1.xp())) &&
+	 (c1.yp() == c2.yp() &&
+	  ((c2.gx() > c1.gx() && c2.xp() >= c1.xp() + c1.wp()) ||
+	   (c2.gx() < c1.gx() && c2.xp() + c2.wp() <= c1.xp())))) &&
 	    (c1.gy() == c2.gy() || 
 	     (c2.gy() > c1.gy() && c2.yp() >= c1.yp() + c1.hp()) ||
 	     (c2.gy() < c1.gy() && c2.yp() + c2.hp() <= c1.yp()))

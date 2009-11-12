@@ -5,137 +5,37 @@ import polyglot.ext.esj.tologic.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Test ensures (x > 20) {
+public class Test {
     
-    protected int x;
-    protected int y;
-    protected Node root;
+    spec protected Integer x;
+    spec protected Integer y;
+    spec protected Integer result;
 
-    private static final int INDENT_STEP = 4;
-
-    public Test(int x, int y, Node root) {
+    public Test(Integer x, Integer y) {
 	super();
 	this.x = x;
 	this.y = y;
-	this.root = root;
     }
     
-    public int x() { return x; }
-    public int y() { return y; }
-    public void x(int v) { this.x = v; }
-    public void y(int v) { this.y = v; }
-    public void root(Node r) { this.root = r; }
+    public Integer x() { return x; }
+    public Integer y() { return y; }
+    public void x(Integer v) { this.x = v; }
+    public void y(Integer v) { this.y = v; }
 
-    function public ESJSet<Node> nodes() {
-	root.*(left+right)
+    public Integer twice()
+	ensures this.result == 2*this.x {
+	Integer z = 2*x;
+	return z;
     }
-
-    function public ESJSet<Integer> nodeValues() {
-	this.nodes().<value
-    }
-
-    function public boolean repOk() {
-	//z == x
-	x == 2 * old.x
-	//this.y() == 2 * this.x() 
-	//this.y == 2 * this.x 
-	//this.x == 2 * this.x_old
-	//root != null
-	//no Node n | n == n.left
-	//no int i | i <= 0     
-	//root.^(left+right).contains(root)
-	//!root.children().contains(root)
-	//no Node n | n.^(left+right).contains(n)
-	//(root == null) ? true : no Node n | n.children().contains(n)
-	//all Node n | all Node x | x.children().contains(n)
-	//all int i | i > this.x
-	//all int i | all int j | j < i
-	//all int i | (i == 0 || all int j | j < i)
-	//lone Node p | p.parent == p
-	//all Node n | lone Node p | n.parent == p
-	//all Node n | n.left.children().size() > 0
-	//all Node n : root.children() | one Node p | n.parent == p
-	//all Node n | one Node p : n.children() | n.parent == p
-	//all Node n | (n.left == null || all Node c : n.left.children() | c.value < n.value)
-	//this.nodes().equals(old.nodes().union(root))
-	//this.nodes().size() == old.nodes().size() + 1
-	}
-
-    public void m1()
-	ensures repOk() {
-
-    }
-
-    public void insert(Integer value) {
-        Node insertedNode = new Node(value, null, null);
-	insert(insertedNode);
-    }
-
-    public void insert(Node insertedNode)
-	ensures this.nodes().equals(this.old.nodes().union(insertedNode)) {
-
-    }
-
 
     public String toString() { return "(" + x + "," + y + ")"; }
 
-    public void print() {
-        printHelper(root, 0);
-	System.out.println("---------------------------------------");
-    }
-
-    private static void printHelper(Node n, int indent) {
-        if (n == null) {
-            System.out.println("<empty tree>");
-            return;
-        }
-        if (n.right != null) {
-            printHelper(n.right, indent + INDENT_STEP);
-        }
-        for (int i = 0; i < indent; i++)
-            System.out.print(" "); 
-            System.out.println(n.value);
-        if (n.left != null) {
-            printHelper(n.left, indent + INDENT_STEP);
-        }
-    }
-
 
     public static void main(String[] args) {
-	LogMap.SolverOpt_debug(true);
-	Node n4 = new Node(4, null, null);	
-	Node n5 = new Node(5, null, null);	
-	Node n2 = new Node(2, n4, n5);	
-	Node n3 = new Node(3, null, null);	
-	Node n1 = new Node(1, n2, n3);
-	Test t1 = new Test(13, 10, n1);
-	//LogMap.initRelationize();
+	LogMap.SolverOpt_debugLevel(1);
+	Test t1 = new Test(13, 10);
 	System.out.println(t1);
-	//t1.m1();
-	//System.out.println(t1);
-	//System.out.println(t1.old());
-	//System.out.println(t1.old());
-	//System.out.println(t1.old().old());
-	//System.out.println(n1.children());
-	//System.out.println(t1.root.children());
-	//System.out.println(t1);	
-	t1.initEnsuredMethod();
-	System.out.println(t1.nodes());
-	System.out.println(t1.nodeValues());
-	//System.out.println(t1.old().nodes());
-	//System.out.println(t1.nodes().equals(t1.old.nodes()));
-
-	//System.out.println(t1.nodes_log());
-	//System.out.println(t1.old().nodes_log());
-	//System.out.println(t1.repOk());
-	//System.out.println(t1.repOk_log());
-	System.out.println(t1.nodeValues_log());
-	//System.out.println("hello");
-	//System.out.println(t1.old().nodes_log());
-	//System.out.println(t1.old().nodes_log().union_log(t1.root_log()));
-	//System.out.println(t1.nodes_log().equals_log(t1.old().nodes_log().union_log(t1.root_log())));
-
-
+	System.out.println(t1.twice());
     }
 
 }
