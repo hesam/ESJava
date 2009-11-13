@@ -87,6 +87,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    for (j=0;j<stms.size()-1;j++)
 		extraMtdBody.add((Stmt) stms.get(j));
 	    extraMtdBody.add(nf.Eval(null, nf.Assign(null, nf.Local(null, "result"), Assign.ASSIGN, ((Return) stms.get(j)).expr())));
+	    extraMtdBody.add(nf.Eval(null, nf.Assign(null, nf.Field(null, nf.This(null), "result"), Assign.ASSIGN, nf.Local(null, "result"))));
 	    extraMtdBody.add(assrt);
 	    extraMtdBody.add(nf.JL5Return(null, nf.Local(null, "result")));
 	}
@@ -199,11 +200,16 @@ public class ESJJavaTranslator extends ContextVisitor {
 	//System.out.println("have:" + r.getClass() + " " + r);
 	if (r instanceof ESJLogPredMethodDecl) {	 
 	    ESJLogPredMethodDecl methodDecl = (ESJLogPredMethodDecl) r;
-	    List formals = methodDecl.formals(); /*new TypedList(new LinkedList(), Formal.class, false);
+	    /*
+	    List formals = new TypedList(new LinkedList(), Formal.class, false);
+	    // HACK FIXME
 	    for (Formal f : (List<Formal>) methodDecl.formals()) {
-		System.out.println("getting type map for: " + f.type().toString());
-		formals.add(f.type((TypeNode) JTypeToLog.get(f.type().toString())));
-		}*/ //FIXME?
+		TypeNode fTp = f.type(); 
+		String fTpN = fTp.toString();
+		boolean isPrimitive = fTpN.equals("int") || fTpN.equals("java.lang.Integer");
+		formals.add(f.type(isPrimitive ? nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")) : fTp));
+	    }
+	    */
 	    List inits = new TypedList(new LinkedList(), Stmt.class, false);
 	    //System.out.println(methodDecl.body().statements());
 	    quantVars = new ArrayList(); //FIXME
@@ -393,12 +399,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    LocalDecl l = (LocalDecl) r;
 	    return r;
 	} else if (r instanceof Local) {
-	    Local l = (Local) r;
 	    return r;
-	    //return quantVars.contains(l.name()) ? nf.Field(null, l, "var_log") : r; //FIXME?
 	}  else if (r instanceof Special) {
 	    return r;
-	    //return isLogVarLogPredMtd ? nf.Field(null, (Special) r, "var_log") : r; //FIXME
 	} else if (r instanceof IntLit) {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, "" + ((IntLit) r).value() ));

@@ -31,4 +31,8 @@ public class LogInt extends LogObject {
 	return new LogInt("(" + string + " " + o + " " + o2.var_log().sumValue_log() + ")");
     }
 
+    public LogInt arithOp(String o, Integer o2) {
+	return new LogInt("(" + string + " " + o + " " + (o2+"") + ")");
+    }
+
 }

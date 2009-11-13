@@ -226,8 +226,10 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    //l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args2)));
 	    l.add(nf.JL5Assert(null, nf.Local(null,"isSatisfiable"), nf.StringLit(null, "Formula UNSAT! Recovery failed...")));
 	    l.add(nf.Return(null, isVoid ? nf.Local(null,  "isSatisfiable") : nf.JL5Cast(null, retTp, nf.Field(null, nf.This(null), "result"))));
-	    List frms = new TypedList(new LinkedList(), Formal.class, false); 
-	    frms.addAll(methodDecl.formals());
+
+	    //frms.addAll(methodDecl.formals());
+	    List frms = methodDecl.formals();
+
      	    return nf.ESJLogPredMethodDecl(null, fl,
 					   isVoid ? nf.CanonicalTypeNode(null,ts.Boolean()) : methodDecl.returnType(),
 					   methodDecl.name() + "_fallback", 
@@ -337,7 +339,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 } else {
 	     if (!isReservedField) 
 		 l.add(this.nf.ESJFieldDecl(null,a, b, dName, dInit, false));
-	     boolean isReferenceType = b instanceof JL5AmbTypeNode && !b.toString().equals("Integer{amb}"); //FIXME
+	     boolean isReferenceType = (b instanceof JL5AmbTypeNode && !b.toString().equals("Integer{amb}")); //FIXME
 	     //System.out.println("somebody adding a fieeeeeld!" + dName + " " + isReferenceType);
 	     List args = new TypedList(new LinkedList(), Expr.class, false);
 	     List relDefBodyArgs = new TypedList(new LinkedList(), Expr.class, false);
@@ -396,10 +398,11 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	     l.add(this.nf.JL5MethodDecl(null, this.makeFlagAnnotations(fs), ivgRT, dName+"_log", this.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), this.nf.Block(null, instVarGetBody), new TypedList(new LinkedList(), TypeNode.class, false)));		     
 	     
 	     //TypedList relDefBodyArgsP = TypedList.copy(relDefBodyArgs, Expr.class, false);
-	     relDefBodyArgs.set(6,this.nf.BooleanLit(null, false));
-	     Block relDefBodyP = this.nf.Block(null, this.nf.Eval(null,this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newInstVarRel", relDefBodyArgs)));
-	     l.add(this.nf.Initializer(null, Flags.STATIC, relDefBodyP));
-	     
+	     if (!isReservedField) {
+		 relDefBodyArgs.set(6,this.nf.BooleanLit(null, false));
+		 Block relDefBodyP = this.nf.Block(null, this.nf.Eval(null,this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newInstVarRel", relDefBodyArgs)));
+		 l.add(this.nf.Initializer(null, Flags.STATIC, relDefBodyP));
+	     }
 	     List gt = new TypedList(new LinkedList(), TypeNode.class, false);
 	     AmbTypeNode cl = this.nf.AmbTypeNode(null, this.currClassName);
 	     gt.add(cl);
@@ -609,20 +612,33 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
      }
 
      // HACK FIXME:
-     public Expr castResultVarInEnsuresClause(Expr ensuresExpr, TypeNode returnType) {
+     public Expr castResultVarInEnsuresClause(Node ensuresExpr, TypeNode returnType) {
      	    if (ensuresExpr instanceof Binary) {
 	       	  Binary b = (Binary) ensuresExpr;
 		  b = b.left(castResultVarInEnsuresClause(b.left(),returnType));
 		  b = b.right(castResultVarInEnsuresClause(b.right(),returnType));
 		  return b;
+	    } else if (ensuresExpr instanceof Call) {
+		  Call c = (Call) ensuresExpr;
+		  return  nf.Call(null, castResultVarInEnsuresClause(c.target(),returnType), c.name(), c.arguments());
+	    } else if (ensuresExpr instanceof Field) {
+		  Field c = (Field) ensuresExpr;
+		  return  nf.Field(null, castResultVarInEnsuresClause(c.target(),returnType), c.name());
 	    } else if (ensuresExpr instanceof Conditional) {
 		  Conditional c = (Conditional) ensuresExpr;
 		  return nf.JL5Conditional(null, c.cond(), castResultVarInEnsuresClause(c.consequent(),returnType), castResultVarInEnsuresClause(c.alternative(),returnType));
-	    } else if (ensuresExpr instanceof AmbExpr &&
-		       ((AmbExpr) ensuresExpr).name().equals("result")) {		
-		return nf.JL5Cast(null, returnType, ensuresExpr);
+	    } else if (ensuresExpr instanceof AmbExpr) {
+		if (((AmbExpr) ensuresExpr).name().equals("result"))		
+		    return nf.JL5Cast(null, returnType, (Expr) ensuresExpr);
+		else
+		    return (Expr) ensuresExpr;
+	    } else if (ensuresExpr instanceof AmbReceiver) {
+		if (((AmbReceiver) ensuresExpr).name().equals("result"))
+		    return nf.JL5Cast(null, returnType, nf.Field(null, nf.This(null), "result"));
+		else
+		    return (Expr) ensuresExpr;
 	    } else {
-	      	   return ensuresExpr;
+		return (Expr) ensuresExpr;
 	    }
      }
 

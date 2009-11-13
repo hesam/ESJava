@@ -302,15 +302,16 @@ public class LogMap {
 	String spacer = "\n";
 	boolean isNonVoid = resultVarType != null;
 	if (isNonVoid) {
-	    getResultVarRel_log(obj).range(resultVarType);
+	    //getResultVarRel_log(obj).range(resultVarType);
+	    funDefs.append("lone s0 &&");
 	}
 	//getProblemRels(obj);
 	if (SolverOpt_debug1) {
 	    System.out.println("problem involves rels: ");
 	    for (Object k : ProblemRels.keySet() ) {
 		LogRelation r =  (LogRelation) ProblemRels.get(k);
-		if (isNonVoid)
-		System.out.println(r.id() + ": " + r.instVar());
+		//if (isNonVoid)
+		//System.out.println(r.id() + ": " + r.instVar());
 	    }
 	    if (modifiableFields != null)
 		System.out.println("modifiable fields: " + modifiableFields);
@@ -334,6 +335,8 @@ public class LogMap {
 		funDefs.append(r.funDef_log());
 	    }
 	}
+	if (isNonVoid)
+	    problem.append("bounds s0: [{}, " + LogMap.bounds_log(resultVarType, true, false) + "]" + spacer);
 	problem.append(ESJInteger.intBounds_log() + spacer);
 	problem.append("solve " + funDefs.toString() + spacer + formula.toString() + ";");
 	

@@ -104,7 +104,7 @@ listItems returns [ArrayList is]:
         (COMMA b = listItem { $is.add(b); } )* ;
 
 listItem returns [ArrayList i]:     
-     ( a = binaryTuple | a = ternaryTuple )
+     ( a = binaryTuple | a = ternaryTuple | a = unaryTuple )
         { $i = $a.t ; } ;
 
 binaryTuple returns [ArrayList t]: 
@@ -116,6 +116,11 @@ ternaryTuple returns [ArrayList t]:
      LBRACKET a = atom COMMA b = atom COMMA c = atom RBRACKET
         { $t = new ArrayList();
           $t.add(a); $t.add(b); $t.add(c); } ;
+
+unaryTuple returns [ArrayList t]: 
+     LBRACKET a = atom RBRACKET 
+        { $t = new ArrayList();
+          $t.add(a); } ;
 
 atom returns [int n]:
      spaces 'A' d = number
