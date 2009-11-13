@@ -8,19 +8,20 @@ import java.util.Iterator;
 import java.awt.Point;
 
 public class Test {
-    
+
+
     spec protected Integer x;
     spec protected Integer y;
-    //spec protected ESJList<Point> points;
+    spec protected ESJList<ESJPoint> points;
 
     public Test(Integer x, Integer y) {
 	super();
 	this.x = x;
 	this.y = y;
-	//this.points = new ESJList<Point>();
-	//this.points.add(new Point(10,22));
-	//this.points.add(new Point(0,1));
-	//this.points.add(new Point(-5,10));
+	this.points = new ESJList<ESJPoint>();
+	this.points.add(new ESJPoint(10,22));
+	this.points.add(new ESJPoint(0,1));
+	this.points.add(new ESJPoint(-5,10));
     }
     
     public Integer x() { return x; }
@@ -28,17 +29,16 @@ public class Test {
     public void x(Integer v) { this.x = v; }
     public void y(Integer v) { this.y = v; }
 
-    
-    public pure Integer twice(Integer i)
+    /*public pure Integer twice(Integer i)
 	ensures result == 2*i+this.x {
-	return 3*x;
-    }
+	int z = 1/0;
+	return 2*i+this.x;
+	}*/
 
-    /*
-    public pure Point pick()
+    public pure ESJPoint pick()
 	ensures result != null && result.x > 0 && result.y > 0 {
 	return this.points.get(0);
-	}*/
+    }
 
     public String toString() { return "(" + x + "," + y + ")"; }
 
@@ -48,8 +48,8 @@ public class Test {
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
-	System.out.println(t1.twice(5));
-	//System.out.println(t1.pick());
+	//System.out.println(t1.twice(5));
+	System.out.println(t1.pick());
     }
 
 }

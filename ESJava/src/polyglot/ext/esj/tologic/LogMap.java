@@ -389,7 +389,6 @@ public class LogMap {
 	for (LogRelation u : (ArrayList<LogRelation>) unknowns) {
 	    ArrayList val = (ArrayList) modelRels.get(u.id());
 	    if (u.isResultVar) {
-		System.out.println(val);
 		((ESJObject) obj).result(((ArrayList) val.get(0)).get(0));
 		return;
 	    }
@@ -411,7 +410,6 @@ public class LogMap {
 		    Method m = c.getDeclaredMethod(u.instVar(), paramTypes); 
 		    //System.out.println(m);
 		    for (ArrayList v : (ArrayList<ArrayList>) val) {
-			System.out.println(v);
 			//System.out.println(get2((Integer) v.get(0)));
 			//System.out.println(get2((Integer) v.get(1)));
 			args[0] = get2((Integer) v.get(1));

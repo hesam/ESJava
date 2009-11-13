@@ -367,7 +367,8 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	     List args3p = new TypedList(new LinkedList(), Expr.class, false);
 	     args3p.add(this.nf.This(null));
 	     //args3p.add(this.nf.StringLit(null, dName));
-	     args3p.add(isReservedField ? this.nf.StringLit(null, dName) : this.nf.JL5Conditional(null, this.nf.Call(null, null, "isOld", this.emptyArgs), this.nf.StringLit(null, dName+"_old"), this.nf.StringLit(null, dName)));
+	     if (!isReservedField)
+		 args3p.add(this.nf.JL5Conditional(null, this.nf.Call(null, null, "isOld", this.emptyArgs), this.nf.StringLit(null, dName+"_old"), this.nf.StringLit(null, dName)));
 	     TypeNode ivgRT;
 	     Expr nExpr = null;
 	     Expr rExp = null;
@@ -378,7 +379,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		 rExp = this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objInstVarSet_log", args3p);
 	     } else {
 		 List args2p = new TypedList(new LinkedList(), Expr.class, false);
-		 Expr ivgExpr = this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objInstVarStr_log", args3p);
+		 Expr ivgExpr = isReservedField ? this.nf.Call(null, this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "getResultVarRel_log", args3p), "id", emptyArgs) : this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objInstVarStr_log", args3p);
 		 args2p.add(ivgExpr);
 		 if (!isEnumFd)
 		     args2p.add(this.nf.ClassLit(null, b2));
@@ -394,22 +395,11 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		 rExp = isEnumFd ? nExpr : this.nf.JL5New(null, b2, instVarGetArgs, null, new TypedList(new LinkedList(), TypeNode.class, false));			  
 	     }
 	     List<Flags> fs = new ArrayList<Flags>();
-	     fs.add(Flags.PUBLIC);
-	     
-	     //TypedList relDefBodyArgsP = TypedList.copy(relDefBodyArgs, Expr.class, false);
-	     if (isReservedField) {
-		 List args4p = new TypedList(new LinkedList(), Expr.class, false);
-		 List args5p = new TypedList(new LinkedList(), Expr.class, false);
-		 args4p.add(this.nf.This(null));
-		 Expr ivgExpr = this.nf.Call(null, this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "getResultVarRel_log", args4p), "id", emptyArgs);
-		 TypeNode loTp = this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogObject"));
-		 args5p.add(ivgExpr);
-		 rExp = this.nf.JL5New(null, loTp, args5p, null, new TypedList(new LinkedList(), TypeNode.class, false));			  
-		 l.add(this.nf.JL5MethodDecl(null, this.makeFlagAnnotations(fs), loTp, dName+"_log", this.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), this.nf.Block(null, this.nf.JL5Return(null,rExp)), new TypedList(new LinkedList(), TypeNode.class, false)));		     
-	     } else { 
-		 instVarGetBody.add(this.nf.JL5Return(null, rExp));
-		 l.add(this.nf.JL5MethodDecl(null, this.makeFlagAnnotations(fs), ivgRT, dName+"_log", this.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), this.nf.Block(null, instVarGetBody), new TypedList(new LinkedList(), TypeNode.class, false)));		     
+	     fs.add(Flags.PUBLIC);	     
+	     instVarGetBody.add(this.nf.JL5Return(null, rExp));
+	     l.add(this.nf.JL5MethodDecl(null, this.makeFlagAnnotations(fs), ivgRT, dName+"_log", this.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), this.nf.Block(null, instVarGetBody), new TypedList(new LinkedList(), TypeNode.class, false)));		     
 		 
+	     if (!isReservedField) {
 		 relDefBodyArgs.set(6,this.nf.BooleanLit(null, false));
 		 Block relDefBodyP = this.nf.Block(null, this.nf.Eval(null,this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newInstVarRel", relDefBodyArgs)));
 		 l.add(this.nf.Initializer(null, Flags.STATIC, relDefBodyP));
