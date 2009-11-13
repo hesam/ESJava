@@ -69,6 +69,7 @@ public class LogRelation extends Hashtable {
     public boolean hasFixedSize() { return fixedSize != 0; }
     public void fixedSize(int s) { fixedSize = s; }
     public void incrFixedSize() { fixedSize++; }
+    public void range(Class range) { this.range = range; }
 
     public boolean isModifiable(HashMap modifiableFields) {
 	return modifiableFields == null ||

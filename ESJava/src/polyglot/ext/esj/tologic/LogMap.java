@@ -236,6 +236,10 @@ public class LogMap {
 	return (LogRelation) ((HashMap) InstVarRels.get(r.domain())).get(r.instVar()+"_old");
     }
 
+    public static LogRelation getResultVarRel_log(Object obj) {
+	return (LogRelation) ((HashMap) InstVarRels.get(obj.getClass())).get("result");
+    }
+
 
     public static LogObjAtom objInstVar_log(Object obj, String instVar) {
 	//System.out.println("instVar_log Object " + obj.getClass());
@@ -290,18 +294,22 @@ public class LogMap {
     }
 
 
-    public static boolean solve(Object obj, Object formula, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects) {
+    public static boolean solve(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects) {
 
 	CharArrayWriter problem = new CharArrayWriter();
 	CharArrayWriter funDefs = new CharArrayWriter();
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
-
+	boolean isNonVoid = resultVarType != null;
+	if (isNonVoid) {
+	    getResultVarRel_log(obj).range(resultVarType);
+	}
 	//getProblemRels(obj);
 	if (SolverOpt_debug1) {
 	    System.out.println("problem involves rels: ");
 	    for (Object k : ProblemRels.keySet() ) {
 		LogRelation r =  (LogRelation) ProblemRels.get(k);
+		if (isNonVoid)
 		System.out.println(r.id() + ": " + r.instVar());
 	    }
 	    if (modifiableFields != null)
@@ -394,7 +402,8 @@ public class LogMap {
 		
 		Class[] paramTypes = new Class[1];
 		Object[] args = new Object[1];
-		paramTypes[0] = u.range();
+		boolean isResultVar = u.instVar().equals("result");
+		paramTypes[0] = isResultVar ? Object.class : u.range();
 		Class c = u.domain();
 		//System.out.println("relation " + u.instVar() + " of type: " + paramTypes[0] + " for class: " + u.domain());
 		//System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);

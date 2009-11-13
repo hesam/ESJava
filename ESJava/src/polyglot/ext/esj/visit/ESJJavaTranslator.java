@@ -112,10 +112,14 @@ public class ESJJavaTranslator extends ContextVisitor {
 	catchBody.add(isVoid ? nf.Eval(null, fbCall) : nf.JL5Return(null, fbCall));
 	Block catchBlock = nf.Block(null,catchBody);
 	catches.add(nf.JL5Catch(null, methodDecl.catchFormal(), catchBlock));
-	List tryBody = new TypedList(new LinkedList(), Stmt.class, false);
-	tryBody.add(nf.Try(null, extraMtdBlock, catches));
-	Block tryCatchBlock = nf.Block(null, tryBody);
-	methodDecl = (ESJEnsuredMethodDecl) methodDecl.body(tryCatchBlock);
+	List mainBody = new TypedList(new LinkedList(), Stmt.class, false);
+	if (!isVoid) {
+	    LocalDecl d1 = nf.JL5LocalDecl(null, makeFlagAnnotations(), methodDecl.returnType(), "result", null);
+	    d1 = d1.localInstance(ts.localInstance(null, d1.flags(), d1.declType(), d1.name()));
+	    mainBody.add(d1);
+	}
+	mainBody.add(nf.Try(null, extraMtdBlock, catches));
+	methodDecl = (ESJEnsuredMethodDecl) methodDecl.body(nf.Block(null,mainBody));
 	return (JL5MethodDecl) methodDecl;
     }
 
@@ -310,7 +314,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    
 	} else if (r instanceof Return) {
 	    Expr e = ((Return) r).expr();
-	    Expr e2 = (e instanceof Field) && (((Field) e).name().equals("result")) ? e
+	    // FIXME:
+	    Expr e2 = (e instanceof JL5Cast) && ((Field) ((JL5Cast) e).expr()).name().equals("result") ? e
 		: (Expr) toLogicExpr(e);
 	    return nf.JL5Return(null, e2);
 	} else if (r instanceof Eval) {
@@ -407,7 +412,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, "" + ((BooleanLit) r).value() ));
 	    return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
-	}  else if (r instanceof New) {
+	}  else if (r instanceof JL5Cast) {
+	    return ((Expr) toLogicExpr(((JL5Cast) r).expr()));
+	} else if (r instanceof New) {
 	    return r;
 	} else if (r instanceof CanonicalTypeNode) {
 	    return r;

@@ -51,8 +51,8 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					      TypeNode returnType, String name,
 					      List formals, List throwTypes, Block body, 
 					      List paramTypes, Expr ensuresExpr, 
-					      JL5Formal catchFormal, List modifiableFields, 
-					      Expr modifiableObjets);
+					      JL5Formal catchFormal, JL5LocalDecl resultVar,
+					      List modifiableFields, Expr modifiableObjets);
 
     ESJQuantifyExpr ESJQuantifyExpr(Position pos, FormulaBinary.Operator quantKind, String quantVarN, List quantVarD, List quantVarD2, Expr quantListExpr, Expr quantClauseExpr, boolean isComprehension);
 

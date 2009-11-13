@@ -10,6 +10,7 @@ import polyglot.visit.*;
 import polyglot.ext.jl5.types.FlagAnnotations;
 import polyglot.ext.jl5.visit.JL5AmbiguityRemover;
 
+import polyglot.ext.jl5.types.JL5TypeSystem;
 import polyglot.ext.jl5.types.JL5Context;
 import polyglot.ext.jl5.types.TypeVariable;
 
@@ -26,18 +27,20 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
     protected JL5Formal catchFormal;
     protected List modifiableFields;
     protected Expr modifiableObjects;
+    protected JL5LocalDecl resultVar;
 
     public ESJEnsuredMethodDecl_c(Position pos, FlagAnnotations flags,
 				  TypeNode returnType, String name,
 				  List formals, List throwTypes, Block body, 
 				  List paramTypes, Expr ensuresExpr, 
-				  JL5Formal catchFormal, List modifiableFields,
-				  Expr modifiableObjects) {
+				  JL5Formal catchFormal, JL5LocalDecl resultVar,
+				  List modifiableFields, Expr modifiableObjects) {
 	super(pos, flags, returnType, name, formals, throwTypes, body, paramTypes);
 	this.ensuresExpr = ensuresExpr;
 	this.catchFormal = catchFormal;
 	this.modifiableFields = modifiableFields;
 	this.modifiableObjects = modifiableObjects;
+	this.resultVar = resultVar;
     }
     
     public Expr ensuresExpr() {
@@ -46,6 +49,10 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 
     public JL5Formal catchFormal() {
 	return catchFormal;
+    }
+
+    public JL5LocalDecl resultVar() {
+	return resultVar;
     }
 
     public List modifiableFields() {
@@ -77,7 +84,7 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 
     /** Reconstruct the method. */
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
-				       List throwTypes, Block body, Expr ensuresExpr, JL5Formal catchFormal) {
+				       List throwTypes, Block body, Expr ensuresExpr, JL5Formal catchFormal, JL5LocalDecl resultVar) {
 	if (returnType != this.returnType ||
 	    ! CollectionUtil.equals(formals, this.formals) ||
 	    ensuresExpr != this.ensuresExpr ||
@@ -88,6 +95,7 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	    n.formals = TypedList.copyAndCheck(formals, Formal.class, true);
 	    n.ensuresExpr = ensuresExpr;
 	    n.catchFormal = catchFormal;
+	    n.resultVar = resultVar;
 	    n.throwTypes = TypedList.copyAndCheck(throwTypes,
 						  TypeNode.class, true);
 	    n.body = body;
@@ -101,19 +109,26 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
     public Node visitChildren(NodeVisitor v) {
 	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 	List formals = visitList(this.formals, v);
+	JL5LocalDecl resultVar = (JL5LocalDecl) visitChild(this.resultVar, v);
 	Expr ensuresExpr = (Expr) visitChild(this.ensuresExpr, v);
 	JL5Formal catchFormal = (JL5Formal) visitChild(this.catchFormal, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	Block body = (Block) visitChild(this.body, v);
-	return reconstruct(returnType, formals, throwTypes, body, ensuresExpr, catchFormal);
+	return reconstruct(returnType, formals, throwTypes, body, ensuresExpr, catchFormal, resultVar);
     }
-    /*
+
     public Node typeCheck(TypeChecker tc) throws SemanticException {
-	return this;
+
+	JL5TypeSystem ts = (JL5TypeSystem) tc.typeSystem();
+	ESJEnsuredMethodDecl n = (ESJEnsuredMethodDecl) super.typeCheck(tc);	    
+	return n;
     }
-    */
+   
 
     public Context enterScope(Node child, Context c) {
+	//System.out.println(child + "\n" + returnType().type());
+	//c.addVariable(c.typeSystem().localInstance(null, flags(), returnType().type(), "result"));
+
 	if (child instanceof Expr) {
 	    for (Formal f : (List<Formal>) formals) {
 		c.addVariable(c.typeSystem().localInstance(null, flags(),f.declType(), f.name()));

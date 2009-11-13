@@ -8,7 +8,7 @@ import java.util.Iterator;
 public class Test {
     
     spec protected Integer x;
-    spec protected Integer y, result;
+    spec protected Integer y;
 
     public Test(Integer x, Integer y) {
 	super();
@@ -20,10 +20,9 @@ public class Test {
     public Integer y() { return y; }
     public void x(Integer v) { this.x = v; }
     public void y(Integer v) { this.y = v; }
-    public void result(Integer r) { this.result = r; }
 
-    public pure Integer twice()
-	ensures this.result == 2*this.x {
+    public pure Integer twice(Integer i)
+	ensures result == 2*i {
 	return 3*x;
     }
 
@@ -31,11 +30,11 @@ public class Test {
 
 
     public static void main(String[] args) {	
-	LogMap.SolverOpt_debugLevel(1);
+	LogMap.SolverOpt_debugLevel(2);
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
-	System.out.println(t1.twice());
+	System.out.println(t1.twice(5));
     }
 
 }
