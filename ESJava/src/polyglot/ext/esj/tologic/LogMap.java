@@ -170,26 +170,25 @@ public class LogMap {
 
     // FIXME
     public static LogSet bounds_log(Class c, boolean addNull, boolean isBoundDef) {
-	//System.out.println(c.allInstances_log().string());
 	if (SolverOpt_debug1) {
+	    System.out.println("getting log bounds for: " + c);
 	    System.out.println(c);
 	    System.out.println(ClassAtoms);
 	}
 	if (c == int.class || c == Integer.class) 
 	    return ESJInteger.allInstances_log();
-	else {	     
-	    ArrayList atoms = (ArrayList) ClassAtoms.get(c);	    
-	    String addL = "";
-	    String addR = "";
-	    if (isBoundDef) {
-		addL = "{[";
-		addR = "]}";
-	    }
-	    return new LogSet("(" + (addNull ? addL+get1_log(null) + addR + " + " : "") + "u" + atoms.size() + (atoms.size() > 0 ? ("@" + atoms.get(0)) : "") + ")");
+	ArrayList atoms = (ArrayList) ClassAtoms.get(c);	    
+	String addL = "";
+	String addR = "";
+	if (isBoundDef) {
+	    addL = "{[";
+	    addR = "]}";
 	}
+	return new LogSet("(" + (addNull ? addL+get1_log(null) + addR + " + " : "") + "u" + atoms.size() + (atoms.size() > 0 ? ("@" + atoms.get(0)) : "") + ")");
+
     }
 
-    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, boolean isCollection, boolean isaList, boolean isUnknown) {
+    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, boolean isCollection, boolean isaList, boolean isUnknown, boolean isResultVar) {
 	String k = instVar;
 	if (!isUnknown) {
 	    k += "_old";
@@ -213,7 +212,7 @@ public class LogMap {
 		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
 	    }
 	}
-	LogRelation r = new LogRelation(instVar, domain, range, isCollection, isaList, isUnknown);
+	LogRelation r = new LogRelation(instVar, domain, range, isCollection, isaList, isUnknown, isResultVar);
 	if (!InstVarRels.containsKey(c))
 	    InstVarRels.put(c, new HashMap());
 	((HashMap) InstVarRels.get(c)).put(k,r);
@@ -301,17 +300,12 @@ public class LogMap {
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
 	boolean isNonVoid = resultVarType != null;
-	if (isNonVoid) {
-	    //getResultVarRel_log(obj).range(resultVarType);
-	    funDefs.append("lone s0 &&");
-	}
-	//getProblemRels(obj);
 	if (SolverOpt_debug1) {
 	    System.out.println("problem involves rels: ");
 	    for (Object k : ProblemRels.keySet() ) {
 		LogRelation r =  (LogRelation) ProblemRels.get(k);
 		//if (isNonVoid)
-		//System.out.println(r.id() + ": " + r.instVar());
+		System.out.println(r.id() + ": " + r.instVar());
 	    }
 	    if (modifiableFields != null)
 		System.out.println("modifiable fields: " + modifiableFields);
@@ -328,15 +322,13 @@ public class LogMap {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
 	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
-	    String rBound = (!r.isUnknown() || isModifiableRelation) ? r.log(isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null) : instVarRelOld_log(r).log(null);
+	    String rBound = (!r.isUnknown() || isModifiableRelation) ? r.log(isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType) : instVarRelOld_log(r).log(null, null);
 	    problem.append("bounds " + k + ": " + rBound + spacer);
 	    if (isUnknown) {
 		unknowns.add(r);
 		funDefs.append(r.funDef_log());
 	    }
 	}
-	if (isNonVoid)
-	    problem.append("bounds s0: [{}, " + LogMap.bounds_log(resultVarType, true, false) + "]" + spacer);
 	problem.append(ESJInteger.intBounds_log() + spacer);
 	problem.append("solve " + funDefs.toString() + spacer + formula.toString() + ";");
 	
@@ -396,6 +388,11 @@ public class LogMap {
 	HashMap modelRels = (HashMap) model.get(1);
 	for (LogRelation u : (ArrayList<LogRelation>) unknowns) {
 	    ArrayList val = (ArrayList) modelRels.get(u.id());
+	    if (u.isResultVar) {
+		System.out.println(val);
+		((ESJObject) obj).result(((ArrayList) val.get(0)).get(0));
+		return;
+	    }
 	    //System.out.println(val);
 	    if (obj instanceof ArrayList) {
 		for (ArrayList v : (ArrayList<ArrayList>) val) {
@@ -414,6 +411,7 @@ public class LogMap {
 		    Method m = c.getDeclaredMethod(u.instVar(), paramTypes); 
 		    //System.out.println(m);
 		    for (ArrayList v : (ArrayList<ArrayList>) val) {
+			System.out.println(v);
 			//System.out.println(get2((Integer) v.get(0)));
 			//System.out.println(get2((Integer) v.get(1)));
 			args[0] = get2((Integer) v.get(1));

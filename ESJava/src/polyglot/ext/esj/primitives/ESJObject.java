@@ -14,5 +14,6 @@ public interface ESJObject {
     public boolean isOld();
     public void relationize();
     public Object clone();
+    public void result(Object r);
     //public ESJSet fieldsClosure(boolean isReflexive, java.lang.String ... fieldNs);
 }

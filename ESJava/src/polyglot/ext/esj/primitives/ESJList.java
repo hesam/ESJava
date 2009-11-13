@@ -44,8 +44,8 @@ public class ESJList<E> extends ArrayList<E> {
     public void relationize() {
 	if (!isRelationized()) { 
 	    this.relationizerStep++;
-	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, true, size());
-	    old.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, false, size());
+	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, true, false, size());
+	    old.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, true, false, false, false, size());
 	    int i = 0;
 	    // FIXME
 	    for (Object e : (ESJList<Object>) this) {
