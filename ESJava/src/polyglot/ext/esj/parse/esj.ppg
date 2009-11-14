@@ -335,7 +335,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 boolean isCollectionType;
 	 boolean isListType;
 	 TypeNode fTN;
-	 String fTpN = ((AmbTypeNode)b).name();
+	 String fTpN = b instanceof AmbTypeNode ? ((AmbTypeNode)b).name() : b.toString();
 	 if (isReservedField) {
 	     isCollectionType = false;
 	     isListType = false;

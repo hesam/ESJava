@@ -5,51 +5,51 @@ import polyglot.ext.esj.tologic.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import java.awt.Point;
+//import java.awt.Point;
+import myjava.awt.Point;
 
 public class Test {
 
 
-    spec protected Integer x;
-    spec protected Integer y;
-    spec protected ESJList<ESJPoint> points;
+    spec protected Integer a;
+    spec protected Integer b;
+    spec protected ESJList<Point> points;
 
-    public Test(Integer x, Integer y) {
+    public Test(Integer a, Integer b) {
 	super();
-	this.x = x;
-	this.y = y;
-	this.points = new ESJList<ESJPoint>();
-	this.points.add(new ESJPoint(5,10));
-	this.points.add(new ESJPoint(0,22));
-	this.points.add(new ESJPoint(0,1));
+	this.a = a;
+	this.b = b;
+	this.points = new ESJList<Point>();
+	this.points.add(new Point(0,22));
+	this.points.add(new Point(0,1));
+	this.points.add(new Point(5,10));
     }
     
-    public Integer x() { return x; }
-    public Integer y() { return y; }
-    public void x(Integer v) { this.x = v; }
-    public void y(Integer v) { this.y = v; }
+    public Integer a() { return a; }
+    public Integer b() { return b; }
+    public void a(Integer v) { this.a = v; }
+    public void b(Integer v) { this.b = v; }
 
-    /*
     public pure Integer twice(Integer i)
-	ensures result == 2*i+this.x {
+	ensures result == 2*i+this.a {
 	int z = 1/0;
-	return 2*i+this.x;
-	}*/
+	return 2*i+this.a;
+    }
 
-    public pure ESJPoint pick()
+    public pure Point pick()
 	ensures result != null && result.x > 4 && result.y > 0 {
 	return this.points.get(0);
     }
 
-    public String toString() { return "(" + x + "," + y + ")"; }
+    public String toString() { return "(" + a + "," + b + ")"; }
 
 
     public static void main(String[] args) {	
-	LogMap.SolverOpt_debugLevel(2);
+	//LogMap.SolverOpt_debugLevel(1);
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
-	//System.out.println(t1.twice(5));
+	System.out.println(t1.twice(5));
 	System.out.println(t1.pick());
     }
 

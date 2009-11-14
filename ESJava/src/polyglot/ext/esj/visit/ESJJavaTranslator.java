@@ -193,9 +193,8 @@ public class ESJJavaTranslator extends ContextVisitor {
     public ESJLogPredMethodDecl DesugarLogPredMethodDecl(ESJLogPredMethodDecl methodDecl) throws SemanticException {
 	//isLogVarLogPredMtd = methodDecl.isLogVar();
 	//HACK FIXME
-	currLogPredMtdTpName = methodDecl.returnType().toString();
-	if (currLogPredMtdTpName.equals("java.lang.Integer"))
-	    currLogPredMtdTpName = "Integer";
+	Type t = methodDecl.returnType().type();
+	currLogPredMtdTpName = t instanceof ClassType ? ((ClassType) t).name() : ((PrimitiveType) t).name();
 	ESJLogPredMethodDecl res = (ESJLogPredMethodDecl) toLogicExpr(methodDecl);
 	//LogMtdDecls.put(res.name(),res);
 	return res;
