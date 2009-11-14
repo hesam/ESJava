@@ -389,7 +389,7 @@ public class LogMap {
 	for (LogRelation u : (ArrayList<LogRelation>) unknowns) {
 	    ArrayList val = (ArrayList) modelRels.get(u.id());
 	    if (u.isResultVar) {
-		((ESJObject) obj).result(((ArrayList) val.get(0)).get(0));
+		((ESJObject) obj).result(get2((Integer) ((ArrayList) val.get(0)).get(0)));
 		return;
 	    }
 	    //System.out.println(val);

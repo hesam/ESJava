@@ -18,10 +18,13 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
     List classFieldNs = new TypedList(new LinkedList(), String.class, false);
     List enums = new TypedList(new LinkedList(), String.class, false);
     boolean noClosureDefYet = true;
+    HashMap<TypeNode,Boolean> resultVarTypes = new HashMap<TypeNode,Boolean>();
+
     //List currClassLogPredMtdDecls = new TypedList(new LinkedList(), MethodDecl.class, false);
 
     public void resetGlobals() {
 	noClosureDefYet = true;
+	resultVarTypes = new HashMap<TypeNode,Boolean>();
 	//currClassLogPredMtdDecls = new TypedList(new LinkedList(), MethodDecl.class, false);
     }
 
@@ -182,10 +185,12 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		modifiableFields = new TypedList(new LinkedList(), Name.class, false);
 		fln.classicFlags(flags.classicFlags().clear(this.ts.Pure()));
 	    }
+
        	    return this.nf.ESJEnsuredMethodDecl(pos, fln, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal, resultVar, modifiableFields, modifiableObjects); 
      }    
 
-     public ESJLogPredMethodDecl makeFallbackMtd(ESJEnsuredMethodDecl methodDecl, List modifiableFields, Expr modifiableObjects) throws SemanticException {
+     public List makeFallbackMtd(ESJEnsuredMethodDecl methodDecl, List modifiableFields, Expr modifiableObjects) throws Exception {
+            List newL = new TypedList(new LinkedList(), ClassMember.class, false);
 	    TypeNode retTp = methodDecl.returnType();
 	    boolean isVoid = retTp.toString().equals("void");
 	    FlagAnnotations fl = emptyFlags; 
@@ -230,13 +235,21 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    //frms.addAll(methodDecl.formals());
 	    List frms = methodDecl.formals();
 
-     	    return nf.ESJLogPredMethodDecl(null, fl,
+     	    newL.add(nf.ESJLogPredMethodDecl(null, fl,
 					   isVoid ? nf.CanonicalTypeNode(null,ts.Boolean()) : methodDecl.returnType(),
 					   methodDecl.name() + "_fallback", 
 					   frms, 
 					   new TypedList(new LinkedList(), TypeNode.class, false), 						  
 					   nf.Block(null,l),
-					   methodDecl.throwTypes(), new TypedList(new LinkedList(), LocalDecl.class, false), new TypedList(new LinkedList(), LocalDecl.class, false), false,true, false); 
+					     methodDecl.throwTypes(), new TypedList(new LinkedList(), LocalDecl.class, false), new TypedList(new LinkedList(), LocalDecl.class, false), false,true, false));
+
+	    // 	also add result_log method
+	    if (!resultVarTypes.containsKey(retTp)) {
+		addFieldDeclAndAssocMethods(emptyFlags, retTp/*nf.CanonicalTypeNode(null, parser.ts.Object())*/, "result", null, newL, false, true);
+		resultVarTypes.put(retTp,true);
+	    }
+
+	    return newL;
 
      }
 
@@ -322,6 +335,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 boolean isCollectionType;
 	 boolean isListType;
 	 TypeNode fTN;
+	 String fTpN = ((AmbTypeNode)b).name();
 	 if (isReservedField) {
 	     isCollectionType = false;
 	     isListType = false;
@@ -329,8 +343,8 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 } else {
 	     tpAs = ((JL5AmbTypeNode) b).typeArguments();
 	     isCollectionType = tpAs.size() > 0;
-	     isListType = ((AmbTypeNode) b).name().equals("ESJList");
-	     fTN = isCollectionType ? (TypeNode) tpAs.get(0) : this.nf.AmbTypeNode(null, ((AmbTypeNode) b).name());
+	     isListType = fTpN.equals("ESJList");
+	     fTN = isCollectionType ? (TypeNode) tpAs.get(0) : this.nf.AmbTypeNode(null, fTpN);
 	     
 	 }
 	 
@@ -339,8 +353,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 } else {
 	     if (!isReservedField) 
 		 l.add(this.nf.ESJFieldDecl(null,a, b, dName, dInit, false));
-	     boolean isReferenceType = (b instanceof JL5AmbTypeNode && !b.toString().equals("Integer{amb}")); //FIXME
-	     //System.out.println("somebody adding a fieeeeeld!" + dName + " " + isReferenceType);
+	     boolean isReferenceType = (b instanceof JL5AmbTypeNode && !fTpN.equals("Integer")); //FIXME
 	     List args = new TypedList(new LinkedList(), Expr.class, false);
 	     List relDefBodyArgs = new TypedList(new LinkedList(), Expr.class, false);
 	     
@@ -367,8 +380,12 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	     List args3p = new TypedList(new LinkedList(), Expr.class, false);
 	     args3p.add(this.nf.This(null));
 	     //args3p.add(this.nf.StringLit(null, dName));
-	     if (!isReservedField)
+	     String xtraAdder = "";
+	     if (isReservedField) {
+		 xtraAdder = "_" + fTpN;
+	     } else {		 
 		 args3p.add(this.nf.JL5Conditional(null, this.nf.Call(null, null, "isOld", this.emptyArgs), this.nf.StringLit(null, dName+"_old"), this.nf.StringLit(null, dName)));
+	     }
 	     TypeNode ivgRT;
 	     Expr nExpr = null;
 	     Expr rExp = null;
@@ -397,7 +414,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	     List<Flags> fs = new ArrayList<Flags>();
 	     fs.add(Flags.PUBLIC);	     
 	     instVarGetBody.add(this.nf.JL5Return(null, rExp));
-	     l.add(this.nf.JL5MethodDecl(null, this.makeFlagAnnotations(fs), ivgRT, dName+"_log", this.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), this.nf.Block(null, instVarGetBody), new TypedList(new LinkedList(), TypeNode.class, false)));		     
+	     l.add(this.nf.JL5MethodDecl(null, this.makeFlagAnnotations(fs), ivgRT, dName+xtraAdder+"_log", this.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), this.nf.Block(null, instVarGetBody), new TypedList(new LinkedList(), TypeNode.class, false)));		     
 		 
 	     if (!isReservedField) {
 		 relDefBodyArgs.set(6,this.nf.BooleanLit(null, false));
@@ -1095,7 +1112,7 @@ ensured_method_declaration ::=
 	   {: ESJEnsuredMethodDecl mainMtdDecl = (ESJEnsuredMethodDecl) a.body(b);
               List l = new TypedList(new LinkedList(), ClassMember.class, false);
 	      l.add(mainMtdDecl);
-	    l.add(parser.makeFallbackMtd(mainMtdDecl, mainMtdDecl.modifiableFields(), mainMtdDecl.modifiableObjects()));
+	      l.addAll(parser.makeFallbackMtd(mainMtdDecl, mainMtdDecl.modifiableFields(), mainMtdDecl.modifiableObjects()));
               RESULT = l; 
 	   :}
 	   ;
@@ -1313,9 +1330,6 @@ ensured_class_declaration ::=
 		 
 		 JL5MethodDecl cloneMtdDecl = parser.nf.JL5MethodDecl(null, fl, parser.nf.AmbTypeNode(null, parser.currClassName), "clone", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, cloneBody), new TypedList(new LinkedList(), TypeNode.class, false));
 		 		 
-		 // add result_log method
-		 parser.addFieldDeclAndAssocMethods( parser.emptyFlags, /*parser.nf.CanonicalTypeNode(null, parser.ts.Object())*/parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("java.lang.Object")), "result", null, l, false, true);
-
 	      	 l.add(relationizeMtdDecl);
 	     	 l.add(relationizeOldMtdDecl);
 	     	 l.add(cloneMtdDecl);

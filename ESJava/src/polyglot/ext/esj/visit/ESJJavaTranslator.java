@@ -34,6 +34,7 @@ public class ESJJavaTranslator extends ContextVisitor {
     //FIXME 
     //static HashMap LogMtdDecls = new HashMap(); 
     static List<String> quantVars;
+    static String currLogPredMtdTpName;
     //static boolean isLogVarLogPredMtd;
 
     public ESJJavaTranslator(Job job, TypeSystem ts, NodeFactory jlnf) {
@@ -191,6 +192,10 @@ public class ESJJavaTranslator extends ContextVisitor {
 
     public ESJLogPredMethodDecl DesugarLogPredMethodDecl(ESJLogPredMethodDecl methodDecl) throws SemanticException {
 	//isLogVarLogPredMtd = methodDecl.isLogVar();
+	//HACK FIXME
+	currLogPredMtdTpName = methodDecl.returnType().toString();
+	if (currLogPredMtdTpName.equals("java.lang.Integer"))
+	    currLogPredMtdTpName = "Integer";
 	ESJLogPredMethodDecl res = (ESJLogPredMethodDecl) toLogicExpr(methodDecl);
 	//LogMtdDecls.put(res.name(),res);
 	return res;
@@ -379,7 +384,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		//String def = "_log";
 		//if (f.target() instanceof Field && ((Field) f.target()).name().equals("old")) //FIXMe
 		//def = "_old_log";
-		String m = f.name() + (f.name().equals("old") ? "" : "_log"); //FIXME
+		String m = f.name() + (f.name().equals("result") ? ("_" + currLogPredMtdTpName) : "") + (f.name().equals("old") ? "" : "_log"); //FIXME
 		return nf.Call(null, (Receiver) toLogicExpr(f.target()), m, args);
 	    }
 	} else if (r instanceof JL5LocalDecl) {

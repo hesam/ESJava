@@ -19,9 +19,9 @@ public class Test {
 	this.x = x;
 	this.y = y;
 	this.points = new ESJList<ESJPoint>();
-	this.points.add(new ESJPoint(10,22));
+	this.points.add(new ESJPoint(5,10));
+	this.points.add(new ESJPoint(0,22));
 	this.points.add(new ESJPoint(0,1));
-	this.points.add(new ESJPoint(-5,10));
     }
     
     public Integer x() { return x; }
@@ -29,14 +29,15 @@ public class Test {
     public void x(Integer v) { this.x = v; }
     public void y(Integer v) { this.y = v; }
 
-    /*public pure Integer twice(Integer i)
+    /*
+    public pure Integer twice(Integer i)
 	ensures result == 2*i+this.x {
 	int z = 1/0;
 	return 2*i+this.x;
 	}*/
 
     public pure ESJPoint pick()
-	ensures result != null && result.x > 0 && result.y > 0 {
+	ensures result != null && result.x > 4 && result.y > 0 {
 	return this.points.get(0);
     }
 

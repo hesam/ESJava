@@ -731,6 +731,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   public LogVar var_log;
   public ESJInteger old;
   public LogVar var_log() { return var_log; }
+  public Object result;
 
   static {
       setBounds(0,30); // FIXME
@@ -743,6 +744,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 	  this.var_log =
 	      dontcare;
     }
+
+  public void result(Object r) { this.result = r; }
 
   public boolean isQuantifyVar() {
       return this.var_log != null;
