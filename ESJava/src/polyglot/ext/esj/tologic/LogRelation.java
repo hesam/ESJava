@@ -90,7 +90,7 @@ public class LogRelation extends Hashtable {
 
     public String range_log(boolean isBoundsDef, Class resultVarType) { 
 	// have to add 'null' to the set of possible values for the ref field
-	return LogMap.bounds_log(resultVarType != null ? resultVarType : range, !isRangeEnum, isBoundsDef).string();
+	return LogMap.bounds_log(isResultVar ? resultVarType : range, !isRangeEnum, isBoundsDef).string();
     }
 
     public String fullDomainRange(Class resultVarType) {

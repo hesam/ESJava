@@ -1241,7 +1241,11 @@ public class GridBag2Layout implements LayoutManager2,
 
       }
     }
+
     r.components = components; //HS
+    this.parentW = parent.getWidth() / SPEC_GRID;
+    this.parentH = parent.getHeight() / SPEC_GRID;
+
     return r;
    }
   }
@@ -1460,29 +1464,28 @@ public class GridBag2Layout implements LayoutManager2,
     protected void arrangeGrid(Container parent) {
 	//System.out.println(comps);	   
 	
-	//HS
-	Dimension d;
-	layoutInfo = getLayoutInfo(parent, PREFERREDSIZE);
-	d = getMinSize(parent, layoutInfo);
-	
-	if (parent.getWidth() < d.width || parent.getHeight() < d.height) {
-	    layoutInfo = getLayoutInfo(parent, MINSIZE);
+	if (FALLBACK) {
+	    //HS
+	    Dimension d;
+	    layoutInfo = getLayoutInfo(parent, PREFERREDSIZE);
 	    d = getMinSize(parent, layoutInfo);
-	}	
-	this.parentW = parent.getWidth() / SPEC_GRID;
-	this.parentH = parent.getHeight() / SPEC_GRID;
-	ESJInteger.setBounds(0,Math.max(50,Math.max(this.parentW,this.parentH)));
-	//HS END
-	if (FALLBACK)
-	    ArrangeGridEnsured(parent, d);
-	else
-	    ArrangeGrid(parent, d);
+	    
+	    if (parent.getWidth() < d.width || parent.getHeight() < d.height) {
+		layoutInfo = getLayoutInfo(parent, MINSIZE);
+		d = getMinSize(parent, layoutInfo);
+	    }	
+	    //HS END	    
+	    ESJInteger.setBounds(0,Math.max(50,Math.max(this.parentW,this.parentH))); 
+	    ArrangeGridEnsured(parent);
+	} else
+	    ArrangeGrid(parent);
     }
 
-    protected void ArrangeGridEnsured(Container parent, Dimension d) 
+    protected void ArrangeGridEnsured(Container parent) 
       modifies fields myjavax.swing.ESJButton.xp, myjavax.swing.ESJButton.yp, myjavax.swing.ESJButton.wp, myjavax.swing.ESJButton.hp
 	ensures gridLayoutValid() {
-	ArrangeGrid(parent, d);
+	int z = FALLBACK ? 1/0 : 0;
+	ArrangeGrid(parent);
     }
     /**
      * This method is obsolete and supplied for backwards
@@ -1492,13 +1495,13 @@ public class GridBag2Layout implements LayoutManager2,
      * refer to <code>arrangeGrid</code> for details on the
      * parameter.
      */
-    protected void ArrangeGrid(Container parent, Dimension d) {
+    protected void ArrangeGrid(Container parent) {
     Component comp;
     int compindex;
     GridBag2Constraints constraints; 
     Insets insets = parent.getInsets();
     Component components[] = parent.getComponents();
-    //Dimension d; //HS
+    Dimension d;
     Rectangle r = new Rectangle();
     int i, diffw, diffh;
     double weight;
@@ -1523,8 +1526,6 @@ public class GridBag2Layout implements LayoutManager2,
      // of space needed.
      ///
 
-    //HS
-    /* 
     info = getLayoutInfo(parent, PREFERREDSIZE);
     d = getMinSize(parent, info);
 
@@ -1532,15 +1533,10 @@ public class GridBag2Layout implements LayoutManager2,
       info = getLayoutInfo(parent, MINSIZE);
       d = getMinSize(parent, info);
     }
-    */
-    //HS END
-    //layoutInfo = info; //HS
-    info = layoutInfo; //HS
+    layoutInfo = info; 
 
     r.width = d.width;
     r.height = d.height;
-
-    int z = FALLBACK ? 1/0 : 0;
 
      // DEBUG
      //

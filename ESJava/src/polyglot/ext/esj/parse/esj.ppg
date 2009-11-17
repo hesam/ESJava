@@ -184,8 +184,9 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    if (flags.classicFlags().contains(this.ts.Pure())) {
 		modifiableFields = new TypedList(new LinkedList(), Name.class, false);
 		fln.classicFlags(flags.classicFlags().clear(this.ts.Pure()));
-	    }
-
+	    } else 
+		fln.classicFlags(flags.classicFlags());
+	    fln.annotations(flags.annotations());
        	    return this.nf.ESJEnsuredMethodDecl(pos, fln, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal, resultVar, modifiableFields, modifiableObjects); 
      }    
 
@@ -244,7 +245,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 					     methodDecl.throwTypes(), new TypedList(new LinkedList(), LocalDecl.class, false), new TypedList(new LinkedList(), LocalDecl.class, false), false,true, false));
 
 	    // 	also add result_log method
-	    if (!resultVarTypes.containsKey(retTp)) {
+	    if (!isVoid && !resultVarTypes.containsKey(retTp)) {		
 		addFieldDeclAndAssocMethods(emptyFlags, retTp/*nf.CanonicalTypeNode(null, parser.ts.Object())*/, "result", null, newL, false, true);
 		resultVarTypes.put(retTp,true);
 	    }

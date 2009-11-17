@@ -26,6 +26,7 @@ public class Point extends Point2D implements java.io.Serializable {
      * @see #getLocation()
      * @see #move(int, int)
      */
+    //HS
     spec public Integer x;
 
     /**
@@ -37,6 +38,10 @@ public class Point extends Point2D implements java.io.Serializable {
      * @see #move(int, int)
      */
     spec public Integer y;
+
+    public void x(Integer x) { this.x = x; }
+    public void y(Integer y) { this.y = y; }
+    //HS END
 
     /*
      * JDK 1.1 serialVersionUID 

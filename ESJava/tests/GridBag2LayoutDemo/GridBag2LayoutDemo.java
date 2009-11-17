@@ -111,6 +111,7 @@ public class GridBag2LayoutDemo {
 	c.gridwidth = 2;   //2 columns wide
 	c.gridy = 2;       //third row
 	pane.add(button, c);
+
     }
 
     /**
