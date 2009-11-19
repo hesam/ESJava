@@ -44,8 +44,13 @@ public class LogSet extends LogObject {
     }                              
 
     // FIXME
-    public LogInt/*Atom*/ get_log(int index) {
-	return new LogInt/*Atom*/(LogObject.join_log(ESJInteger.log_str(index),string));
+    /*
+    public LogInt get_log(int index) {
+	return new LogInt(LogObject.join_log(ESJInteger.log_str(index),string));
+    } */                             
+
+    public LogInt/*Atom*/ get_log(ESJObject index) {
+	return new LogInt/*Atom*/(LogObject.join_log(index.var_log().intValue_log().string(),string));
     }                              
 
     /*
