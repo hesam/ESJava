@@ -20,6 +20,7 @@ public class LogRelation extends Hashtable {
     protected String id;
     protected String instVar;
     protected Class domain;
+    protected String domainName;
     protected Class range;
     protected Class indexingDomain;
     protected ArrayList subRels;
@@ -52,6 +53,13 @@ public class LogRelation extends Hashtable {
 	super();
 	this.instVar = instVar;
 	this.domain = domain;
+	String longName = domain.getName();
+	int pi = longName.lastIndexOf(46); // char '.'
+	if (pi == -1) {
+	    this.domainName = longName;
+	} else {
+	    this.domainName = longName.substring(pi+1);
+	}
 	this.range = range;
 	this.indexingDomain = indexingDomain;
 	this.fixedSize = fixedSize;
@@ -85,7 +93,7 @@ public class LogRelation extends Hashtable {
 
     public boolean isModifiable(HashMap modifiableFields) {
 	return modifiableFields == null || isResultVar ||
-	    modifiableFields.containsKey(domain.getName() + "." + instVar);
+	    modifiableFields.containsKey(domainName + "." + instVar);
     }
 
     public String domain_log() { 

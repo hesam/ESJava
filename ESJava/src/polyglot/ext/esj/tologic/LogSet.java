@@ -35,12 +35,12 @@ public class LogSet extends LogObject {
 	return arithOp("-", ESJInteger.atom_log(listSize-1));
     }
 
-    public LogInt/*Atom*/ get_log(LogInt index) {
-	return new LogInt/*Atom*/(LogObject.join_log(index.intValue_log().string(),string));
+    public LogIntAtom get_log(LogObject index) {
+	return new LogIntAtom(LogObject.join_log(index.intValue_log().string(),string));
     }                              
 
-    public LogInt/*Atom*/ get_log(ESJInteger index) {
-	return new LogInt/*Atom*/(LogObject.join_log(index.var_log().intValue_log().string(),string));
+    public LogIntAtom get_log(ESJInteger index) {
+	return new LogIntAtom(LogObject.join_log(index.var_log().intValue_log().string(),string));
     }                              
 
     // FIXME
@@ -49,8 +49,8 @@ public class LogSet extends LogObject {
 	return new LogInt(LogObject.join_log(ESJInteger.log_str(index),string));
     } */                             
 
-    public LogInt/*Atom*/ get_log(ESJObject index) {
-	return new LogInt/*Atom*/(LogObject.join_log(index.var_log().intValue_log().string(),string));
+    public LogIntAtom get_log(ESJObject index) {
+	return new LogIntAtom(LogObject.join_log(index.var_log().intValue_log().string(),string));
     }                              
 
     /*
@@ -102,6 +102,14 @@ public class LogSet extends LogObject {
 
     public LogFormula contains_log(ESJObject itm) {
 	return new LogFormula("some (" + string + " & " + itm.var_log().string() + ")");
+    }
+
+    public LogFormula containsKey_log(LogObject itm) {
+	return new LogFormula("some (" + itm.string() + "." + string + ")");
+    }
+
+    public LogFormula containsKey_log(ESJObject itm) {
+	return new LogFormula("some (" + itm.var_log().string() + "." + string + ")");
     }
 
     public LogSet plus_log(LogSet o2) {

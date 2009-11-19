@@ -1,0 +1,48 @@
+package com.capsicumcorp.swing.spreadsheet;
+
+import java.util.*;
+
+import net.sf.jeppers.expression.*;
+import net.sf.jeppers.expression.function.*;
+import net.sf.jeppers.grid.*;
+
+	/**
+	 * Cell reference
+	 */
+	//static protected //HS
+	    public class CellReference {
+		spec Integer foo; //HS: bug in esjava, w/o any spec fields won't add class to ClassAtoms
+		/*private*/ int row;
+		/*private*/ int column;
+		/*private*/ GridModel model;
+		
+		public CellReference(int row, int column, GridModel model) {
+			this.row = row;
+			this.column = column;
+			this.model = model;
+		}
+		
+		public int hashCode() {
+			/* (row << 16) moves the row into the upper 
+			 * 16 bits of the 32 bit hashCode
+			 *  
+			 * (column & 0xFFFF) truncates the column into 
+			 * the lower 16 bits of the 32 bit hashCode
+			 */			
+			return (row << 16) + (column & 0xFFFF);
+		}
+		
+		public boolean equals(Object obj) {
+			if (!(obj instanceof CellReference)) {
+				return false;
+			}
+			
+			CellReference ck = (CellReference) obj;
+			return (row == ck.row 
+				&& column == ck.column
+				&& model == ck.model);
+		}
+
+		public String toString() { return row + "x" + column; // + " (" + model.getValueAt(row, column) + ")"; 
+		}
+	}

@@ -1482,7 +1482,7 @@ public class GridBag2Layout implements LayoutManager2,
     }
 
     protected void ArrangeGridEnsured(Container parent) 
-      modifies fields myjavax.swing.ESJButton.xp, myjavax.swing.ESJButton.yp, myjavax.swing.ESJButton.wp, myjavax.swing.ESJButton.hp
+      modifies fields ESJButton.xp, ESJButton.yp, ESJButton.wp, ESJButton.hp
 	ensures gridLayoutValid() {
 	int z = FALLBACK ? 1/0 : 0;
 	ArrangeGrid(parent);
