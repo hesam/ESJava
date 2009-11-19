@@ -84,12 +84,14 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 
     /** Reconstruct the method. */
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
-				       List throwTypes, Block body, Expr ensuresExpr, JL5Formal catchFormal, JL5LocalDecl resultVar) {
+				       List throwTypes, Block body, List paramTypes, 
+				       Expr ensuresExpr, JL5Formal catchFormal, 
+				       JL5LocalDecl resultVar) {
 	if (returnType != this.returnType ||
 	    ! CollectionUtil.equals(formals, this.formals) ||
 	    ensuresExpr != this.ensuresExpr ||
 	    ! CollectionUtil.equals(throwTypes, this.throwTypes) ||
-	    body != this.body) {
+	    body != this.body || !CollectionUtil.equals(paramTypes, this.paramTypes)) {
 	    ESJEnsuredMethodDecl_c n = (ESJEnsuredMethodDecl_c) copy();
 	    n.returnType = returnType;
 	    n.formals = TypedList.copyAndCheck(formals, Formal.class, true);
@@ -99,6 +101,7 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	    n.throwTypes = TypedList.copyAndCheck(throwTypes,
 						  TypeNode.class, true);
 	    n.body = body;
+            n.paramTypes = paramTypes;
 	    return n;
 	}
 
@@ -114,7 +117,8 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	JL5Formal catchFormal = (JL5Formal) visitChild(this.catchFormal, v);
 	List throwTypes = visitList(this.throwTypes, v);
 	Block body = (Block) visitChild(this.body, v);
-	return reconstruct(returnType, formals, throwTypes, body, ensuresExpr, catchFormal, resultVar);
+        List paramTypes = visitList(this.paramTypes, v);
+	return reconstruct(returnType, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal, resultVar);
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {
@@ -126,9 +130,6 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
    
 
     public Context enterScope(Node child, Context c) {
-	//System.out.println(child + "\n" + returnType().type());
-	//c.addVariable(c.typeSystem().localInstance(null, flags(), returnType().type(), "result"));
-
 	if (child instanceof Expr) {
 	    for (Formal f : (List<Formal>) formals) {
 		c.addVariable(c.typeSystem().localInstance(null, flags(),f.declType(), f.name()));
@@ -137,7 +138,7 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	}
 
 	return super.enterScope(child, c);
-	}
+    }
 
 
 }

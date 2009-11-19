@@ -35,12 +35,15 @@ public class ESJJavaTranslator extends ContextVisitor {
     //static HashMap LogMtdDecls = new HashMap(); 
     static List<String> quantVars;
     static String currLogPredMtdTpName;
+    static HashMap LogMtdRetTypes = new HashMap();
     //static boolean isLogVarLogPredMtd;
 
     public ESJJavaTranslator(Job job, TypeSystem ts, NodeFactory jlnf) {
 	super(job, ts, jlnf);
 	this.nf = (ESJNodeFactory) jlnf;
 	//System.out.println("init Translating...");
+	LogMtdRetTypes.put("boolean","LogFormula");
+	LogMtdRetTypes.put("java.lang.Integer","LogInt");
     }
 
     // FIXME
@@ -244,7 +247,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    fl.classicFlags(Flags.NONE);
 	    fl.annotations(new TypedList(new LinkedList(), AnnotationElem.class, false));
 	    if (!methodDecl.isFallback()) {
-		methodDecl = (ESJLogPredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName(methodDecl.isPredicate() ? "polyglot.ext.esj.tologic.LogFormula" : "polyglot.ext.esj.tologic.LogSet")));
+		//methodDecl = (ESJLogPredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName(methodDecl.isPredicate() ? "polyglot.ext.esj.tologic.LogFormula" : "polyglot.ext.esj.tologic.LogSet")));
+		String retTpN = methodDecl.returnType().toString();		
+		methodDecl = (ESJLogPredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic." + (LogMtdRetTypes.containsKey(retTpN) ? LogMtdRetTypes.get(retTpN) : "LogSet"))));
 	    }
 	    return methodDecl/*.formals(formals)*/.body(nf.Block(null,inits));
 	    				    
@@ -410,6 +415,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    args.add(nf.StringLit(null, "" + ((IntLit) r).value() ));
 	    return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
+	    //return r;
 	}  else if (r instanceof StringLit) {
 	    return r;
 	} else if (r instanceof NullLit) {

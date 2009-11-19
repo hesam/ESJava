@@ -2,12 +2,12 @@ package polyglot.ext.esj.primitives;
 
 import polyglot.ext.esj.tologic.*;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
-public class ESJList<E> extends ArrayList<E> {
+public class ESJMap<K,V> extends HashMap<K,V> {
 
     protected LogRelation rel_log;
-    protected ESJList old;
+    protected ESJMap old;
     int relationizerStep = 0;    
     int clonerStep = 0;
 
@@ -15,9 +15,9 @@ public class ESJList<E> extends ArrayList<E> {
     public LogVar var_log() { return var_log; }
 
     // Constructor
-    public ESJList() { super(); }
+    public ESJMap() { super(); }
 
-    public ESJList(LogVar dontcare, boolean isQuantifyVar) {
+    public ESJMap(LogVar dontcare, boolean isQuantifyVar) {
 	super();
 	if (isQuantifyVar)
 	    this.var_log =
@@ -26,14 +26,12 @@ public class ESJList<E> extends ArrayList<E> {
 
 
     // keep my pre-state copy in old field 
-    public ESJList<E> clone() {
-	ESJList<E> res = (ESJList<E>) super.clone();
-	for (Object e : (ESJList<Object>) this)
-	    if (e instanceof ESJObject)
-		((ESJObject)e).clone();
+
+    public ESJMap<K,V> clone() {
+	ESJMap<K,V> res = (ESJMap<K,V>) super.clone();
 	this.old = res;
 	return res;
-    }
+	}
 
     boolean isRelationized() { return this.relationizerStep == LogMap.relationizerStep(); }
     boolean isCloned() { return this.clonerStep == LogMap.clonerStep(); }
@@ -44,25 +42,26 @@ public class ESJList<E> extends ArrayList<E> {
     public void relationize() {
 	if (!isRelationized()) { 
 	    this.relationizerStep++;
-	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, true, false, true, false, true, size());
-	    old.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, true, false, false, false, true, size());
+	    /*
+	    this.rel_log = new LogRelation("ESJMap" , Integer.class, Integer.class, K, true, false, true, false, size());
+	    old.rel_log = new LogRelation("ESJMap" , Integer.class, Integer.class, K, true, false, false, false, size());
 	    int i = 0;
 	    // FIXME
-	    for (Object e : (ESJList<Object>) this) {
+	    for (Object e : (ESJMap<Object>) this) {
 		if (e instanceof ESJObject)
 		    ((ESJObject) e).relationize();
 		rel_log.put_log(i, e);
 		old.rel_log.put_log(i, e);
 		i++;
 	    }
+	    */
 	}
     }
-
+    
     public void relationizeOld() { 
     }
 
-
-    public ESJList<E> old() { return old; }
+    public ESJMap<K,V> old() { return old; }
     
     public LogRelation rel_log() {
 	return rel_log;
@@ -76,6 +75,7 @@ public class ESJList<E> extends ArrayList<E> {
 	return new LogSet(rel_log.id() + "[1]");
     }
 
+    /*
     public LogSet indices_log() {
 	int s = rel_log.hasFixedSize() ? rel_log.fixedSize() : size();	
 	return new LogSet(ESJInteger.zeroTo_log(s).string(), s, false); 
@@ -112,22 +112,21 @@ public class ESJList<E> extends ArrayList<E> {
 
     // copies obj plus its relation
 
-    /*
-    public ESJList<E> copy(int from, int to) { 
-	ESJList<E> res = new ESJList<E>();
-	res.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, true, true, false, size());
+    public ESJMap<K,V> copy(int from, int to) { 
+	ESJMap<K,V> res = new ESJMap<K,V>();
+	res.rel_log = new LogRelation("ESJMap" , Integer.class, Integer.class, K, true, true, false, size());
 	for (int i = from; i <= to; i++) {
 	    E itm = get(i);
 	    res.add(itm); 
 	    res.rel_log.put_log(i, itm);
 	}
 	return res; }    
-    */
 
-    public ESJList<Integer> indices() { return ESJInteger.range(0, size() - 1); }
+
+    public ESJMap<Integer> indices() { return ESJInteger.range(0, size() - 1); }
     
-    public ESJList<E> allButLast() { 
-	ESJList<E> res = clone();
+    public ESJMap<K,V> allButLast() { 
+	ESJMap<K,V> res = clone();
 	res.remove(size()-1);
 	return res;
     }
@@ -136,10 +135,11 @@ public class ESJList<E> extends ArrayList<E> {
                                  for (int i = 0; i < size(); i++) if (e.equals(get(i))) ct++;
                                  return ct; }
     
-    public static void main(String[] args) { ESJList<Integer> ta = new ESJList<Integer>();
+    public static void main(String[] args) { ESJMap<Integer> ta = new ESJMap<Integer>();
                                              int[] a = { 1, 2, 3, 4, 4, 5 };
                                              for (int i = 0; i < a.length; i++) { ta.add(new Integer(a[i]));
 					     }
                                              System.out.println(ta); }
-    
+
+*/    
 }

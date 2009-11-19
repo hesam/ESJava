@@ -35,7 +35,7 @@ public class LogMap {
  
     static HashMap JtoLog = new HashMap(); // Java Objs to Solver Atoms
     static HashMap LogtoJ = new HashMap(); 
-    static HashMap ProblemRels = new HashMap(); // Holds relations for given problem  
+    static HashMap ProblemRels; // Holds relations for given problem  
     static HashMap InstVarRels = new HashMap(); // Holds inst var relations for each class
     static HashMap ClassAtoms = new HashMap(); // Holds atoms for each class
     static HashMap ClassConstrs = new HashMap(); // Holds class constr for each class
@@ -80,6 +80,7 @@ public class LogMap {
     public static void incrClonerStep() { clonerStep++; }
 
     public static void initRelationize() {
+	ProblemRels = new HashMap();
 	AtomCtr = ESJInteger.BoundsSize()+1;
 	relationizerStep++;
 	clonerStep++;
@@ -188,7 +189,7 @@ public class LogMap {
 
     }
 
-    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, boolean isCollection, boolean isaList, boolean isUnknown, boolean isResultVar) {
+    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, Class indexingDomain, boolean isCollection, boolean isaList, boolean isUnknown, boolean isResultVar) {
 	String k = instVar;
 	if (!isUnknown) {
 	    k += "_old";
@@ -212,7 +213,7 @@ public class LogMap {
 		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
 	    }
 	}
-	LogRelation r = new LogRelation(instVar, domain, range, isCollection, isaList, isUnknown, isResultVar);
+	LogRelation r = new LogRelation(instVar, domain, range, indexingDomain, isCollection, isaList, isUnknown, isResultVar);
 	if (!InstVarRels.containsKey(c))
 	    InstVarRels.put(c, new HashMap());
 	((HashMap) InstVarRels.get(c)).put(k,r);

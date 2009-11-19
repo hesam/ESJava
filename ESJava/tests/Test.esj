@@ -14,15 +14,24 @@ public class Test {
     spec protected Integer a;
     spec protected Integer b;
     spec protected ESJList<Point> points;
+    spec protected ESJMap<Point,Integer> map;
+
 
     public Test(Integer a, Integer b) {
 	super();
 	this.a = a;
 	this.b = b;
 	this.points = new ESJList<Point>();
-	this.points.add(new Point(0,22));
-	this.points.add(new Point(0,1));
-	this.points.add(new Point(5,10));
+	this.map = new ESJMap<Point,Integer>();
+	Point p1 = new Point(0,22);
+	Point p2 = new Point(0,1);
+	Point p3 = new Point(5,10);
+	this.points.add(p1);
+	this.points.add(p2);
+	this.points.add(p3);
+	this.map.put(p1,0);
+	this.map.put(p2,1);
+        this.map.put(p3,2);
     }
     
     public Integer a() { return a; }
@@ -39,18 +48,24 @@ public class Test {
     public pure Point pick()
 	ensures result != null && result.x > 4 && result.y > 0 {
 	return this.points.get(0);
-    }
+	}
+
+    public void blah() 
+	modifies fields Test.points,Test.map
+	ensures this.map.get(this.points.get(0)) == 0//this.map.get(this.points.get(0)) == 12 
+    {  }
 
     public String toString() { return "(" + a + "," + b + ")"; }
 
 
     public static void main(String[] args) {	
-	//LogMap.SolverOpt_debugLevel(1);
+	LogMap.SolverOpt_debugLevel(1);
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
 	System.out.println(t1.twice(5));
 	System.out.println(t1.pick());
+	t1.blah();
     }
 
 }

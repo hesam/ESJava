@@ -791,6 +791,10 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return "A" + (num - MIN_VALUE);
   }
 
+  public String log_str() {
+      return ESJInteger.log_str(value);
+  }
+
   public static LogSet atom_log(int num) {
       return new LogSet("A" + log(num));
   }
@@ -837,6 +841,11 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   //FIXME:
   public LogSet arithOp(String o, LogObject o2) {
       return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
+  }
+
+  //FIXME:
+  public LogSet arithOp(String o, int o2) {
+      return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + (new LogInt(o2 + "")).sumValue_log() + ")");
   }
 
   //FIXME:

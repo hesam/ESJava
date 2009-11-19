@@ -35,13 +35,27 @@ public class LogSet extends LogObject {
 	return arithOp("-", ESJInteger.atom_log(listSize-1));
     }
 
-    public LogIntAtom get_log(LogInt index) {
-	return new LogIntAtom(LogObject.join_log(index.intValue_log().string(),string));
+    public LogInt/*Atom*/ get_log(LogInt index) {
+	return new LogInt/*Atom*/(LogObject.join_log(index.intValue_log().string(),string));
     }                              
 
-    public LogIntAtom get_log(ESJInteger index) {
-	return new LogIntAtom(LogObject.join_log(index.var_log().intValue_log().string(),string));
+    public LogInt/*Atom*/ get_log(ESJInteger index) {
+	return new LogInt/*Atom*/(LogObject.join_log(index.var_log().intValue_log().string(),string));
     }                              
+
+    // FIXME
+    public LogInt/*Atom*/ get_log(int index) {
+	return new LogInt/*Atom*/(LogObject.join_log(ESJInteger.log_str(index),string));
+    }                              
+
+    /*
+    public LogInt get_log(ESJInteger index) {
+	return new LogInt(LogObject.join_log(
+						     index.var_log == null ? 
+						     index.log_str() :
+						     index.var_log().intValue_log().string(),
+						     string));
+    } */                             
 
     public LogSet arithOp(String o, LogObject o2) {
 	return new LogSet("(" + string + " " + o + " " + o2.string() + ")");
