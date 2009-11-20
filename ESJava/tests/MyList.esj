@@ -6,12 +6,12 @@ import java.util.Random;
 public class MyList extends ESJList<Integer> {
 			    //ensures (no int e : this | e < 0) {
 
-    // ALLOY METHODS    
-    alloy public boolean isSorted() {
+    // SPEC METHODS    
+    spec public boolean isSorted() {
 	all int i : indices().allButLast() | get(i) <= get(i+1)
     }
     
-    alloy public boolean isPermutationOf(ESJList<Integer> l) {
+    spec public boolean isPermutationOf(ESJList<Integer> l) {
 	all int i | count(i) == l.count(i)
     }
 

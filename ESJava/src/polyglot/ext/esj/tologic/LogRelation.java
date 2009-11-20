@@ -70,6 +70,10 @@ public class LogRelation extends Hashtable {
 	this.isaList = isaList;
 	this.id = (isaListInstVar ? "m3_" : (isResultVar ? "s" : "r")) + this.RelCtr++;
 	this.isRangeEnum = range.isEnum();
+	if (isaListInstVar && isUnknown) {
+	    this.subRels = new ArrayList();	    
+	    this.subRels.add(new LogRelation(instVar + "_subrel", indexingDomain, range, null, false, false, true, false));
+	}
 	if (LogMap.SolverOpt_debug1())
 	    System.out.println("new relation " + this.id + " " + instVar + " old: " + !isUnknown);
     }
@@ -227,12 +231,9 @@ public class LogRelation extends Hashtable {
 	if (isUnknown()) {
 	    CharArrayWriter o = new CharArrayWriter();
 	    o.append("[" + lower + ", " + fullDomainRange(resultVarType) + "]");
-	    if (isaListInstVar) {
-		/*
-		for (LogRelation s : (ArrayList<LogRelation>) subRels) {
-		    o.append(" bounds " + s + ": [{}, " +  listInstVarDomain_log() + "->" + range() + "] ");
-		    }*/
-	    }
+	    if (isaListInstVar)
+		for (LogRelation s : (ArrayList<LogRelation>) subRels)
+		    o.append("\nbounds " + s.id() + ": [{}, " +  listInstVarDomain_log() + range_log(false, null) + "] ");
 	    return o.toString();
 	}
 	return lower;
@@ -245,10 +246,9 @@ public class LogRelation extends Hashtable {
 	String r = range_log(false, null);
 	if (isaListInstVar) {
 	    String d = listInstVarDomain_log();	    
-	    /*
-	    for (LogRelation s : (ArrayList<LogRelation>) subRels) {
-		o.append("FUNCTION(" + s.id() + ", " + d + "->one " + r + ") && ");
-		}*/
+	    for (LogRelation s : (ArrayList<LogRelation>) subRels)
+		o.append("FUNCTION(" + s.id() + ", " + d + "one " + r + ") && (" + 
+			 domain_log() + "." + id + " = " + s.id() + ") && ");
 	} else {
 	    String d = domain_log();	    
 	    o.append("FUNCTION(" + id + ", " + d + "->one " + r + ") && ");

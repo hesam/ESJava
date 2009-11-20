@@ -24,7 +24,7 @@ import java.util.*;
 import net.sf.jeppers.expression.function.Function;
 
 //HS
-import com.capsicumcorp.swing.spreadsheet.CellReference;
+import com.capsicumcorp.swing.spreadsheet.*;
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
@@ -65,7 +65,7 @@ public class ExpressionCompiler {
 	 * @param expression Expression to compile
 	 * @return Compiled expression
 	 */
-    public Expression compile(CellReference ck, String expression) {
+    public Expression compile(CellReference ck, String expression, Workbook workbook) {
 	Lexer lexer = new Lexer(expression);
 	Parser parser = new Parser(lexer);
 	Token[] postfixExpression = parser.postfix();
@@ -76,7 +76,8 @@ public class ExpressionCompiler {
 			      references,
 			      variableMap,
 			      functionMap, 
-			      varRefMap);
+			      varRefMap,
+			      workbook);
 	}
 	
 	/**
@@ -85,7 +86,7 @@ public class ExpressionCompiler {
 	 * @param expression Expression to evaluate
 	 * @return Result of computing the expression 
 	 */
-    public Object evaluate(CellReference ck, String expression) {
-	return compile(ck, expression).evaluate();
+    public Object evaluate(CellReference ck, String expression, Workbook workbook) {
+	return compile(ck, expression, workbook).evaluate();
     }
 }

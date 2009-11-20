@@ -24,6 +24,10 @@ import net.sf.jeppers.expression.*;
 import net.sf.jeppers.expression.function.*;
 import net.sf.jeppers.grid.*;
 
+//HS
+import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.tologic.*;
+
 /**
  * Workbook is responsible for updating formulas.
  * 
@@ -44,12 +48,19 @@ public class Workbook implements GridModelListener {
 	// Parsers expressions
 	protected ExpressionCompiler compiler;
 	
+        // HS
+    spec protected ESJMap<CellReference,Integer> cellValueMap = new ESJMap<CellReference,Integer>();
+    spec protected ESJMap<CellReference,Expression> cellExprMap = new ESJMap<CellReference,Expression>();
+    spec protected CellReference lastCellExpr;
 	// Set of dirty cells
 	private transient Set dirtyCells;
     
     // Set of cells we have visted. Used to detect circular references
     private transient Set visitCells = new HashSet();
 
+
+    public ESJMap<CellReference,Integer> cellValueMap() { return this.cellValueMap; } //HS
+    
     // Don't listen to grid changes when true
 	protected boolean block = false;
 
@@ -130,7 +141,7 @@ public class Workbook implements GridModelListener {
             CellReference formulaRef = formula.getReference();
             if (! dirtyCells.contains(formulaRef)) {
                 dirtyCells.add(formulaRef);                
-                Expression error = new Expression(ref, formula.formulaExpression.getExpression(), new Token[0], null, null, null, null) {
+                Expression error = new Expression(ref, formula.formulaExpression.getExpression(), new Token[0], null, null, null, null, null) {
                     public Integer getCachedResult() {
                         return -1;
                     }
@@ -141,12 +152,24 @@ public class Workbook implements GridModelListener {
         }         
     }
 
+    public boolean toLogic() { return false; }
 
+    public LogFormula toLogic_log() {
+	LogFormula f = new LogFormula("true");
+	for (CellReference ck : cellExprMap.keySet()) {
+	    System.out.print(ck + " log: ");
+	    System.out.println(cellExprMap.get(ck).toLogic_log());
+	    f = f.formulaOp("&&", cellExprMap.get(ck).toLogic_log());
+	} 
+	return f;
+    }
 	/**
 	 *  Listens to worksheets for changes
 	 */
 	public void gridChanged(GridModelEvent evt) 
-    { //ensures true {
+	    modifies fields Workbook.cellValueMap
+	    modifies objects new HashSet(cellExprMap.keySet())
+	    ensures toLogic() { //this.cellValueMap.get(this.lastCellExpr) == this.cellValueMap.get(this.lastCellExpr) * 2 {  
 	    if (block) {
 		/* Ignore change if it was caused by formula.update() */
 		return;
@@ -171,7 +194,7 @@ public class Workbook implements GridModelListener {
                 if (value != null && value.toString().startsWith("=")) {    
                     // Convert formula into expression
                     Expression exp =
-                        compiler.compile(ck, value.toString().substring(1));
+                        compiler.compile(ck, value.toString().substring(1), this);
 
                     formula = new FormulaInfo(ck, exp);
                     formulaMap.put(ck, formula);
@@ -186,7 +209,7 @@ public class Workbook implements GridModelListener {
 		    System.out.println("need update: " + affectedCells(ck));
                 } catch (CircularReferenceException e) {                    
                     block = true;
-                    Expression error = new Expression(ck, value.toString().substring(1), new Token[0], null, null, null, null) {
+                    Expression error = new Expression(ck, value.toString().substring(1), new Token[0], null, null, null, null, null) {
                         public Integer getCachedResult() {
                             return -1;
                         }
@@ -206,13 +229,22 @@ public class Workbook implements GridModelListener {
                     formula = (FormulaInfo) formulaMap.get(ref);
                     formula.update();
                 }
+		//HS
+		Object val = source.getValueAt(row,column);
+		if (val instanceof String)
+		    cellValueMap.put(ck,Integer.parseInt((String) val));
+		else {
+		    cellExprMap.put(ck,(Expression) val);
+		    lastCellExpr = ck;
+		}
+		//HS END
             } //end for(column)
         } //end for(row)
         visitCells.clear();
 
         dirtyCells = null;  
 
-	System.out.println("firstRow= " + firstRow + " lastRow= " + lastRow + " firstColumn= " + firstColumn + " lastColumn= " + lastColumn + "\nreferenceMap: " + referenceMap + "\nformulaMap: " + formulaMap + "\nworksheets: " + worksheets  + "\ndirtyCells: " + dirtyCells + "\nvisitCells: " + visitCells);
+	System.out.println("firstRow= " + firstRow + " lastRow= " + lastRow + " firstColumn= " + firstColumn + " lastColumn= " + lastColumn + "\nreferenceMap: " + referenceMap + "\nformulaMap: " + formulaMap + "\nworksheets: " + worksheets  + "\ndirtyCells: " + dirtyCells + "\nvisitCells: " + visitCells + " cellValueMap: " + cellValueMap + " cellExprMap: " + cellExprMap);
 
 	} //end gridChanged
 

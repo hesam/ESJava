@@ -18,25 +18,25 @@ public class BSTree
 
     public void root(Node r) { this.root = r; }
 
-    alloy public ESJSet<Node> nodes() { root.*(left+right) }
+    spec public ESJSet<Node> nodes() { root.*(left+right) }
 
-    alloy public ESJSet<Integer> nodeValues() { this.nodes().<value }
+    spec public ESJSet<Integer> nodeValues() { this.nodes().<value }
 
-    alloy public boolean isBinarySearchTree() {
+    spec public boolean isBinarySearchTree() {
 	isAcyclic() && parentDef() && isValidBinarySearch() 
     }
 
-    alloy public boolean isAcyclic() { 
+    spec public boolean isAcyclic() { 
 	no Node n | n.descendants().contains(n) //|| n.ancestors().contains(n)) 
     }
 
-    alloy public boolean parentDef() {
+    spec public boolean parentDef() {
 	all Node n | all Node p | 
 	    (((!p.children().contains(n) || n.parent == p)) &&
 	     (n.parent != p || p.children().contains(n)))
     }
 
-    alloy public boolean isValidBinarySearch() {
+    spec public boolean isValidBinarySearch() {
        all Node n | ((n.left == null  || all Node lc : n.leftDescendants()  | lc.value < n.value) &&
         	     (n.right == null || all Node rc : n.rightDescendants() | rc.value > n.value))
     }

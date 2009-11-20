@@ -18,45 +18,45 @@ public class RBTree
 
     public void root(Node r) { this.root = r; }
  
-    alloy public ESJSet<Node> nodes() { root.*(left+right) }
+    spec public ESJSet<Node> nodes() { root.*(left+right) }
 
-    alloy public ESJSet<Node> leaves() 
+    spec public ESJSet<Node> leaves() 
     { { Node n : nodes() | (n.left == null || n.right == null) }  }
 
-    alloy public ESJSet<Integer> nodeValues() { this.nodes().<value }
+    spec public ESJSet<Integer> nodeValues() { this.nodes().<value }
 
-    alloy public boolean isRBTree() {
+    spec public boolean isRBTree() {
 	isBinarySearchTree() && rootBlack() && redsChildren() && eqBlacks()
     }
 
-    alloy public boolean isBinarySearchTree() {
+    spec public boolean isBinarySearchTree() {
 	isAcyclic() && parentDef() && isValidBinarySearch() 
     }
 
-    alloy public boolean rootBlack() { this.root == null || this.root.color == Color.BLACK }
+    spec public boolean rootBlack() { this.root == null || this.root.color == Color.BLACK }
 
-    alloy public boolean redsChildren() {
+    spec public boolean redsChildren() {
 	all Node n : nodes() | (n.color == Color.BLACK || 
 				all Node c : n.children() | c.color == Color.BLACK)
     }
 
-    alloy public boolean eqBlacks() {
+    spec public boolean eqBlacks() {
 	all Node l1 : leaves() | 
 	    all Node l2: leaves() |
 	        (l1 == l2 || l1.blackAncestors().size() == l2.blackAncestors().size())
     }
 
-    alloy public boolean isAcyclic() { 
+    spec public boolean isAcyclic() { 
 	no Node n | (n.descendants().contains(n)) // || n.ancestors().contains(n)) 
     }
 
-    alloy public boolean parentDef() {
+    spec public boolean parentDef() {
 	all Node n | all Node p |
 	    (((!p.children().contains(n) || n.parent == p)) &&
 	     (n.parent != p || p.children().contains(n)))
     }
 
-    alloy public boolean isValidBinarySearch() {
+    spec public boolean isValidBinarySearch() {
        all Node n | ((n.left == null  || all Node lc : n.leftDescendants()  | lc.value < n.value) &&
         	     (n.right == null || all Node rc : n.rightDescendants() | rc.value > n.value))
     }

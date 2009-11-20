@@ -1419,7 +1419,7 @@ public class GridBag2Layout implements LayoutManager2,
 
     transient boolean rightToLeft = false;
 
-    alloy protected boolean boundsValid(ESJButton c1) {
+    spec protected boolean boundsValid(ESJButton c1) {
 	c1.xp() >= 0 && c1.yp() >= 0 && c1.wp() > 0 && c1.hp() > 0 &&
 	    c1.xp() + c1.wp() <= this.parentW &&
 	    c1.yp() + c1.hp() <= this.parentH &&
@@ -1427,14 +1427,14 @@ public class GridBag2Layout implements LayoutManager2,
 	    c1.hp() == c1.eh() - c1.itop() 
     }
 
-    alloy protected boolean noOverlaps(ESJButton c1, ESJButton c2) {
+    spec protected boolean noOverlaps(ESJButton c1, ESJButton c2) {
 	(c2.xp() >= c1.xp() && c2.xp() >= c1.xp() + c1.wp()) ||
 	    (c2.xp() <= c1.xp() && c2.xp() + c2.wp() <= c1.xp()) ||
 	    (c2.yp() >= c1.yp() && c2.yp() >= c1.yp() + c1.hp()) ||
 	    (c2.yp() <= c1.yp() && c2.yp() + c2.hp() <= c1.yp())
     }
 
-    alloy protected boolean relPositionsValid(ESJButton c1, ESJButton c2) {
+    spec protected boolean relPositionsValid(ESJButton c1, ESJButton c2) {
 	(c1.gy() != c2.gy() || 
 	 (c1.yp() == c2.yp() &&
 	  ((c2.gx() > c1.gx() && c2.xp() >= c1.xp() + c1.wp()) ||
@@ -1444,7 +1444,7 @@ public class GridBag2Layout implements LayoutManager2,
 	     (c2.gy() < c1.gy() && c2.yp() + c2.hp() <= c1.yp()))
    }
 
-    alloy protected boolean gridLayoutValid() { 
+    spec protected boolean gridLayoutValid() { 
 	all myjavax.swing.ESJButton c1 : this.comps |
 	    (boundsValid(c1) &&
 	     all myjavax.swing.ESJButton c2 : this.comps | 
