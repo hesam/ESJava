@@ -40,7 +40,8 @@ import net.sf.jeppers.grid.*;
 			CellReference ck = (CellReference) obj;
 			return (row == ck.row 
 				&& column == ck.column
-				&& model == ck.model);
+				&& model == ck.model
+				);
 		}
 
 		public String toString() { return row + "x" + column; // + " (" + model.getValueAt(row, column) + ")"; 

@@ -189,7 +189,7 @@ public class LogMap {
 
     }
 
-    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, Class indexingDomain, boolean isCollection, boolean isaList, boolean isUnknown, boolean isResultVar) {
+    public static String newInstVarRel(Class c, String instVar, Class domain, Class range, Class indexingDomain, boolean isaList, boolean isaMap, boolean isUnknown, boolean isResultVar) {
 	String k = instVar;
 	if (!isUnknown) {
 	    k += "_old";
@@ -213,7 +213,7 @@ public class LogMap {
 		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
 	    }
 	}
-	LogRelation r = new LogRelation(instVar, domain, range, indexingDomain, isCollection, isaList, isUnknown, isResultVar);
+	LogRelation r = new LogRelation(instVar, domain, range, indexingDomain, isaList, isaMap, isUnknown, isResultVar);
 	if (!InstVarRels.containsKey(c))
 	    InstVarRels.put(c, new HashMap());
 	((HashMap) InstVarRels.get(c)).put(k,r);
@@ -257,7 +257,7 @@ public class LogMap {
 
     public static LogSet objInstVarSet_log(ESJObject obj, String instVar) {
 	LogRelation r = instVarRel_log(obj, instVar);
-	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + r.id() + ")", 0, r.isaListInstVar());
+	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + r.id() + ")", 0, r.isaCollectionInstVar());
     }
 
     public static LogObjAtom null_log() {
@@ -399,28 +399,71 @@ public class LogMap {
 		    ((ESJList<Integer>) obj).set((Integer) get2((Integer) v.get(0)), (Integer) get2((Integer) v.get(1)));
 		}
 	    } else {
-		
-		Class[] paramTypes = new Class[1];
-		Object[] args = new Object[1];
-		boolean isResultVar = u.instVar().equals("result");
-		paramTypes[0] = isResultVar ? Object.class : u.range();
-		Class c = u.domain();
-		//System.out.println("relation " + u.instVar() + " of type: " + paramTypes[0] + " for class: " + u.domain());
-		//System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);
-		try { 
-		    Method m = c.getDeclaredMethod(u.instVar(), paramTypes); 
-		    //System.out.println(m);
-		    for (ArrayList v : (ArrayList<ArrayList>) val) {
-			//System.out.println(get2((Integer) v.get(0)));
-			//System.out.println(get2((Integer) v.get(1)));
-			args[0] = get2((Integer) v.get(1));
-			m.invoke(get2((Integer) v.get(0)),args);
+		if (u.isaListInstVar()) {
+		    System.out.println("hi: list - " + val); //FIXME
+		    Class[] paramTypes = new Class[0];
+		    Object[] args = new Object[0];
+		    Class c = u.domain();
+		    try { 
+			Method m = c.getDeclaredMethod(u.instVar(), paramTypes);
+			Integer lastSeen = null;
+			ArrayList l = null;
+			for (ArrayList v : (ArrayList<ArrayList>) val) {
+			    Integer last = (Integer) v.get(0);
+			    if (l == null || lastSeen != last) {
+				l = (ArrayList) m.invoke(get2(last),args);
+				lastSeen = last;
+			    }
+			    l.set((Integer) get2((Integer) v.get(1)),get2((Integer) v.get(2)));
+			}
+		    } catch (Exception e) {
+			System.out.println("duh: " + e);
+			System.exit(1);
+		    }		    
+
+		} else if (u.isaMapInstVar()) {
+		    System.out.println("hi: map - " + val);
+		    Class[] paramTypes = new Class[0];
+		    Object[] args = new Object[0];
+		    Class c = u.domain();
+		    try { 
+			Method m = c.getDeclaredMethod(u.instVar(), paramTypes);
+			Integer lastSeen = null;
+			HashMap map = null;
+			for (ArrayList v : (ArrayList<ArrayList>) val) {
+			    Integer last = (Integer) v.get(0);
+			    if (map == null || lastSeen != last) {
+				map = (HashMap) m.invoke(get2(last),args);
+				lastSeen = last;
+			    }
+			    map.put(get2((Integer) v.get(1)),get2((Integer) v.get(2)));
+			}
+		    } catch (Exception e) {
+			System.out.println("duh: " + e);
+			System.exit(1);
+		    }		    
+		} else {
+		    Class[] paramTypes = new Class[1];
+		    Object[] args = new Object[1];
+		    boolean isResultVar = u.instVar().equals("result");
+		    paramTypes[0] = isResultVar ? Object.class : u.range();
+		    Class c = u.domain();
+		    //System.out.println("relation " + u.instVar() + " of type: " + paramTypes[0] + " for class: " + u.domain());
+		    //System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);
+		    try { 
+			Method m = c.getDeclaredMethod(u.instVar(), paramTypes); 
+			//System.out.println(m);
+			for (ArrayList v : (ArrayList<ArrayList>) val) {
+			    //System.out.println(get2((Integer) v.get(0)));
+			    //System.out.println(get2((Integer) v.get(1)));
+			    args[0] = get2((Integer) v.get(1));
+			    m.invoke(get2((Integer) v.get(0)),args);
+			}
+		    } catch (Exception e) {
+			System.out.println("duh: " + e);
+			System.exit(1);
 		    }
-		} catch (Exception e) {
-		    System.out.println("duh: " + e);
-		    System.exit(1);
 		}
-		
 	    }
 	    
 	}

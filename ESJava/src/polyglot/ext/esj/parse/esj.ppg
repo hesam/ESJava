@@ -347,7 +347,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	     int s = tpAs.size();
 	     isCollectionType =  s > 0;
 	     isMapType = s == 2;
-	     isListType = fTpN.equals("ESJList") || fTpN.equals("ESJMap");
+	     isListType = fTpN.equals("ESJList"); //HACK FIXME
 	     fTN = this.nf.AmbTypeNode(null, fTpN);
 	     if (isCollectionType) {		 
 		 TypeNode tn1 = (TypeNode) tpAs.get(0);
@@ -375,8 +375,8 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	     relDefBodyArgs.add(this.nf.ClassLit(null, this.nf.AmbTypeNode(null, this.currClassName)));
 	     relDefBodyArgs.add(this.nf.ClassLit(null, fTN));
 	     relDefBodyArgs.add(isCollectionType ? this.nf.ClassLit(null, idxingTp) : this.nf.NullLit(null));
-	     relDefBodyArgs.add(this.nf.BooleanLit(null, isCollectionType));
 	     relDefBodyArgs.add(this.nf.BooleanLit(null, isListType));
+	     relDefBodyArgs.add(this.nf.BooleanLit(null, isMapType));
 	     relDefBodyArgs.add(this.nf.BooleanLit(null, true));
 	     relDefBodyArgs.add(isReservedField ? this.nf.BooleanLit(null, true) : this.nf.BooleanLit(null, false));
 	     Block relDefBody = this.nf.Block(null, this.nf.Eval(null,this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newInstVarRel", relDefBodyArgs)));

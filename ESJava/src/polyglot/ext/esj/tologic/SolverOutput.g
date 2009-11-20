@@ -78,8 +78,10 @@ instance returns [HashMap rels] :
         { $rels = $rs.rs; } ;
 
 relations returns [HashMap rs] :   
-    r = relation { $rs = new HashMap(); $rs.put($r.rn,$r.rv); } 
-        (COMMA r = relation { $rs.put($r.rn,$r.rv); } )* ;
+     { $rs = new HashMap(); } 
+        ( |
+            r = relation {  $rs.put($r.rn,$r.rv); } 
+                (COMMA r = relation { $rs.put($r.rn,$r.rv); } )* ) ;
 
 relation returns [String rn, ArrayList rv] : 
      n = name EQUALS v = value 

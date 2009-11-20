@@ -127,7 +127,7 @@ public class Expression {
 	    if (TokenType.isOperand(token)) {
 		if(token.getType() == TokenType.VAR) {
 		    this.varCellRef = varRefMap.get(token.getText());
-		    System.out.println("hi: " + workbook.cellValueMap() + " " + varCellRef + " " + workbook.cellValueMap_log());
+		    //System.out.println("hi: " + workbook.cellValueMap() + " " + varCellRef + " " + workbook.cellValueMap_log());
 		    stack.push(workbook.cellValueMap_log().get_log(new LogIntAtom(LogMap.get1_log(varCellRef))));
 		} else {
 		    stack.push(token.getText());
@@ -143,7 +143,7 @@ public class Expression {
 		    roperand = stack.pop();
 		    loperand = stack.pop();
 		}
-		System.out.println("left= " + loperand + " (" + loperand.getClass() + ") right=" + roperand + " (" + roperand.getClass() +")");
+		//System.out.println("left= " + loperand + " (" + loperand.getClass() + ") right=" + roperand + " (" + roperand.getClass() +")");
 		Object res;
 		if (loperand instanceof LogIntAtom)
 		    res = ((LogIntAtom) loperand).arithOp(token.getType().symbol(), roperand instanceof LogObject ? (LogObject) roperand : new LogInt((String) roperand));
@@ -154,7 +154,7 @@ public class Expression {
 	    }
 	}
 	LogFormula p = workbook.cellValueMap_log().get_log(new LogIntAtom(LogMap.get1_log(cellRef))).cmpOp("=", (LogObject) stack.pop());
-	System.out.println("pop: " + p + " " + p.getClass());
+	//System.out.println("pop: " + p + " " + p.getClass());
 	//cachedResult = (p instanceof String) ? Integer.parseInt((String) p) : ((BigDecimal) p).intValue();
 	return p;
     }
@@ -180,7 +180,7 @@ public class Expression {
 				if(token.getType() == TokenType.VAR) {
 				    //Object value = variableMap.get(token.getText());
 				    this.varCellRef = varRefMap.get(token.getText());
-				    System.out.println("variableMap: " + variableMap + " this: " + this.cellRef + " var cell: " + varCellRef + " get: " + variableMap.get(this.varCellRef));
+				    //System.out.println("variableMap: " + variableMap + " this: " + this.cellRef + " var cell: " + varCellRef + " get: " + variableMap.get(this.varCellRef));
 				    Object value = variableMap.get(varRefMap.get(token.getText())); //HS
 
 					if (value == null) {
@@ -214,7 +214,7 @@ public class Expression {
 			}
 		}
 		Object p = stack.pop();
-		System.out.println("pop: " + p + " " + p.getClass());
+		//System.out.println("pop: " + p + " " + p.getClass());
 		//cachedResult = (p instanceof String) ? Integer.parseInt((String) p) : ((BigDecimal) p).intValue();
 		cachedResult = p instanceof BigDecimal ? ((BigDecimal) p).intValue() : (Integer) p; //HS
 		

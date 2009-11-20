@@ -16,7 +16,6 @@ public class LogRelation extends Hashtable {
 
     static int RelCtr = 0;
 
-    // id instVar domain range fixedSize isUnknown isaCollectionInstVar isaListInstVar subRels
     protected String id;
     protected String instVar;
     protected Class domain;
@@ -28,28 +27,28 @@ public class LogRelation extends Hashtable {
     protected boolean isResultVar;
     protected boolean isUnknown;
     protected boolean isaCollectionInstVar;
-    protected boolean isaList, isaListInstVar;
+    protected boolean isaList, isaListInstVar, isaMapInstVar;
     protected boolean isRangeEnum;
 
     public LogRelation(String instVar, Class domain, Class range) {
 	this(instVar, domain, range, null, false, false, false, false, false, 0);
     }
 
-    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, boolean isaCollectionInstVar, boolean isaListInstVar){
-	this(instVar, domain, range, indexingDomain, isaCollectionInstVar, isaListInstVar, false, false, false, 0);
+    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, boolean isaListInstVar, boolean isaMapInstVar){
+	this(instVar, domain, range, indexingDomain, isaListInstVar, isaMapInstVar, false, false, false, 0);
     }
 
-    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, boolean isaCollectionInstVar, boolean isaListInstVar, boolean isUnknown){
-	this(instVar, domain, range, indexingDomain, isaCollectionInstVar, isaListInstVar, isUnknown, false, false, 0);
+    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, boolean isaListInstVar, boolean isaMapInstVar, boolean isUnknown){
+	this(instVar, domain, range, indexingDomain, isaListInstVar, isaMapInstVar, isUnknown, false, false, 0);
     }
 
-    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, boolean isaCollectionInstVar, boolean isaListInstVar, boolean isUnknown, boolean isResultVar){
-	this(instVar, domain, range, indexingDomain, isaCollectionInstVar, isaListInstVar, isUnknown, isResultVar, false, 0);
+    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, boolean isaListInstVar, boolean isaMapInstVar, boolean isUnknown, boolean isResultVar){
+	this(instVar, domain, range, indexingDomain, isaListInstVar, isaMapInstVar, isUnknown, isResultVar, false, 0);
     }
 
     public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, 
-		       boolean isaCollectionInstVar, boolean isaListInstVar, 
-		       boolean isUnknown, boolean isResultVar, boolean isaList, int fixedSize) {
+		       boolean isaListInstVar, boolean isaMapInstVar, boolean isUnknown, 
+		       boolean isResultVar, boolean isaList, int fixedSize) {
 	super();
 	this.instVar = instVar;
 	this.domain = domain;
@@ -65,12 +64,13 @@ public class LogRelation extends Hashtable {
 	this.fixedSize = fixedSize;
 	this.isUnknown = isUnknown;
 	this.isResultVar = isResultVar;
-	this.isaCollectionInstVar = isaCollectionInstVar;
 	this.isaListInstVar = isaListInstVar;
+	this.isaMapInstVar = isaMapInstVar;
+	this.isaCollectionInstVar = isaListInstVar || isaMapInstVar;
 	this.isaList = isaList;
-	this.id = (isaListInstVar ? "m3_" : (isResultVar ? "s" : "r")) + this.RelCtr++;
+	this.id = (isaCollectionInstVar ? "m3_" : (isResultVar ? "s" : "r")) + this.RelCtr++;
 	this.isRangeEnum = range.isEnum();
-	if (isaListInstVar && isUnknown) {
+	if (isaCollectionInstVar && isUnknown) {
 	    this.subRels = new ArrayList();	    
 	    this.subRels.add(new LogRelation(instVar + "_subrel", indexingDomain, range, null, false, false, true, false));
 	}
@@ -88,6 +88,7 @@ public class LogRelation extends Hashtable {
     public boolean isUnknown() { return isUnknown; }
     public boolean isaCollectionInstVar() { return isaCollectionInstVar; }
     public boolean isaListInstVar() { return isaListInstVar; }
+    public boolean isaMapInstVar() { return isaMapInstVar; }
     public boolean isResultVar() { return isResultVar; }
     public boolean isRangeEnum() { return isRangeEnum; }
     public boolean hasFixedSize() { return fixedSize != 0; }
@@ -111,7 +112,7 @@ public class LogRelation extends Hashtable {
     }
 
     public String fullDomainRange(Class resultVarType) {
-	return (isResultVar ? "" : domain_log() + "->") + (isaListInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
+	return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
     }
 
     // FIXME
@@ -173,7 +174,7 @@ public class LogRelation extends Hashtable {
 	    Object k = itr.next();
 	    Object v = r.get(k);
 	    if (v instanceof ArrayList) {
-		if (isaListInstVar) {
+		if (isaCollectionInstVar) {
 		    ArrayList lv = (ArrayList) v;
 		    int lvs = lv.size() - 1;
 		    for(int c = 0; c <= lvs; c++)
@@ -199,7 +200,7 @@ public class LogRelation extends Hashtable {
 	    if (v instanceof ArrayList) {
 		ArrayList lv = (ArrayList) v;
 		int lvs = lv.size() - 1;
-		if (isaListInstVar) {
+		if (isaCollectionInstVar) {
 		    for(int c = 0; c < lvs; c++)
 			o.append("[A" + k + ", A" + ESJInteger.log(c) + ", A" + lv.get(c) + "],");
 		    o.append("[A" + k + ", A" + ESJInteger.log(lvs) + ", A" + lv.get(lvs) + "]");
@@ -231,7 +232,7 @@ public class LogRelation extends Hashtable {
 	if (isUnknown()) {
 	    CharArrayWriter o = new CharArrayWriter();
 	    o.append("[" + lower + ", " + fullDomainRange(resultVarType) + "]");
-	    if (isaListInstVar)
+	    if (isaCollectionInstVar)
 		for (LogRelation s : (ArrayList<LogRelation>) subRels)
 		    o.append("\nbounds " + s.id() + ": [{}, " +  listInstVarDomain_log() + range_log(false, null) + "] ");
 	    return o.toString();
@@ -244,7 +245,7 @@ public class LogRelation extends Hashtable {
 	    return "one " + id() + " && ";
 	CharArrayWriter o = new CharArrayWriter();
 	String r = range_log(false, null);
-	if (isaListInstVar) {
+	if (isaCollectionInstVar) {
 	    String d = listInstVarDomain_log();	    
 	    for (LogRelation s : (ArrayList<LogRelation>) subRels)
 		o.append("FUNCTION(" + s.id() + ", " + d + "one " + r + ") && (" + 

@@ -43,8 +43,6 @@ public class ESJMap<K,V> extends HashMap<K,V> {
 	if (!isRelationized()) { 
 	    this.relationizerStep++;
 	    /*
-	    this.rel_log = new LogRelation("ESJMap" , Integer.class, Integer.class, K, true, false, true, false, size());
-	    old.rel_log = new LogRelation("ESJMap" , Integer.class, Integer.class, K, true, false, false, false, size());
 	    int i = 0;
 	    // FIXME
 	    for (Object e : (ESJMap<Object>) this) {
@@ -114,7 +112,7 @@ public class ESJMap<K,V> extends HashMap<K,V> {
 
     public ESJMap<K,V> copy(int from, int to) { 
 	ESJMap<K,V> res = new ESJMap<K,V>();
-	res.rel_log = new LogRelation("ESJMap" , Integer.class, Integer.class, K, true, true, false, size());
+
 	for (int i = from; i <= to; i++) {
 	    E itm = get(i);
 	    res.add(itm); 

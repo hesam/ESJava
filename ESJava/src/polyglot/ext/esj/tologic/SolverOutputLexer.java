@@ -1,4 +1,4 @@
-// $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SolverOutput.g 2009-11-13 13:10:06
+// $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SolverOutput.g 2009-11-20 11:50:12
 
 package polyglot.ext.esj.tologic;
 
@@ -573,8 +573,8 @@ public class SolverOutputLexer extends Lexer {
         try {
             int _type = SPACE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // SolverOutput.g:147:7: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' ) )
-            // SolverOutput.g:147:9: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )
+            // SolverOutput.g:149:7: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' ) )
+            // SolverOutput.g:149:9: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||(input.LA(1)>='\f' && input.LA(1)<='\r')||input.LA(1)==' ' ) {
                 input.consume();
@@ -602,8 +602,8 @@ public class SolverOutputLexer extends Lexer {
         try {
             int _type = DIGIT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // SolverOutput.g:149:7: ( '0' .. '9' )
-            // SolverOutput.g:149:9: '0' .. '9'
+            // SolverOutput.g:151:7: ( '0' .. '9' )
+            // SolverOutput.g:151:9: '0' .. '9'
             {
             matchRange('0','9'); 
 
@@ -622,8 +622,8 @@ public class SolverOutputLexer extends Lexer {
         try {
             int _type = LOWER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // SolverOutput.g:151:7: ( 'a' .. 'z' )
-            // SolverOutput.g:151:9: 'a' .. 'z'
+            // SolverOutput.g:153:7: ( 'a' .. 'z' )
+            // SolverOutput.g:153:9: 'a' .. 'z'
             {
             matchRange('a','z'); 
 
@@ -642,8 +642,8 @@ public class SolverOutputLexer extends Lexer {
         try {
             int _type = UPPER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // SolverOutput.g:153:7: ( 'A' .. 'Z' )
-            // SolverOutput.g:153:9: 'A' .. 'Z'
+            // SolverOutput.g:155:7: ( 'A' .. 'Z' )
+            // SolverOutput.g:155:9: 'A' .. 'Z'
             {
             matchRange('A','Z'); 
 

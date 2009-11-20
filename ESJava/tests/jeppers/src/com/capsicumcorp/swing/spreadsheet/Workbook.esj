@@ -51,7 +51,7 @@ public class Workbook implements GridModelListener {
         // HS
     spec protected ESJMap<CellReference,Integer> cellValueMap = new ESJMap<CellReference,Integer>();
     spec protected ESJMap<CellReference,Expression> cellExprMap = new ESJMap<CellReference,Expression>();
-    spec protected CellReference lastCellExpr;
+    protected CellReference lastCell; //HS
 	// Set of dirty cells
 	private transient Set dirtyCells;
     
@@ -152,6 +152,12 @@ public class Workbook implements GridModelListener {
         }         
     }
 
+    private HashSet<CellReference> modifiables() {
+	HashSet<CellReference> r = new HashSet<CellReference>(cellExprMap.keySet());
+	r.add(lastCell);
+	return r;
+    }
+
     public boolean toLogic() { return false; }
 
     public LogFormula toLogic_log() {
@@ -168,8 +174,8 @@ public class Workbook implements GridModelListener {
 	 */
 	public void gridChanged(GridModelEvent evt) 
 	    modifies fields Workbook.cellValueMap
-	    modifies objects new HashSet(cellExprMap.keySet())
-	    ensures toLogic() { //this.cellValueMap.get(this.lastCellExpr) == this.cellValueMap.get(this.lastCellExpr) * 2 {  
+	    modifies objects modifiables()
+	    ensures toLogic() { 
 	    if (block) {
 		/* Ignore change if it was caused by formula.update() */
 		return;
@@ -183,7 +189,8 @@ public class Workbook implements GridModelListener {
             for (int column = firstColumn; column <= lastColumn; column++) {
                 Object value = source.getValueAt(row, column);
                 CellReference ck = new CellReference(row, column, source);
-
+		source.setCellAt(ck,row,column);
+		lastCell = ck;
                 // Delete existing formula
                 FormulaInfo formula = (FormulaInfo) formulaMap.get(ck);
                 if (formula != null) {                  
@@ -200,6 +207,18 @@ public class Workbook implements GridModelListener {
                     formulaMap.put(ck, formula);
                     formula.update();
                 } //end if
+
+		//HS
+		Object val = source.getValueAt(row,column);
+		if (val instanceof String)
+		    cellValueMap.put(ck,Integer.parseInt((String) val));
+		else {
+		    cellExprMap.put(ck,(Expression) val);
+
+		}
+		int z = 1/0;
+		//HS END
+
                 
                 // Update cells which reference the changed cell                
                 // 1. Mark the cells as dirty                
@@ -229,15 +248,6 @@ public class Workbook implements GridModelListener {
                     formula = (FormulaInfo) formulaMap.get(ref);
                     formula.update();
                 }
-		//HS
-		Object val = source.getValueAt(row,column);
-		if (val instanceof String)
-		    cellValueMap.put(ck,Integer.parseInt((String) val));
-		else {
-		    cellExprMap.put(ck,(Expression) val);
-		    lastCellExpr = ck;
-		}
-		//HS END
             } //end for(column)
         } //end for(row)
         visitCells.clear();
@@ -318,7 +328,7 @@ public class Workbook implements GridModelListener {
 
 				int row = Integer.parseInt(variableName.substring(index));
 				
-				CellReference reference = new CellReference(row, column, refModel);
+				CellReference reference = refModel.getCellAt(row,column); //new CellReference(row, column, refModel); //HS
 				varRefMap.put(variableName, reference);
 				
 				// Listen to changes on the reference cell
