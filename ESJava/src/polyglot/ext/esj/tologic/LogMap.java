@@ -80,6 +80,11 @@ public class LogMap {
     public static void incrClonerStep() { clonerStep++; }
 
     public static void initRelationize() {
+	// FIXME?	
+	JtoLog = new HashMap();
+	LogtoJ = new HashMap();
+	ESJInteger.setBounds(ESJInteger.MIN_VALUE,ESJInteger.MAX_VALUE);
+
 	ProblemRels = new HashMap();
 	AtomCtr = ESJInteger.BoundsSize()+1;
 	relationizerStep++;
@@ -109,7 +114,7 @@ public class LogMap {
 
     public static void newAtoms(Class c, boolean isEnum) { // FIXME?
 	if (SolverOpt_debug1)
-	    System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")" + "\n" + ClassConstrs);
+	    System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")" + "\n");
 	ArrayList classAs = (ArrayList) ClassAtoms.get(c);
 	try {
 	    ArrayList objs;
@@ -118,8 +123,6 @@ public class LogMap {
 	    args[1] = false;
 
 	    objs = isEnum ? (ArrayList) Enums.get(c) : ((ESJObject) ((Constructor) ClassConstrs.get(c)).newInstance(args)).allInstances2();
-	    if (SolverOpt_debug1)
-		System.out.println(objs);
 	    if (SolverOpt_debug1)
 		System.out.println("objs: " + objs);
 
@@ -305,7 +308,6 @@ public class LogMap {
 	    System.out.println("problem involves rels: ");
 	    for (Object k : ProblemRels.keySet() ) {
 		LogRelation r =  (LogRelation) ProblemRels.get(k);
-		//if (isNonVoid)
 		System.out.println(r.id() + ": " + r.instVar());
 	    }
 	    if (modifiableFields != null)
@@ -400,7 +402,6 @@ public class LogMap {
 		}
 	    } else {
 		if (u.isaListInstVar()) {
-		    System.out.println("hi: list - " + val); //FIXME
 		    Class[] paramTypes = new Class[0];
 		    Object[] args = new Object[0];
 		    Class c = u.domain();
@@ -422,7 +423,6 @@ public class LogMap {
 		    }		    
 
 		} else if (u.isaMapInstVar()) {
-		    System.out.println("hi: map - " + val);
 		    Class[] paramTypes = new Class[0];
 		    Object[] args = new Object[0];
 		    Class c = u.domain();

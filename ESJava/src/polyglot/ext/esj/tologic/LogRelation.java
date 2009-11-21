@@ -125,7 +125,7 @@ public class LogRelation extends Hashtable {
     // FIXME
     public void put_log(Object key, Object value) {
 	if (LogMap.SolverOpt_debug2())
-	    System.out.println("trying put key " + key + " value " + value + " ");
+	    System.out.println("rel" + id + " trying put key " + key + " value " + value + " ");
 	if (value instanceof AbstractCollection) {
 	    ArrayList l = new ArrayList();
 	    for(Object v : (AbstractCollection) value) {
@@ -162,6 +162,7 @@ public class LogRelation extends Hashtable {
 	    filterObjects = true;
 	    r = LogMap.instVarRelOld_log(this);
 	    HashSet sNew = new HashSet();
+	    System.out.println("howdy contents: " + r + " " + modifiableObjects);
 	    for (Object k : r.keySet())
 		if (!modifiableObjects.contains(k))
 		    sNew.add(k);

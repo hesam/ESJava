@@ -34,7 +34,7 @@ import polyglot.ext.esj.tologic.*;
  * @author <a href="mailto:grom@capsicumcorp.com">Cameron Zemek</a>
  */
 public class ExpressionCompiler {
-        spec private ESJMap<CellReference,Integer> variableMap = new ESJMap<CellReference,Integer>(); //HS
+        private HashMap<CellReference,Integer> variableMap = new HashMap<CellReference,Integer>(); //HS
 	private Map<String,Function> functionMap = new HashMap<String,Function>();
         private Map<String,CellReference> varRefMap = new HashMap<String,CellReference>();
         public ExpressionCompiler() { super(); }

@@ -49,8 +49,9 @@ public class Workbook implements GridModelListener {
 	protected ExpressionCompiler compiler;
 	
         // HS
-    spec protected ESJMap<CellReference,Integer> cellValueMap = new ESJMap<CellReference,Integer>();
-    spec protected ESJMap<CellReference,Expression> cellExprMap = new ESJMap<CellReference,Expression>();
+    protected ESJMap<CellReference,Integer> cellValueMap = new ESJMap<CellReference,Integer>();
+    protected ESJMap<CellReference,Expression> cellExprMap = new ESJMap<CellReference,Expression>();
+    spec protected ESJSet<CellReference> cells = new ESJSet<CellReference>(); //HS
     protected CellReference lastCell; //HS
 	// Set of dirty cells
 	private transient Set dirtyCells;
@@ -169,11 +170,40 @@ public class Workbook implements GridModelListener {
 	} 
 	return f;
     }
+
+
+    public void gridChanged(GridModelEvent evt) {
+	if (block) {
+	    /* Ignore change if it was caused by formula.update() */
+	    return;
+	}
+        GridModel source = (GridModel) evt.getSource();
+        int firstRow = evt.getFirstRow();
+        int lastRow = evt.getLastRow();
+        int firstColumn = evt.getFirstColumn();
+        int lastColumn = evt.getLastColumn();
+        for (int row = firstRow; row <= lastRow; row++) {
+            for (int column = firstColumn; column <= lastColumn; column++) {
+                Object value = source.getValueAt(row, column);
+                CellReference ck = null;
+		if (source.getCellAt(row,column) == null) {
+		    ck = new CellReference(row, column, source);
+		    cells.add(ck);
+		    source.setCellAt(ck,row,column);
+		} else {
+		    ck = source.getCellAt(row,column);		    
+		}		
+	    }
+	}
+	gridChangedH(evt);
+    }
+
+
 	/**
 	 *  Listens to worksheets for changes
 	 */
-	public void gridChanged(GridModelEvent evt) 
-	    modifies fields Workbook.cellValueMap
+	public void gridChangedH(GridModelEvent evt) 
+	    modifies fields CellReference.cachedResult //Workbook.cellValueMap
 	    modifies objects modifiables()
 	    ensures toLogic() { 
 	    if (block) {
@@ -188,8 +218,14 @@ public class Workbook implements GridModelListener {
         for (int row = firstRow; row <= lastRow; row++) {
             for (int column = firstColumn; column <= lastColumn; column++) {
                 Object value = source.getValueAt(row, column);
-                CellReference ck = new CellReference(row, column, source);
-		source.setCellAt(ck,row,column);
+                CellReference ck = null;
+		if (source.getCellAt(row,column) == null) {
+		    ck = new CellReference(row, column, source);
+		    cells.add(ck);
+		    source.setCellAt(ck,row,column);
+		} else {
+		    ck = source.getCellAt(row,column);		    
+		}
 		lastCell = ck;
                 // Delete existing formula
                 FormulaInfo formula = (FormulaInfo) formulaMap.get(ck);
@@ -210,12 +246,16 @@ public class Workbook implements GridModelListener {
 
 		//HS
 		Object val = source.getValueAt(row,column);
-		if (val instanceof String)
-		    cellValueMap.put(ck,Integer.parseInt((String) val));
-		else {
+		if (val instanceof String) {
+		    Integer v = Integer.parseInt((String) val);
+		    cellValueMap.put(ck,v);
+		    ck.cachedResult(v); //HS
+		} else {
 		    cellExprMap.put(ck,(Expression) val);
 
 		}
+		System.out.println("firstRow= " + firstRow + " lastRow= " + lastRow + " firstColumn= " + firstColumn + " lastColumn= " + lastColumn + "\nreferenceMap: " + referenceMap + "\nformulaMap: " + formulaMap + "\nworksheets: " + worksheets  + "\ndirtyCells: " + dirtyCells + "\nvisitCells: " + visitCells + " cellValueMap: " + cellValueMap + " cellExprMap: " + cellExprMap + " cells: " + cells);
+	
 		int z = 1/0;
 		//HS END
 
@@ -254,7 +294,6 @@ public class Workbook implements GridModelListener {
 
         dirtyCells = null;  
 
-	System.out.println("firstRow= " + firstRow + " lastRow= " + lastRow + " firstColumn= " + firstColumn + " lastColumn= " + lastColumn + "\nreferenceMap: " + referenceMap + "\nformulaMap: " + formulaMap + "\nworksheets: " + worksheets  + "\ndirtyCells: " + dirtyCells + "\nvisitCells: " + visitCells + " cellValueMap: " + cellValueMap + " cellExprMap: " + cellExprMap);
 
 	} //end gridChanged
 
@@ -392,6 +431,7 @@ public class Workbook implements GridModelListener {
 			
 			block = true;
 			formulaExpression.evaluate();
+			cellRef.model.setCellAt(cellRef,cellRef.row,cellRef.column);
 			cellRef.model.setValueAt(
 				formulaExpression,
 				cellRef.row,

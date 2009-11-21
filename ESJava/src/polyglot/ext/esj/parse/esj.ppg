@@ -1279,9 +1279,10 @@ ensured_class_declaration ::=
 		  // add an old field and old_log, isOld mtds
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.AmbTypeNode(null, parser.currClassName) ,"old", null));
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.AmbTypeNode(null, parser.currClassName), "old", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Field(null, parser.nf.This(null), "old"))), new TypedList(new LinkedList(), TypeNode.class, false))); 
-		  //Expr isOldE1 = parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), Binary.EQ, parser.nf.NullLit(null));
-		  Expr isOldE2 = parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "old"), Binary.EQ, parser.nf.NullLit(null));
-		  Expr isOldExpr = isOldE2; //parser.nf.Binary(null, isOldE1, Binary.COND_AND, isOldE2);
+		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isOld", null));
+		  //Expr isOldE2 = parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "old"), Binary.EQ, parser.nf.NullLit(null));
+		  Expr isOldE2 = parser.nf.Field(null, parser.nf.This(null), "isOld");
+		  Expr isOldExpr = isOldE2; 
 
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isOld", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,isOldExpr)), new TypedList(new LinkedList(), TypeNode.class, false)));
 
@@ -1346,6 +1347,7 @@ ensured_class_declaration ::=
 		 JL5MethodDecl relationizeMtdDecl = parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(basicFs), parser.nf.CanonicalTypeNode(null, parser.ts.Void()), "relationize", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, relationizeMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
 	      	 JL5MethodDecl relationizeOldMtdDecl = parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(basicFs), parser.nf.CanonicalTypeNode(null, parser.ts.Void()), "relationizeOld", new TypedList(new LinkedList(), Expr.class, false), new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, relationizeOldMtdBody), new TypedList(new LinkedList(), TypeNode.class, false));
 		 
+		 cloneBody.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.Local(null, "res"), "isOld"), Assign.ASSIGN, parser.nf.BooleanLit(null, true))));
 		 cloneBody.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), "old"), Assign.ASSIGN, parser.nf.Local(null, "res"))));
 		 cloneBody.add(parser.nf.JL5Return(null, parser.nf.Local(null, "res")));
 		 

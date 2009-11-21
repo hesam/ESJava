@@ -11,7 +11,7 @@ import net.sf.jeppers.grid.*;
 	 */
 	//static protected //HS
 	    public class CellReference {
-		spec Integer foo; //HS: bug in esjava, w/o any spec fields won't add class to ClassAtoms
+		spec Integer cachedResult; //HS: bug in esjava, w/o any spec fields won't add class to ClassAtoms
 		/*private*/ int row;
 		/*private*/ int column;
 		/*private*/ GridModel model;
@@ -22,6 +22,8 @@ import net.sf.jeppers.grid.*;
 			this.model = model;
 		}
 		
+		public void cachedResult(Integer val) { cachedResult = val; }
+
 		public int hashCode() {
 			/* (row << 16) moves the row into the upper 
 			 * 16 bits of the 32 bit hashCode

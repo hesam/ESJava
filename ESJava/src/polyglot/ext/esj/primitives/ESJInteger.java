@@ -839,18 +839,18 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   }
 
   //FIXME:
-  public LogSet arithOp(String o, LogObject o2) {
-      return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
+  public LogIntComposite arithOp(String o, LogObject o2) {
+      return new LogIntComposite("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
   }
-
+  /*
   //FIXME:
   public LogSet arithOp(String o, int o2) {
       return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + (new LogInt(o2 + "")).sumValue_log() + ")");
-  }
+      }*/
 
   //FIXME:
-  public LogInt arithOp(String o, ESJObject o2) {
-      return new LogInt("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
+  public LogIntComposite arithOp(String o, ESJObject o2) {
+      return new LogIntComposite("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
   }
 
   public static void main(String[] args) {
