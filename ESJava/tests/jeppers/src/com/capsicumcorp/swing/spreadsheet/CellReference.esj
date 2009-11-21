@@ -12,8 +12,8 @@ import net.sf.jeppers.grid.*;
 	//static protected //HS
 	    public class CellReference {
 		spec Integer cachedResult; //HS: bug in esjava, w/o any spec fields won't add class to ClassAtoms
-		/*private*/ int row;
-		/*private*/ int column;
+		/*private int*/ spec Integer row;
+		/*private int*/ spec Integer column;
 		/*private*/ GridModel model;
 		
 		public CellReference(int row, int column, GridModel model) {
@@ -22,7 +22,12 @@ import net.sf.jeppers.grid.*;
 			this.model = model;
 		}
 		
-		public void cachedResult(Integer val) { cachedResult = val; }
+		public void cachedResult(Integer val) { 
+		    cachedResult = val; 
+		    Object value = model.getValueAt(row, column);
+		    if (value instanceof Expression)
+			((Expression) value).cachedResult(val);
+		}
 
 		public int hashCode() {
 			/* (row << 16) moves the row into the upper 

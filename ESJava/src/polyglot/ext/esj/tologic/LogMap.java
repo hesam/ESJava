@@ -81,10 +81,11 @@ public class LogMap {
 
     public static void initRelationize() {
 	// FIXME?	
+	/*
 	JtoLog = new HashMap();
 	LogtoJ = new HashMap();
 	ESJInteger.setBounds(ESJInteger.MIN_VALUE,ESJInteger.MAX_VALUE);
-
+	*/
 	ProblemRels = new HashMap();
 	AtomCtr = ESJInteger.BoundsSize()+1;
 	relationizerStep++;
@@ -115,6 +116,7 @@ public class LogMap {
     public static void newAtoms(Class c, boolean isEnum) { // FIXME?
 	if (SolverOpt_debug1)
 	    System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")" + "\n");
+
 	ArrayList classAs = (ArrayList) ClassAtoms.get(c);
 	try {
 	    ArrayList objs;
@@ -127,7 +129,6 @@ public class LogMap {
 		System.out.println("objs: " + objs);
 
 	    for (Object obj : objs) {		
-		//System.out.println("my old = " + ((ESJObject) obj).old());
 		classAs.add(AtomCtr);
 		LogtoJ.put(AtomCtr,obj);
 		JtoLog.put(obj,AtomCtr);
@@ -136,6 +137,7 @@ public class LogMap {
 			JtoLog.put(((ESJObject) obj).old(),AtomCtr);
 		AtomCtr++;
 	    }
+
 	} catch (Exception e) { System.out.println("oops " + e); System.exit(1); }
     }
 

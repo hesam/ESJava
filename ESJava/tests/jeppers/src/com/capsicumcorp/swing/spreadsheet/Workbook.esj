@@ -155,7 +155,8 @@ public class Workbook implements GridModelListener {
 
     private HashSet<CellReference> modifiables() {
 	HashSet<CellReference> r = new HashSet<CellReference>(cellExprMap.keySet());
-	r.add(lastCell);
+	if (lastCell != null)
+	    r.add(lastCell);
 	return r;
     }
 
@@ -219,14 +220,8 @@ public class Workbook implements GridModelListener {
             for (int column = firstColumn; column <= lastColumn; column++) {
                 Object value = source.getValueAt(row, column);
                 CellReference ck = null;
-		if (source.getCellAt(row,column) == null) {
-		    ck = new CellReference(row, column, source);
-		    cells.add(ck);
-		    source.setCellAt(ck,row,column);
-		} else {
-		    ck = source.getCellAt(row,column);		    
-		}
-		lastCell = ck;
+		ck = source.getCellAt(row,column);		    
+		lastCell = null; //HS
                 // Delete existing formula
                 FormulaInfo formula = (FormulaInfo) formulaMap.get(ck);
                 if (formula != null) {                  
@@ -234,7 +229,8 @@ public class Workbook implements GridModelListener {
                 }
                 
                 // Add new formula              
-                if (value != null && value.toString().startsWith("=")) {    
+                if (value != null && value.toString().startsWith("=")) { 
+		    lastCell = ck;   //HS
                     // Convert formula into expression
                     Expression exp =
                         compiler.compile(ck, value.toString().substring(1), this);
