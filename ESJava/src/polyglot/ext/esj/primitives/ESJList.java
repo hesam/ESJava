@@ -110,6 +110,11 @@ public class ESJList<E> extends ArrayList<E> {
 	return new LogFormula("some (" + rel_log.id() + "." + itm.string() + ")");
     }
 
+    //FIXME:
+    public LogFormula contains_log(Integer itm) {
+	return new LogFormula("some (" + rel_log.id() + "." + ESJInteger.atom_log(itm) + ")");
+    }
+
     // copies obj plus its relation
 
     /*

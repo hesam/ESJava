@@ -58,6 +58,10 @@ public class LogObject  {
 	return new LogFormula("(" + string + " = " + o2.string() + ")");
     }
 
+    public LogFormula equals_log(ESJObject o2) {
+	return new LogFormula("(" + string + " = " + o2.var_log().string() + ")");
+    }
+
     public static String join_log(String s1, String s2) {
 	return s1 + "." + s2;
     }

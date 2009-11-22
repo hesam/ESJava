@@ -36,6 +36,16 @@ public class MyList extends ESJList<Integer> {
 	set(0,0); //<-- TEST: ASSERTION VIOLATION BUG#2
 
     }
+
+    /*
+    pure public Integer indexOf2(Integer elem)
+	ensures (this.old.contains(elem) && result >= 0 && 
+		 result < this.old.size() &&
+		 this.old.get((Integer) result).equals(elem)) ||
+	result == 29 {
+	return -2;
+    }
+    */
     
     public static void main(String[] args) {
 	
@@ -77,12 +87,15 @@ public class MyList extends ESJList<Integer> {
 	System.out.println(tb.isSorted());
 	//System.out.print("permutations: ");
 	//System.out.println(ta.isPermutationOf(tb));
+
 	System.out.println("sorting B...");
 	tb.bubbleSort();
 	System.out.print("B=");
         System.out.println(tb);
 	System.out.print("now B sorted: ");
 	System.out.println(tb.isSorted());
+
+	//System.out.println(tb.indexOf2(5));
 
     }
 

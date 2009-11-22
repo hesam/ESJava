@@ -79,7 +79,7 @@ public class LogRelation extends Hashtable {
     }
 
     public String instVar() { return instVar; }
-    //public String id() { return id; }
+    public String getId() { return id; }
     public String id() { LogMap.addAsProblemRel(this,id); return id; }
     public Class domain() { return domain; }
     public Class range() { return range; }
