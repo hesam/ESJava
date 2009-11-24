@@ -1,11 +1,10 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 
-//import java.util.HashSet;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
-//import java.awt.Point;
 import myjava.awt.Point;
 
 public class Test {
