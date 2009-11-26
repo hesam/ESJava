@@ -20,7 +20,13 @@ public class LogIntAtom extends LogObject {
     }
 
     public LogInt arithOp(String o, LogObject o2) {
-	return new LogInt("(" + sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
+	return new LogInt("(" + sumValue_log() + " " + o + " " + o2.sumValue_log() + ")",
+			  id_sumValue_log() + "." + o + "(" + o2.id_sumValue_log() + ")");
+    }
+
+    public LogInt arithOp(String o, ESJObject o2) {
+	return new LogInt("(" + sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")",
+			  id_sumValue_log() + "." + o + "(" + o2.var_log().id_sumValue_log() + ")");
     }
 
 }

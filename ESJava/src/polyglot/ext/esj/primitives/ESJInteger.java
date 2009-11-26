@@ -827,20 +827,38 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
 
   public LogFormula cmpOp(String o, LogObject o2) {
-      return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
+      return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")",
+			    var_log.id_sumValue_log() + "." + o + "(" + o2.id() + ")");
   }
 
   public LogFormula cmpOp(String o, ESJObject o2) {
-      return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
+      return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")",
+			    var_log.id_sumValue_log() + "." + o + "(" + o2 + ")");
   }
 
   public LogFormula cmpOp(String o, Integer o2) {
-      return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + new LogInt(o2.toString()).sumValue_log() + ")");
+      LogInt nli = new LogInt(o2.toString());
+      return new LogFormula("(" + var_log.sumValue_log() + " " + o + " " + nli.sumValue_log() + ")",
+			    var_log.id_sumValue_log() + "." + o + "(" + nli.id() + ")");
+  }
+
+
+  public LogFormula cmpOp2(String o, LogObject o2) {
+      return new LogFormula(var_log.sumValue_log2() + "." + o + "(" + o2.sumValue_log2() + ")");
+  }
+
+  public LogFormula cmpOp2(String o, ESJObject o2) {
+      return new LogFormula(var_log.sumValue_log2() + "." + o + "(" + o2.var_log().sumValue_log2() + ")");
+  }
+
+  public LogFormula cmpOp2(String o, Integer o2) {
+      return new LogFormula(var_log.sumValue_log2() + "." + o + "(" + new LogInt(o2.toString()).sumValue_log2() + ")");
   }
 
   //FIXME:
   public LogIntComposite arithOp(String o, LogObject o2) {
-      return new LogIntComposite("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")");
+      return new LogIntComposite("(" + var_log.sumValue_log() + " " + o + " " + o2.sumValue_log() + ")",
+				 var_log.id_sumValue_log() + "." + o + "(" + o2.id() + ")");
   }
   /*
   //FIXME:
@@ -850,7 +868,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
   //FIXME:
   public LogIntComposite arithOp(String o, ESJObject o2) {
-      return new LogIntComposite("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")");
+      return new LogIntComposite("(" + var_log.sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")",
+				 var_log.id_sumValue_log() + "." + o + "(IntConstant.constant(" + o2 + "))");
   }
 
   public static void main(String[] args) {

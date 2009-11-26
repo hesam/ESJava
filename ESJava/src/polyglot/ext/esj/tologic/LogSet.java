@@ -73,7 +73,7 @@ public class LogSet extends LogObject {
 	    String s = string + (isaListInstVar ? "[1]" : "");
 	    String p =  " [" + quantVarN + ": one " + s + "] | " + quantClauseExpr.string();
 	    String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
-	    return new LogFormula("(" + quantKind + q + ")");
+	    return new LogFormula("(" + quantKind + q + ")", quantClauseExpr.id() + ".forAll()");
 	}
 			   }
 
@@ -110,6 +110,10 @@ public class LogSet extends LogObject {
 
     public LogFormula containsKey_log(ESJObject itm) {
 	return new LogFormula("some (" + itm.var_log().string() + "." + string + ")");
+    }
+
+    public LogSet indices_log() {
+	return new LogSet(string + "[0]");
     }
 
     public LogSet plus_log(LogSet o2) {

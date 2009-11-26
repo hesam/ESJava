@@ -7,14 +7,21 @@ import java.util.ArrayList;
 
 public class LogVar extends LogObject {
 
+    static int VarCtr = 0;
+
     protected Class logType;
 
+
     public LogVar(String string, Class logType) {
-	this(string, logType, 0, false);
+	this(string, string, logType, 0, false);
     }
 
-    public LogVar(String string, Class logType, int listSize, boolean isaListInstVar) {
-	super(string, listSize, isaListInstVar);
+    public LogVar(String string, String decl, Class logType) {
+	this(string, decl, logType, 0, false);
+    }
+
+    public LogVar(String string, String decl, Class logType, int listSize, boolean isaListInstVar) {
+	super(string, "e" + VarCtr++, decl, listSize, isaListInstVar);
 	this.logType = logType;
     }
 

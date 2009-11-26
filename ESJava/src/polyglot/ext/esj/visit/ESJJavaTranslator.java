@@ -413,7 +413,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return r;
 	} else if (r instanceof IntLit) {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    args.add(nf.StringLit(null, "" + ((IntLit) r).value() ));
+	    args.add(r); //nf.StringLit(null, "" + ((IntLit) r).value() ));
 	    return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
 	    //return r;
 	}  else if (r instanceof StringLit) {
@@ -423,7 +423,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "null_log", args);
 	} else if (r instanceof BooleanLit) {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    args.add(nf.StringLit(null, "" + ((BooleanLit) r).value() ));
+	    //args.add(nf.StringLit(null, "" + ((BooleanLit) r).value() ));
+	    args.add(r);
 	    return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
 	}  else if (r instanceof JL5Cast) {
 	    return ((Expr) toLogicExpr(((JL5Cast) r).expr()));

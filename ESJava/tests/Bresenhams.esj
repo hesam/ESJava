@@ -1,0 +1,87 @@
+import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.tologic.LogMap;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import java.util.HashSet;
+import java.awt.*;
+import java.awt.Color;
+
+
+public class Bresenhams extends Canvas {
+    
+    public Bresenhams(int x, int y) { 
+	super(); 
+	this.X = x;
+	this.Y = y;
+	this.out = new ESJList<Integer>();
+    }
+    
+    static int canvasSize = 600;
+
+    spec Integer X, Y;
+    spec ESJList<Integer> out;
+    Graphics g;
+
+    public ESJList<Integer> out() { return out; }
+
+    spec public boolean bresenham() {
+	//this.out.size() == this.X + 1 &&
+	all int i : this.out.indices() | 
+	    ((this.out.get(i) >= i && 2*(this.out.get(i) - (this.Y/this.X)*i) <= 1) ||
+	     (this.out.get(i) < i && 2*((this.Y/this.X)*i - this.out.get(i)) <= 1))
+    }
+
+    public void doLineDraw()
+	modifies fields Bresenhams.out
+	ensures bresenham() {
+	int z = 1/0;
+	int v = 2*Y-X;
+	int y = 0;
+	int x = 0;
+	while (x <= X) {
+	    out.add(y);
+	    if (v < 0)
+		v = v + 2*Y;
+	    else {
+		v = v + 2 *(Y-X);
+		y++;
+	    }
+	    x++;
+	}
+	System.out.println(out);
+    }
+
+    public void draw() {
+	paint(g);
+	doLineDraw();
+	for (int i = 0; i < out.size(); i++)
+	    g.fillOval(i, out.get(i), 1, 1);
+    }
+
+    public void init() {
+	this.g = getGraphics();
+	g.setColor(Color.black);
+	paint(g);
+    }
+    
+    public static void main( String[] args ) {
+	int X = 60, Y = 60;
+	LogMap.SolverOpt_debugLevel(1);
+	ESJInteger.setBounds(0,X);
+	Frame myFrame = new Frame( "Bresenhams Line Drawing" );
+	Bresenhams myCanvas = new Bresenhams(X,Y);
+	myFrame.add( myCanvas );
+	myFrame.setSize( canvasSize, canvasSize );
+	myFrame.setVisible(true);
+	myCanvas.init();
+	myCanvas.draw();
+	myFrame.addWindowListener( new WindowAdapter() {
+		public void windowClosing( WindowEvent we ) {
+		    System.exit( 0 );
+		}
+	    } );
+
+    }
+}

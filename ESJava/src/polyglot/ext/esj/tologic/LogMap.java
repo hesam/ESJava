@@ -252,12 +252,10 @@ public class LogMap {
     }
 
     // FIXME
-    public static String objInstVarStr_log(ESJObject obj, String instVar) {
-	/*if (SolverOpt_debug1) {
-	    System.out.println("instVarStr_log -> isVar: " + (obj.var_log() != null));
-	    System.out.println(instVar + " " + obj + " " + ((ESJObject)obj).old());
-	    }*/
-	return "(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + instVarRel_log(obj, instVar).id() + ")";
+    public static LogVar objInstVarStr_log(ESJObject obj, String instVar, Class c) {
+	String s1 = obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj); 
+	String s2 = instVarRel_log(obj, instVar).id();
+	return new LogVar("(" + s1 + "." + s2 + ")", s1 + ".join(" + s2 + ")", c);
     }
 
     public static LogSet objInstVarSet_log(ESJObject obj, String instVar) {
@@ -415,6 +413,10 @@ public class LogMap {
 			    Integer last = (Integer) v.get(0);
 			    if (l == null || lastSeen != last) {
 				l = (ArrayList) m.invoke(get2(last),args);
+				int vs = ((ArrayList<ArrayList>) val).size();
+				int dec = vs - l.size();
+				while (dec-- > 0) 
+				    l.add(null);
 				lastSeen = last;
 			    }
 			    l.set((Integer) get2((Integer) v.get(1)),get2((Integer) v.get(2)));
@@ -423,7 +425,6 @@ public class LogMap {
 			System.out.println("duh: " + e);
 			System.exit(1);
 		    }		    
-
 		} else if (u.isaMapInstVar()) {
 		    Class[] paramTypes = new Class[0];
 		    Object[] args = new Object[0];
