@@ -60,8 +60,13 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 
     ESJQuantifyTypeExpr ESJQuantifyTypeExpr(Position pos, String theType);
 
+    ESJBinary ESJBinary(Position pos, Expr left, Binary.Operator op, Expr right);
+    ESJBinary ESJBinary(Position pos, Expr left, Binary.Operator op, Expr right, String kodkodiOp, String kodkodOp);
+
     FormulaBinary FormulaBinary(Position pos, Expr left, Binary.Operator op, Expr right);
+    FormulaBinary FormulaBinary(Position pos, Expr left, Binary.Operator op, Expr right, String kodkodiOp, String kodkodOp);
     CmpBinary CmpBinary(Position pos, Expr left, Binary.Operator op, Expr right);
+    CmpBinary CmpBinary(Position pos, Expr left, Binary.Operator op, Expr right, String kodkodiOp, String kodkodOp);
 
     ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isOld);
 

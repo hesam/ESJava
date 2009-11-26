@@ -289,12 +289,12 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 			    
 			    if (fi.isReferenceType() && !isEnumFd) {
 				Expr fieldExpr1 = nf.Field(null, nf.This(null), fi.name());
-				Expr ifC1 = nf.Binary(null, fieldExpr1, Binary.NE, nf.NullLit(null));
+				Expr ifC1 = nf.ESJBinary(null, fieldExpr1, Binary.NE, nf.NullLit(null));
 				//Stmt ifT1 = nf.Block(null, relationizeOldMtdIfBody);
 				//relationizeOldMtdBody.add(nf.JL5If(null, ifC1, ifT1, null));
 				Expr fieldExpr = nf.Field(null, nf.This(null), fi.name());
 				
-				Expr ifC = nf.Binary(null, fieldExpr, Binary.NE, nf.NullLit(null));
+				Expr ifC = nf.ESJBinary(null, fieldExpr, Binary.NE, nf.NullLit(null));
 				Stmt ifT = nf.Eval(null, nf.Call(null, fieldExpr,  "relationize", emptyArgs));
 				relationizeMtdSubBody.add(nf.JL5If(null, ifC, ifT, null));
 
@@ -511,7 +511,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 
 	 argsW2a.add(nf.Local(null, "n"));
 	 forLoop2Stmts.add(nf.JL5LocalDecl(null, emptyFlags, cl, "childN", nf.JL5Cast(null, cl, nf.Call(null, nf.Local(null, "f"), "get", argsW2a))));
-	 Expr forLoop2Ife1 = nf.Binary(null, nf.Local(null, "childN"), Binary.NE, nf.NullLit(null));
+	 Expr forLoop2Ife1 = nf.ESJBinary(null, nf.Local(null, "childN"), Binary.NE, nf.NullLit(null));
 	 
 	 List argsW2b = new TypedList(new LinkedList(), Expr.class, false);
 	 argsW2b.add(nf.Local(null, "childN"));
@@ -523,7 +523,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 Stmt forLoop2 = nf.ExtendedFor(null, forLoop2VarD, nf.Local(null, "fields"), forLoop2Body);
 	 whileLoopStmts.add(forLoop2);
 	 Block whileLoopBody = nf.Block(null, whileLoopStmts);
-	 tryBody.add(nf.While(null, nf.Binary(null, nf.Call(null, nf.Local(null, "unExpanded"), "size", argsW0), Binary.GT, nf.IntLit(null, IntLit.INT, 0)), whileLoopBody));
+	 tryBody.add(nf.While(null, nf.ESJBinary(null, nf.Call(null, nf.Local(null, "unExpanded"), "size", argsW0), Binary.GT, nf.IntLit(null, IntLit.INT, 0)), whileLoopBody));
 	 tryBody.add(nf.JL5If(null, nf.Unary(null, Unary.NOT, nf.Local(null,"isReflexive")), nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "remove", argsW2)), null));
 	 Block tryBlock = nf.Block(null, tryBody);
 	 extraMtdBody.add(nf.Try(null, tryBlock, catches));
@@ -562,7 +562,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 argsW1b.add(nf.Local(null, "n"));
 	 forLoop1Stmts.add(nf.JL5LocalDecl(null, emptyFlags, cl, "n", nf.JL5Cast(null, cl, nf.Call(null, nf.Local(null, "f"), "get", argsW2a))));
 
-	 Expr forLoop2Ife1 = nf.Binary(null, nf.Local(null, "n"), Binary.NE, nf.NullLit(null));	 	 
+	 Expr forLoop2Ife1 = nf.ESJBinary(null, nf.Local(null, "n"), Binary.NE, nf.NullLit(null));	 	 
 	 Stmt forLoop2Ife2 = nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "add", argsW1b)); 
 	 
 	 forLoop1Stmts.add(nf.JL5If(null, forLoop2Ife1, forLoop2Ife2, null));
@@ -612,14 +612,14 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
      public Expr makeESJLogPredBlockHelper(Expr e, List quantVarD, ESJLogPredMethodDecl m, boolean isComprehension) {
      	    if (e instanceof FormulaBinary) {
-	       	  Binary b = (Binary) e;
-	       	  return nf.FormulaBinary(null,  makeESJLogPredBlockHelper(b.left(),quantVarD, m, isComprehension), b.operator(), makeESJLogPredBlockHelper(b.right(), quantVarD, m, isComprehension));
+	       	  FormulaBinary b = (FormulaBinary) e;
+	       	  return nf.FormulaBinary(null,  makeESJLogPredBlockHelper(b.left(),quantVarD, m, isComprehension), b.operator(), makeESJLogPredBlockHelper(b.right(), quantVarD, m, isComprehension), b.kodkodiOp(), b.kodkodOp());
 	    } else if (e instanceof CmpBinary) {
-	       	  Binary b = (Binary) e;
-	       	  return nf.CmpBinary(null, b.left(), b.operator(), b.right());
-	    } else if (e instanceof Binary) {
-	       	  Binary b = (Binary) e;
-	       	  return nf.Binary(null, b.left(), b.operator(), b.right());
+	       	  CmpBinary b = (CmpBinary) e;
+	       	  return nf.CmpBinary(null, b.left(), b.operator(), b.right(), b.kodkodiOp(), b.kodkodOp());
+	    } else if (e instanceof ESJBinary) {
+	       	  ESJBinary b = (ESJBinary) e;
+	       	  return nf.ESJBinary(null, b.left(), b.operator(), b.right(), b.kodkodiOp(), b.kodkodOp());
 	    } else if (e instanceof Conditional) {
 		  Conditional c = (Conditional) e;
 		  return nf.JL5Conditional(null, c.cond(), makeESJLogPredBlockHelper(c.consequent(),quantVarD, m, isComprehension), makeESJLogPredBlockHelper(c.alternative(),quantVarD, m, isComprehension));
@@ -924,7 +924,7 @@ or_predicate_expr ::=
 		  RESULT = a;
 	       else
 		  RESULT = parser.nf.FormulaBinary(parser.pos(a), a,
-		                            Binary.COND_OR, b); 
+						   Binary.COND_OR, b, "||", "or"); 
 	    :}
             ;
 
@@ -941,7 +941,7 @@ and_predicate_expr ::=
 		  RESULT = a;
 	       else
 		  RESULT = parser.nf.FormulaBinary(parser.pos(a), a,
-				            Binary.COND_AND, b); 
+						   Binary.COND_AND, b, "&&", "and"); 
 	    :}
             ;
 
@@ -962,9 +962,15 @@ equality_predicate_expr ::=
 	    {: RESULT = a; :}
     |   relational_predicate_expr:a
             {: RESULT = a; :}
-    |   relational_predicate_expr:a  equality_predicate_op:b
+/*    |   relational_predicate_expr:a  equality_predicate_op:b
             equality_predicate_expr:c
-	        {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, b, c); :} 
+	    {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, b, c); :} */
+    |   relational_predicate_expr:a  EQEQ
+            equality_predicate_expr:c
+	    {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.EQ, c, "=", "eq"); :} 
+    |   relational_predicate_expr:a  NOTEQ
+            equality_predicate_expr:c
+	    {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.NE, c, "=", "ne"); :} 
             ;
 
 equality_predicate_op ::=
@@ -984,9 +990,22 @@ conditional_predicate_expr ::=
 relational_predicate_expr ::=
 	additive_predicate_expr:a
             {: RESULT = a; :}
-    |   additive_predicate_expr:a  relational_predicate_op:b
+/*    |   additive_predicate_expr:a  relational_predicate_op:b
         relational_predicate_expr:c
-	    {: RESULT = parser.nf.CmpBinary(parser.pos(a), a, b, c); :}
+	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, b, c); :}*/
+    |   additive_predicate_expr:a LT
+        relational_predicate_expr:c
+	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.LT, c, "<", "lt"); :}
+    |   additive_predicate_expr:a  LTEQ
+        relational_predicate_expr:c
+	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.LE, c, "<=", "lte"); :}
+    |   additive_predicate_expr:a GT   
+        relational_predicate_expr:c
+	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.GT, c, ">=", "gte"); :}
+    |   additive_predicate_expr:a  GTEQ
+        relational_predicate_expr:c
+	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.GE, c, ">", "gt"); :}
+
     ;
 
 relational_predicate_op ::=
@@ -999,9 +1018,15 @@ relational_predicate_op ::=
 additive_predicate_expr ::=
         multiplicative_predicate_expr:a
 	   {: RESULT = a; :}
-   |    multiplicative_predicate_expr:a additive_predicate_op:b
+/*   |    multiplicative_predicate_expr:a additive_predicate_op:b
         additive_predicate_expr:c
-	   {: RESULT = parser.nf.Binary(parser.pos(a), a, b, c); :}
+	{: RESULT = parser.nf.ESJBinary(parser.pos(a), a, b, c); :}*/
+   |    multiplicative_predicate_expr:a PLUS
+        additive_predicate_expr:c
+	{: RESULT = parser.nf.ESJBinary(parser.pos(a), a, Binary.ADD, c, "+", "plus"); :}
+   |    multiplicative_predicate_expr:a MINUS
+        additive_predicate_expr:c
+	{: RESULT = parser.nf.ESJBinary(parser.pos(a), a, Binary.SUB, c, "-", "minus"); :}
    ;
 
 additive_predicate_op ::=
@@ -1013,11 +1038,11 @@ multiplicative_predicate_expr ::=
         unary_predicate_expr:a
 	   {: RESULT = a; :}
    |    unary_predicate_expr:a MULT multiplicative_predicate_expr:b
-	   {: RESULT = parser.nf.Binary(parser.pos(a), a,
-	                                Binary.MUL, b); :}
+	   {: RESULT = parser.nf.ESJBinary(parser.pos(a), a,
+					   Binary.MUL, b, "*", "multiply"); :}
    |    unary_predicate_expr:a DIV multiplicative_predicate_expr:b
-	   {: RESULT = parser.nf.Binary(parser.pos(a), a,
-	                                Binary.DIV, b); :}
+	   {: RESULT = parser.nf.ESJBinary(parser.pos(a), a,
+					   Binary.DIV, b, "/", "divide"); :}
    ;
 
 unary_predicate_expr ::=
@@ -1255,7 +1280,7 @@ ensured_class_declaration ::=
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.AmbTypeNode(null, parser.currClassName) ,"old", null));
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.AmbTypeNode(null, parser.currClassName), "old", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Field(null, parser.nf.This(null), "old"))), new TypedList(new LinkedList(), TypeNode.class, false))); 
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isOld", null));
-		  //Expr isOldE2 = parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "old"), Binary.EQ, parser.nf.NullLit(null));
+		  //Expr isOldE2 = parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "old"), Binary.EQ, parser.nf.NullLit(null));
 		  Expr isOldE2 = parser.nf.Field(null, parser.nf.This(null), "isOld");
 		  Expr isOldExpr = isOldE2; 
 
@@ -1264,14 +1289,14 @@ ensured_class_declaration ::=
 		  // add a var_log field when obj is being used a quantify var
 		  l.add(parser.nf.JL5FieldDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")),"var_log", null));
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), "var_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Field(null, parser.nf.This(null), "var_log"))), new TypedList(new LinkedList(), TypeNode.class, false))); 
-		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isQuantifyVar", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), Binary.NE, parser.nf.NullLit(null)))), new TypedList(new LinkedList(), TypeNode.class, false)));
+		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isQuantifyVar", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), Binary.NE, parser.nf.NullLit(null)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 
 		  // define a isRelationized mtd and isCloned mtd
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Int()),"relationizerStep", parser.nf.IntLit(null, IntLit.INT, 0)));
-		  l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isRelationized", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "relationizerStep"), Binary.EQ, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "relationizerStep", parser.emptyArgs)))), new TypedList(new LinkedList(), TypeNode.class, false)));
+		  l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isRelationized", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "relationizerStep"), Binary.EQ, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "relationizerStep", parser.emptyArgs)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Int()),"clonerStep", parser.nf.IntLit(null, IntLit.INT, 0)));
-		  l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isCloned", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.Binary(null, parser.nf.Field(null, parser.nf.This(null), "clonerStep"), Binary.EQ, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "clonerStep", parser.emptyArgs)))), new TypedList(new LinkedList(), TypeNode.class, false)));
+		  l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isCloned", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "clonerStep"), Binary.EQ, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "clonerStep", parser.emptyArgs)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 
  	      	 // define a static list to keep instance list
      	      	 List<Flags> fs = new ArrayList<Flags>();
@@ -1291,18 +1316,20 @@ ensured_class_declaration ::=
 		 args2.add(parser.nf.BooleanLit(null, false));
 		 l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs2),  parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogSet")), "allInstances_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "bounds_log", args2))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		 
-		 // define LogObject general log methods (cmpOp, arithOp, etc.)
+		 // define LogObject general log methods (cmpOp, etc.)
 		 TypeNode logFormulaTN = parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula"));
 		 List frms = new TypedList(new LinkedList(), Formal.class, false);
-		 frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.String()), "o"));
+		 frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.String()), "kodkodiOp"));
+		 frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.String()), "kodkodOp"));
 		 frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.primitives.ESJObject")), "o2"));
 		 List lfArgs = new TypedList(new LinkedList(), Expr.class, false);
 		 lfArgs.add(parser.nf.Call(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), "string", parser.emptyArgs));
-		 lfArgs.add(parser.nf.Local(null,"o"));	     
+		 lfArgs.add(parser.nf.Local(null,"kodkodiOp"));
+		 lfArgs.add(parser.nf.Local(null,"kodkodOp"));
 		 lfArgs.add(parser.nf.Call(null, parser.nf.Call(null, parser.nf.Local(null,"o2"), "var_log", parser.emptyArgs), "string", parser.emptyArgs));
 		 l.add(parser.nf.JL5MethodDecl(null, fl1, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
-		 frms.set(1,parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogObject")), "o2"));
-		 lfArgs.set(2,parser.nf.Call(null, parser.nf.Local(null,"o2"), "string", parser.emptyArgs));
+		 frms.set(2,parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogObject")), "o2"));
+		 lfArgs.set(3,parser.nf.Call(null, parser.nf.Local(null,"o2"), "string", parser.emptyArgs));
 		 l.add(parser.nf.JL5MethodDecl(null, fl1, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		 				 
 	      	 // define relationize() and relationizeOld() and clone()...

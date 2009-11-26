@@ -32,10 +32,12 @@ public class ESJJavaTranslator extends ContextVisitor {
     protected ESJNodeFactory nf;
 
     //FIXME 
+    // Globals:
     //static HashMap LogMtdDecls = new HashMap(); 
     static List<String> quantVars;
     static String currLogPredMtdTpName;
     static HashMap LogMtdRetTypes = new HashMap();
+    //static HashMap LogBinaryOps = new HashMap();
     //static boolean isLogVarLogPredMtd;
 
     public ESJJavaTranslator(Job job, TypeSystem ts, NodeFactory jlnf) {
@@ -44,6 +46,21 @@ public class ESJJavaTranslator extends ContextVisitor {
 	//System.out.println("init Translating...");
 	LogMtdRetTypes.put("boolean","LogFormula");
 	LogMtdRetTypes.put("java.lang.Integer","LogInt");
+
+	/*
+	// kodkod binaries
+	LogBinaryOps.put(Binary.NE, "ne");
+	LogBinaryOps.put(Binary.EQ, "eq");
+	LogBinaryOps.put(Binary.LT, "lt");
+	LogBinaryOps.put(Binary.LE, "lte");
+	LogBinaryOps.put(Binary.GT, "gt");
+	LogBinaryOps.put(Binary.GE, "gte");
+	LogBinaryOps.put(Binary.ANDAND, "and");
+	LogBinaryOps.put(Binary.OROR, "or");
+	LogBinaryOps.put(Binary.ADD, "plus");
+	LogBinaryOps.put(Binary.SUB, "minus");
+	LogBinaryOps.put(Binary.MUL, "multiply");
+	LogBinaryOps.put(Binary.DIV, "divide");*/
     }
 
     // FIXME
@@ -74,7 +91,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	Expr call1 = nf.Call(null, null, "verifyInvariants", 
 			     new TypedList(new LinkedList(), Expr.class, false));
 	Expr assertExpr = methodDecl.ensuresExpr() == null ? call1 : 
-	    nf.FormulaBinary(null, call1, Binary.COND_AND, methodDecl.ensuresExpr());
+	    nf.FormulaBinary(null, call1, Binary.COND_AND, methodDecl.ensuresExpr(), "&&", "and");
 	extraMtdBody.add(nf.Eval(null, nf.Call(null, null, "initEnsuredMethod", new TypedList(new LinkedList(), Expr.class, false))));
 	for (Formal f : (List<Formal>) methodDecl.formals()) {
 	    if (f.type().type().isReference() && !f.type().toString().equals("java.lang.Integer")) { //HACK FIXME		
@@ -160,7 +177,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	quantClauseStmts.add(quantMainStmt);	    
 	if (quantKindIsaCount) {
 	    extraMtdBody.add((Stmt) methodDecl.body().statements().get(0));
-	    Expr countViolation = nf.Binary(null, quantCount, Binary.GT, nf.IntLit(null, IntLit.INT, 1));
+	    Expr countViolation = nf.ESJBinary(null, quantCount, Binary.GT, nf.IntLit(null, IntLit.INT, 1), ">", "gt");
 	    Stmt ifC = nf.JL5Return(null, nf.BooleanLit(null, !quantKindBool2));
 	    Stmt quantMainStmt2 = nf.JL5If(null, countViolation, ifC, null);
 	    quantClauseStmts.add(quantMainStmt2);	    
@@ -182,7 +199,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	Stmt retStmt =  
 	    nf.JL5Return(null, 
 			 quantKind == FormulaBinary.ONE ? 
-			 nf.Binary(null, quantCount, Binary.EQ, nf.IntLit(null, IntLit.INT, 1)) :
+			 nf.ESJBinary(null, quantCount, Binary.EQ, nf.IntLit(null, IntLit.INT, 1), "=", "eq") :
 			 isComprehension ? nf.Local(null, "res") :
 			 nf.BooleanLit(null, quantKindBool2));
 	extraMtdBody.add(retStmt);
@@ -260,16 +277,20 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    }
 	    return nf.Block(null, body);
 	} else if (r instanceof FormulaBinary) {
-	    Binary b = (Binary) r;
+	    FormulaBinary b = (FormulaBinary) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    args.add(nf.StringLit(null, b.operator().toString()));
+	    //args.add(nf.StringLit(null, b.operator().toString()));
+	    args.add(nf.StringLit(null, b.kodkodiOp()));
+	    args.add(nf.StringLit(null, b.kodkodOp()));
 	    args.add((Expr) toLogicExpr(b.right()));
 	    return nf.Call(null,(Expr) toLogicExpr(b.left()), "formulaOp", args);
 	} else if (r instanceof CmpBinary) {
-	    Binary b = (Binary) r;
+	    CmpBinary b = (CmpBinary) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    String binOp = b.operator().equals(Binary.EQ) || b.operator().equals(Binary.NE) ? "=" : b.operator().toString();
-	    args.add(nf.StringLit(null, binOp));
+	    //String binOp = b.operator().equals(Binary.EQ) || b.operator().equals(Binary.NE) ? "=" : b.operator().toString();
+	    //args.add(nf.StringLit(null, binOp));
+	    args.add(nf.StringLit(null, b.kodkodiOp()));
+	    args.add(nf.StringLit(null, b.kodkodOp()));
 	    args.add((Expr) toLogicExpr(b.right()));
 	    Call c = nf.Call(null,(Expr) toLogicExpr(b.left()), "cmpOp", args);
 	    if (b.operator().equals(Binary.NE)) {		
@@ -278,9 +299,18 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    } else {
 		return c;
 	    }
+	} else if (r instanceof ESJBinary) {
+	    ESJBinary b = (ESJBinary) r;
+	    List args = new TypedList(new LinkedList(), Expr.class, false);
+	    //args.add(nf.StringLit(null, b.operator().toString()));
+	    args.add(nf.StringLit(null, b.kodkodiOp()));
+	    args.add(nf.StringLit(null, b.kodkodOp()));
+	    args.add((Expr) toLogicExpr(b.right()));
+	    return nf.Call(null,(Expr) toLogicExpr(b.left()), "arithOp", args);
 	} else if (r instanceof Binary) {
 	    Binary b = (Binary) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
+	    args.add(nf.StringLit(null, b.operator().toString()));
 	    args.add(nf.StringLit(null, b.operator().toString()));
 	    args.add((Expr) toLogicExpr(b.right()));
 	    return nf.Call(null,(Expr) toLogicExpr(b.left()), "arithOp", args);
@@ -400,6 +430,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    } else {
 		List args4 = new TypedList(new LinkedList(), Expr.class, false);
 		args4.add(nf.StringLit(null, "&&"));
+		args4.add(nf.StringLit(null, "and"));
 		args4.add((Expr) toLogicExpr(l.init()));
 		probFormula = nf.Call(null, e1, "formulaOp", args4);
 	    }
@@ -434,7 +465,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return r;
 	}
 	else {
-	    throw new RuntimeException("Don't know how to convert " + r.getClass() +
+	    throw new RuntimeException("Don't know how to convert " + r.getClass() + "(" + r + ")" +
 				       " to a Logic expression.");
 				       }
 	}
@@ -480,7 +511,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	for (int i=0; i<fc.multiNames().size(); i++) 
 	    args.add(nf.StringLit(null, (String) fc.multiNames().get(i)));
 	List args0 = new TypedList(new LinkedList(), Expr.class, false);
-	Expr res0 = nf.Binary(null, (Expr) fc.target(), Binary.EQ, nf.NullLit(null));
+	Expr res0 = nf.ESJBinary(null, (Expr) fc.target(), Binary.EQ, nf.NullLit(null));
 	Expr res1 = nf.JL5New(null, nf.CanonicalTypeNode(null, fc.type()), args0, null, new TypedList(new LinkedList(), TypeNode.class, false));
 	Expr res2 = nf.ESJFieldClosureCall(null, r, m, args, fc.kind());
 	Expr res = nf.JL5Conditional(null, res0, res1, res2);

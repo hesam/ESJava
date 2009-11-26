@@ -8,15 +8,15 @@ import polyglot.types.*;
 import polyglot.util.*;
 
 // binary expressions appearing in predicates
-public class FormulaBinary_c extends Binary_c implements FormulaBinary {
+public class ESJBinary_c extends Binary_c implements ESJBinary {
 
     protected String kodkodiOp, kodkodOp;
 
-    public FormulaBinary_c(Position pos, Expr left, Operator op, Expr right) {
+    public ESJBinary_c(Position pos, Expr left, Operator op, Expr right) {
 	this(pos, left, op, right, null, null);
     }
 
-    public FormulaBinary_c(Position pos, Expr left, Operator op, Expr right, String kodkodiOp, String kodkodOp) {
+    public ESJBinary_c(Position pos, Expr left, Operator op, Expr right, String kodkodiOp, String kodkodOp) {
 	super(pos, left, op, right);
 	this.kodkodiOp = kodkodiOp;
 	this.kodkodOp = kodkodOp;
@@ -24,5 +24,6 @@ public class FormulaBinary_c extends Binary_c implements FormulaBinary {
 
     public String kodkodiOp() { return kodkodiOp; }
     public String kodkodOp() { return kodkodOp; }
+
 
 }

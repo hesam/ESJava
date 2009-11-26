@@ -25,9 +25,9 @@ public class LogFormula extends LogObject {
 	super(string, "f" + VarCtr++, decl, listSize, isaListInstVar);
     }
 
-    public LogFormula formulaOp(String o, LogFormula o2) {
-	return new LogFormula("(" + string + " " + o + " " + o2.string() + ")", 
-			      id + "." + o + "(" + o2.id() + ")");
+    public LogFormula formulaOp(String kodkodiOp, String kodkodOp, LogFormula o2) {
+	return new LogFormula("(" + string + " " + kodkodiOp + " " + o2.string() + ")", 
+			      id + "." + kodkodOp + "(" + o2.id() + ")");
     }
 
     public LogFormula formulaOp2(String o, LogFormula o2) {
@@ -38,8 +38,8 @@ public class LogFormula extends LogObject {
 	return new LogFormula(o + "( " + string + ")");
     }
 
-    public static LogFormula binaryOp(String o1, String o, String o2) {
-	return new LogFormula("( " + o1 + " " + o + " " + o2 + ")");
+    public static LogFormula binaryOp(String o1, String kodkodiOp, String kodkodOp, String o2) {
+	return new LogFormula("( " + o1 + " " + kodkodiOp + " " + o2 + ")");
     }
 
     public LogFormula notOp() {

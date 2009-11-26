@@ -19,8 +19,9 @@ public class LogObjAtom extends LogObject {
 	return this;
     }
 
-    public LogFormula cmpOp(String o, LogObject o2) {
-	return new LogFormula("(" + string + " " + o + " " + o2.string() + ")");
+    public LogFormula cmpOp(String kodkodiOp, String kodkodOp, LogObject o2) {
+	return new LogFormula("(" + string + " " + kodkodiOp + " " + o2.string() + ")",
+			      "(" + id + " " + kodkodOp + "(" + o2.id() + ")");
     }
 
 

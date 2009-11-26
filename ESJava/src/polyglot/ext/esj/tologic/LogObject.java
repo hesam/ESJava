@@ -97,18 +97,18 @@ public class LogObject  {
 	return s1 + "." + s2;
     }
 
-    public LogFormula cmpOp(String o, LogObject o2) {
-	return new LogFormula("(" + sumValue_log() + " " + o + " " + o2.sumValue_log() + ")",
-			      id_sumValue_log() + "." + o + "(" + o2.id_sumValue_log() + ")");
+    public LogFormula cmpOp(String kodkodiOp, String kodkodOp, LogObject o2) {
+	return new LogFormula("(" + sumValue_log() + " " + kodkodiOp + " " + o2.sumValue_log() + ")",
+			      id_sumValue_log() + "." + kodkodOp + "(" + o2.id_sumValue_log() + ")");
     }
 
     public LogFormula cmpOp2(String o, LogObject o2) {
 	return new LogFormula(sumValue_log2() + "." + o + "(" + o2.sumValue_log2() + ")");
     }
 
-    public LogFormula cmpOp(String o, ESJObject o2) {
-	return new LogFormula("(" + sumValue_log() + " " + o + " " + o2.var_log().sumValue_log() + ")",
-			      id_sumValue_log() + "." + o + "(" + o2 + ")");
+    public LogFormula cmpOp(String kodkodiOp, String kodkodOp, ESJObject o2) {
+	return new LogFormula("(" + sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")",
+			      id_sumValue_log() + "." + kodkodOp + "(" + o2 + ")");
     }
 
     public LogFormula cmpOp2(String o, ESJObject o2) {

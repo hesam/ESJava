@@ -97,12 +97,28 @@ public class ESJNodeFactory_c extends JL5NodeFactory_c
 	return new ESJQuantifyTypeExpr_c(pos, theType);
     }
 
+    public ESJBinary ESJBinary(Position pos, Expr left, Binary.Operator op, Expr right, String kodkodiOp, String kodkodOp) {
+	return new ESJBinary_c(pos, left, op, right, kodkodiOp, kodkodOp);
+    }
+
+    public ESJBinary ESJBinary(Position pos, Expr left, Binary.Operator op, Expr right) {
+	return new ESJBinary_c(pos, left, op, right);
+    }
+
+    public FormulaBinary FormulaBinary(Position pos, Expr left, Binary.Operator op, Expr right, String kodkodiOp, String kodkodOp) {
+	return new FormulaBinary_c(pos, left, op, right, kodkodiOp, kodkodOp);
+    }
+
     public FormulaBinary FormulaBinary(Position pos, Expr left, Binary.Operator op, Expr right) {
-	return new FormulaBinary_c(pos, left, op,  right);
+	return new FormulaBinary_c(pos, left, op, right);
+    }
+
+    public CmpBinary CmpBinary(Position pos, Expr left, Binary.Operator op, Expr right, String kodkodiOp, String kodkodOp) {
+	return new CmpBinary_c(pos, left, op, right, kodkodiOp, kodkodOp);
     }
 
     public CmpBinary CmpBinary(Position pos, Expr left, Binary.Operator op, Expr right) {
-	return new CmpBinary_c(pos, left, op,  right);
+	return new CmpBinary_c(pos, left, op, right);
     }
     
     public ESJFieldDecl ESJFieldDecl(Position pos, FlagAnnotations flags, TypeNode type, String name, Expr init, boolean isOld) {

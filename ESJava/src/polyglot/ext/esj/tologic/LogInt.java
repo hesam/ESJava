@@ -41,19 +41,19 @@ public class LogInt extends LogObject {
 	return id;
     }
 
-    public LogInt arithOp(String o, LogObject o2) {
-	return new LogInt("(" + string + " " + o + " " + o2.sumValue_log() + ")",
-			  id() + "." + o + "(" + o2.id_sumValue_log() + ")");
+    public LogInt arithOp(String kodkodiOp, String kodkodOp, LogObject o2) {
+	return new LogInt("(" + string + " " + kodkodiOp + " " + o2.sumValue_log() + ")",
+			  id() + "." + kodkodOp + "(" + o2.id_sumValue_log() + ")");
     }
 
-    public LogInt arithOp(String o, ESJObject o2) {
-	return new LogInt("(" + string + " " + o + " " + o2.var_log().sumValue_log() + ")",
-			  id() + "." + o + "(" + o2.var_log().id_sumValue_log() + ")");
+    public LogInt arithOp(String kodkodiOp, String kodkodOp, ESJObject o2) {
+	return new LogInt("(" + string + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")",
+			  id() + "." + kodkodOp + "(" + o2.var_log().id_sumValue_log() + ")");
     }
 
-    public LogInt arithOp(String o, Integer o2) {
-	return new LogInt("(" + string + " " + o + " " + (o2+"") + ")",
-			  id() + "." + o + "(IntConstant.constant(" + o2 + "))");
+    public LogInt arithOp(String kodkodiOp, String kodkodOp, Integer o2) {
+	return new LogInt("(" + string + " " + kodkodiOp + " " + (o2+"") + ")",
+			  id() + "." + kodkodOp + "(IntConstant.constant(" + o2 + "))");
     }
 
     public LogInt arithOp2(String o, LogObject o2) {
