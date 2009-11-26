@@ -413,11 +413,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 		return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObjAtom")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
 	    } else {
 		
-		//return instVarGet_log(f.target(), f.name(), f.type());
-		//return nf.Field(null, (Receiver) toLogicExpr(f.target()), f.name() + "_log");
-		//String def = "_log";
-		//if (f.target() instanceof Field && ((Field) f.target()).name().equals("old")) //FIXMe
-		//def = "_old_log";
 		String m = f.name() + (f.name().equals("result") ? ("_" + currLogPredMtdTpName) : "") + (f.name().equals("old") ? "" : "_log"); //FIXME
 		return nf.Call(null, (Receiver) toLogicExpr(f.target()), m, args);
 	    }

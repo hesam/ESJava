@@ -68,7 +68,7 @@ public class LogRelation extends Hashtable {
 	this.isaMapInstVar = isaMapInstVar;
 	this.isaCollectionInstVar = isaListInstVar || isaMapInstVar;
 	this.isaList = isaList;
-	this.id = (isaCollectionInstVar ? "m3_" : (isResultVar ? "s" : "r")) + this.RelCtr++;
+	this.id = isResultVar ? "s0" : ((isaCollectionInstVar ? "m3_" : "r") + this.RelCtr++);
 	this.isRangeEnum = range.isEnum();
 	if (isaCollectionInstVar && isUnknown) {
 	    this.subRels = new ArrayList();	    

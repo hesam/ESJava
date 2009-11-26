@@ -10,7 +10,7 @@ public class LogFormula extends LogObject {
     static int VarCtr = 0;
 
     public LogFormula(boolean b) {
-	this(b+"", b+"", 0, false);
+	this(b+"", "Formula." + (b ? "TRUE" : "FALSE"), 0, false);
     }
 
     public LogFormula(String string) {
@@ -22,7 +22,7 @@ public class LogFormula extends LogObject {
     }
 
     public LogFormula(String string, String decl, int listSize, boolean isaListInstVar) {
-	super(string, "f" + VarCtr++, decl, listSize, isaListInstVar);
+	super(string, "f" + VarCtr++, "Formula", decl, listSize, isaListInstVar);
     }
 
     public LogFormula formulaOp(String kodkodiOp, String kodkodOp, LogFormula o2) {

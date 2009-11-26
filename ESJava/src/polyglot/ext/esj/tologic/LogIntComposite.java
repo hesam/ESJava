@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 public class LogIntComposite extends LogObject {
 
+    static int VarCtr = 0;
+
     public LogIntComposite(String string) {
 	this(string, null, 0, false);
     }
@@ -16,7 +18,7 @@ public class LogIntComposite extends LogObject {
     }
 
     public LogIntComposite(String string, String decl, int listSize, boolean isaListInstVar) {
-	super(string, decl, listSize, isaListInstVar);
+	super(string, "i" + VarCtr++, "IntExpression", decl, listSize, isaListInstVar);
     }
 
     public String sumValue_log() {

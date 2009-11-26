@@ -21,7 +21,7 @@ public class LogVar extends LogObject {
     }
 
     public LogVar(String string, String decl, Class logType, int listSize, boolean isaListInstVar) {
-	super(string, "e" + VarCtr++, decl, listSize, isaListInstVar);
+	super(string, "e" + VarCtr++, "Expression", decl, listSize, isaListInstVar);
 	this.logType = logType;
     }
 

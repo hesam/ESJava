@@ -13,6 +13,7 @@ public class LogObject  {
     protected String string;
     protected String id;
     protected String decl;
+    protected String kodkodType;
     protected int listSize;
     protected boolean isaListInstVar;
 
@@ -21,26 +22,27 @@ public class LogObject  {
     public static String allDecls() { return allDecls.toString(); }
 
     public LogObject(String string) {
-	this(string, "o" + VarCtr++, null, 0, false);
+	this(string, "o" + VarCtr++, null, null, 0, false);
     }
 
     public LogObject(String string, int listSize, boolean isaListInstVar) {
-	this(string, "o" + VarCtr++, null, listSize, isaListInstVar);
+	this(string, "o" + VarCtr++, null, null, listSize, isaListInstVar);
     }
 
-    public LogObject(String string, String id, int listSize, boolean isaListInstVar) {
-	this(string, id, null, listSize, isaListInstVar);
+    public LogObject(String string, String id, String kodkodType, int listSize, boolean isaListInstVar) {
+	this(string, id, kodkodType, null, listSize, isaListInstVar);
     }
 
-    public LogObject(String string, String id, String decl, int listSize, boolean isaListInstVar) {
+    public LogObject(String string, String id, String kodkodType, String decl, int listSize, boolean isaListInstVar) {
 	super();
 	this.string = string;
 	this.id = id;
+	this.kodkodType = kodkodType;
 	this.decl = id + " = " + decl + ";\n";
 	this.listSize = listSize;
 	this.isaListInstVar = isaListInstVar;
 	if (string != null)
-	    allDecls.append(this.decl +"\t" + string +"\n");
+	    allDecls.append(kodkodType + " " + this.decl +"\t" + string +"\n");
     }
 
     public static String genVar_log() {
@@ -50,6 +52,8 @@ public class LogObject  {
     public String id() { return id; }
 
     public String decl() { return decl; }
+
+    public String kodkodType() { return kodkodType; }
 
     public String string() {
 	return string;

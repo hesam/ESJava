@@ -22,7 +22,7 @@ public class LogInt extends LogObject {
     }
 
     public LogInt(String string, String decl, int listSize, boolean isaListInstVar) {
-	super(string, "i" + VarCtr++, decl, listSize, isaListInstVar);
+	super(string, "i" + VarCtr++, "IntExpression", decl, listSize, isaListInstVar);
     }
 
     public LogObject intValue_log() {
