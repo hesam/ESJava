@@ -39,12 +39,13 @@ public class Test {
     public void a(Integer v) { this.a = v; }
     public void b(Integer v) { this.b = v; }
 
+    /*
     public pure Integer twice(Integer i)
-	ensures result == 2*i+this.a {
+	ensures result == 2 *i+this.a {
 	int z = 1/0;
 	return 2*i+this.a;
     }
-
+    */
     /*
     public pure Point pick()
 	ensures result != null && result.x > 4 && result.y > 0 {
@@ -56,7 +57,9 @@ public class Test {
 	ensures this.map.get(this.points.get(0)) == 0//this.map.get(this.points.get(0)) == 12 
     {  }
     */
-    public void foo() ensures 1 == this.a { }
+    public void foo() 
+	ensures 1 == this.a 
+    { }
 
     public String toString() { return "(" + a + "," + b + ")"; }
 
@@ -66,10 +69,11 @@ public class Test {
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
-	System.out.println(t1.twice(5));
+	//System.out.println(t1.twice(5));
 	/*System.out.println(t1.pick());
 	t1.blah();*/
-	//t1.foo();
+	t1.foo();
+	System.out.println(t1);
     }
 
 }

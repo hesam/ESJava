@@ -2,6 +2,14 @@ package polyglot.ext.esj.primitives;
 
 import polyglot.ext.esj.tologic.*;
 
+import kodkod.ast.Expression;
+import kodkod.ast.Relation;
+import kodkod.instance.TupleSet;
+import kodkod.instance.TupleFactory;
+import kodkod.instance.Bounds;
+
+import java.util.HashMap;
+
 import java.io.CharArrayWriter;
 
 public final class ESJInteger extends Number implements Comparable<ESJInteger>, ESJObject
@@ -718,6 +726,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       MIN_VALUE = min;
       MAX_VALUE = max;
       int i;
+      LogMap.resetMaps();
       for(i=min;i<=max;i++) {
 	  int i_log = log(i);
 	  LogMap.put1(i,i_log);
@@ -815,6 +824,25 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 	  }
 	  res.append("{A" + log(MAX_VALUE) + "}]");
 	  return res.toString();
+  }
+
+  public static void intBounds_log2() {
+
+      Bounds bounds = LogMap.ProblemBounds();
+      TupleFactory factory = LogMap.ProblemFactory();
+      HashMap<Class,Expression> ClassRels = LogMap.ClassRels();
+
+      Relation Ints = Relation.unary("Ints");
+      TupleSet Ints_upper = factory.noneOf(1);
+
+      for(int i=MIN_VALUE;i<MAX_VALUE;i++) {
+	  Object ti = log(i); //_str(i);
+	  bounds.boundExactly(i,factory.range(factory.tuple(ti),factory.tuple(ti)));
+	  Ints_upper.add(factory.tuple(ti));
+      }
+      bounds.boundExactly(Ints, Ints_upper);
+      ClassRels.put(int.class, Ints); 
+      ClassRels.put(Integer.class, Ints);
   }
 
   public static ESJList<Integer> allInstances() {

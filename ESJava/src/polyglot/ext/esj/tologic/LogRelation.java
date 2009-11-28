@@ -12,11 +12,19 @@ import java.util.AbstractMap;
 import java.util.Iterator;
 import java.io.CharArrayWriter;
 
+import kodkod.ast.Relation;
+import kodkod.ast.Expression;
+import kodkod.ast.Formula;
+import kodkod.instance.Bounds;
+import kodkod.instance.TupleSet;
+
+
 public class LogRelation extends Hashtable {
 
     static int RelCtr = 0;
 
     protected String id;
+    protected Relation kodkodRel;
     protected String instVar;
     protected Class domain;
     protected String domainName;
@@ -31,24 +39,29 @@ public class LogRelation extends Hashtable {
     protected boolean isRangeEnum;
 
     public LogRelation(String instVar, Class domain, Class range) {
-	this(instVar, domain, range, null, false, false, false, false, false, 0);
-    }
-
-    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, boolean isaListInstVar, boolean isaMapInstVar){
-	this(instVar, domain, range, indexingDomain, isaListInstVar, isaMapInstVar, false, false, false, 0);
-    }
-
-    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, boolean isaListInstVar, boolean isaMapInstVar, boolean isUnknown){
-	this(instVar, domain, range, indexingDomain, isaListInstVar, isaMapInstVar, isUnknown, false, false, 0);
-    }
-
-    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, boolean isaListInstVar, boolean isaMapInstVar, boolean isUnknown, boolean isResultVar){
-	this(instVar, domain, range, indexingDomain, isaListInstVar, isaMapInstVar, isUnknown, isResultVar, false, 0);
+	this(instVar, domain, range, null, null, false, false, false, false, false, 0);
     }
 
     public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, 
-		       boolean isaListInstVar, boolean isaMapInstVar, boolean isUnknown, 
-		       boolean isResultVar, boolean isaList, int fixedSize) {
+		       Relation kodkodRel, boolean isaListInstVar, boolean isaMapInstVar){
+	this(instVar, domain, range, indexingDomain, kodkodRel, isaListInstVar, isaMapInstVar, false, false, false, 0);
+    }
+
+    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, 
+		       Relation kodkodRel, boolean isaListInstVar, boolean isaMapInstVar, 
+		       boolean isUnknown){
+	this(instVar, domain, range, indexingDomain, kodkodRel, isaListInstVar, isaMapInstVar, isUnknown, false, false, 0);
+    }
+
+    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, 
+		       Relation kodkodRel, boolean isaListInstVar, boolean isaMapInstVar, 
+		       boolean isUnknown, boolean isResultVar){
+	this(instVar, domain, range, indexingDomain, kodkodRel, isaListInstVar, isaMapInstVar, isUnknown, isResultVar, false, 0);
+    }
+
+    public LogRelation(String instVar, Class domain, Class range, Class indexingDomain, 
+		       Relation kodkodRel, boolean isaListInstVar, boolean isaMapInstVar, 
+		       boolean isUnknown, boolean isResultVar, boolean isaList, int fixedSize) {
 	super();
 	this.instVar = instVar;
 	this.domain = domain;
@@ -64,6 +77,7 @@ public class LogRelation extends Hashtable {
 	this.fixedSize = fixedSize;
 	this.isUnknown = isUnknown;
 	this.isResultVar = isResultVar;
+	this.kodkodRel = kodkodRel;
 	this.isaListInstVar = isaListInstVar;
 	this.isaMapInstVar = isaMapInstVar;
 	this.isaCollectionInstVar = isaListInstVar || isaMapInstVar;
@@ -72,7 +86,7 @@ public class LogRelation extends Hashtable {
 	this.isRangeEnum = range.isEnum();
 	if (isaCollectionInstVar && isUnknown) {
 	    this.subRels = new ArrayList();	    
-	    this.subRels.add(new LogRelation(instVar + "_subrel", indexingDomain, range, null, false, false, true, false));
+	    this.subRels.add(new LogRelation(instVar + "_subrel", indexingDomain, range, null, null, false, false, true, false));
 	}
 	if (LogMap.SolverOpt_debug1())
 	    System.out.println("new relation " + this.id + " " + instVar + " old: " + !isUnknown);
@@ -95,6 +109,8 @@ public class LogRelation extends Hashtable {
     public void fixedSize(int s) { fixedSize = s; }
     public void incrFixedSize() { fixedSize++; }
     public void range(Class range) { this.range = range; }
+    public Relation kodkodRel() { return kodkodRel; }
+    public void kodkodRel(Relation rel) { this.kodkodRel = rel; }
 
     public boolean isModifiable(HashMap modifiableFields) {
 	return modifiableFields == null || isResultVar ||
@@ -106,13 +122,34 @@ public class LogRelation extends Hashtable {
 	return isaList ? ESJInteger.zeroTo_log(fixedSize).string() : LogMap.bounds_log(domain, false, false).string();
     }
 
+    public Expression domain_log2() { 
+	return isaList ? null /* FIXME ESJInteger.zeroTo_log(fixedSize).string()*/  : 
+	    LogMap.bounds_log2(domain, false, false);
+    }
+
     public String range_log(boolean isBoundsDef, Class resultVarType) { 
 	// have to add 'null' to the set of possible values for the ref field
 	return LogMap.bounds_log(isResultVar ? resultVarType : range, !isRangeEnum, isBoundsDef).string();
     }
 
-    public String fullDomainRange(Class resultVarType) {
+    public Expression range_log2(boolean isBoundsDef, Class resultVarType) { 
+	// have to add 'null' to the set of possible values for the ref field
+	return LogMap.bounds_log2(isResultVar ? resultVarType : range, !isRangeEnum, isBoundsDef);
+    }
+
+    public String fullDomainRange_log(Class resultVarType) {
 	return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
+    }
+
+    public TupleSet fullDomainRange_log2(Class resultVarType) {
+	Relation d = (Relation) domain_log2();
+	Relation r = (Relation) range_log2(true, resultVarType);
+	TupleSet dB = LogMap.ProblemBounds.upperBound(d);
+	TupleSet rB = LogMap.ProblemBounds.upperBound(r);
+	TupleSet res = dB.product(rB);
+	//return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
+	System.out.println("hi: " + d + " " + dB + "\n" + r + " " + rB +  "\n" + res); // upperBound(r));
+	return res;
     }
 
     // FIXME
@@ -120,6 +157,10 @@ public class LogRelation extends Hashtable {
 	return (fixedSize > 0 ? 
 		ESJInteger.zeroTo_log(fixedSize-1).string() : 
 		LogMap.bounds_log(indexingDomain, false, false).string()) + "->";
+    }
+
+    public Expression listInstVarDomain_log2() {
+	return null;
     }
    
     // FIXME
@@ -159,6 +200,81 @@ public class LogRelation extends Hashtable {
 	if (isUnknown) {
 	    if (modifiableObjects == null)
 		return "{}";	    
+	    filterObjects = true;
+	    r = LogMap.instVarRelOld_log(this);
+	    HashSet sNew = new HashSet();
+	    for (Object k : r.keySet())
+		if (!modifiableObjects.contains(k))
+		    sNew.add(k);
+	    s = sNew;
+	}
+	CharArrayWriter o = new CharArrayWriter();
+	o.append("{");
+	Iterator itr = s.iterator();
+	for (int i=0;i<s.size()-1;i++) {
+	    Object k = itr.next();
+	    Object v = r.get(k);
+	    if (v instanceof ArrayList) {
+		if (isaCollectionInstVar) {
+		    ArrayList lv = (ArrayList) v;
+		    int lvs = lv.size() - 1;
+		    for(int c = 0; c <= lvs; c++)
+			o.append("[A" + k + ", A" + ESJInteger.log(c) + ", A" + lv.get(c) + "], ");
+		} else {
+		    for(Object e : (ArrayList) v)
+			o.append("[A" + k + ", A" + e + "], ");
+		}
+	    } else if (v instanceof HashMap) {
+		HashMap lv = (HashMap) v;
+		ArrayList keys = new ArrayList(lv.keySet());
+		int lvs = keys.size() - 1;
+		for(int c = 0; c <= lvs; c++) {
+		    Object theKey = keys.get(c);
+		    o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "], ");
+		}
+	    } else
+		o.append("[A" + k + ", A" + v + "], ");
+	}
+	if (itr.hasNext()) {
+	    Object k = itr.next();
+	    Object v = r.get(k);
+	    if (v instanceof ArrayList) {
+		ArrayList lv = (ArrayList) v;
+		int lvs = lv.size() - 1;
+		if (isaCollectionInstVar) {
+		    for(int c = 0; c < lvs; c++)
+			o.append("[A" + k + ", A" + ESJInteger.log(c) + ", A" + lv.get(c) + "],");
+		    o.append("[A" + k + ", A" + ESJInteger.log(lvs) + ", A" + lv.get(lvs) + "]");
+		} else {
+		    for(int c = 0; c < lvs; c++) {
+			o.append("[A" + k + ", A" + lv.get(c) + "],");
+		    }
+		    o.append("[A" + k + ", A" + lv.get(lvs) + "]");
+		}
+	    } else if (v instanceof HashMap) {
+		HashMap lv = (HashMap) v;
+		ArrayList keys = new ArrayList(lv.keySet());
+		int lvs = keys.size() - 1;
+		for(int c = 0; c < lvs; c++) {
+		    Object theKey = keys.get(c);
+		    o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "],");
+		}
+		Object theKey = keys.get(lvs);
+		o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "]");
+	    } else
+		o.append("[A" + k + ", A" + v + "]");
+	}
+	o.append("}");
+	return o.toString();
+    }
+
+    public TupleSet lowerBound_log2(HashSet<?> modifiableObjects) {
+	LogRelation r = this;
+	boolean filterObjects = false;
+	Set s = r.keySet();
+	if (isUnknown) {
+	    if (modifiableObjects == null)
+		return null;	    
 	    filterObjects = true;
 	    r = LogMap.instVarRelOld_log(this);
 	    HashSet sNew = new HashSet();
@@ -225,20 +341,39 @@ public class LogRelation extends Hashtable {
 		o.append("[A" + k + ", A" + v + "]");
 	}
 	o.append("}");
-	return o.toString();
+	return null;
     }
 
     public String log(HashSet<?> modifiableObjects, Class resultVarType) {
 	String lower = lowerBound_log(modifiableObjects);
 	if (isUnknown()) {
 	    CharArrayWriter o = new CharArrayWriter();
-	    o.append("[" + lower + ", " + fullDomainRange(resultVarType) + "]");
+	    o.append("[" + lower + ", " + fullDomainRange_log(resultVarType) + "]");
 	    if (isaCollectionInstVar)
 		for (LogRelation s : (ArrayList<LogRelation>) subRels)
 		    o.append("\nbounds " + s.id() + ": [{}, " +  listInstVarDomain_log() + range_log(false, null) + "] ");
 	    return o.toString();
 	}
 	return lower;
+    }
+
+    public void log2(HashSet<?> modifiableObjects, Class resultVarType) {
+	TupleSet lower = lowerBound_log2(modifiableObjects);
+	if (isUnknown()) {
+	    TupleSet upper = fullDomainRange_log2(resultVarType);
+
+	    if (isaCollectionInstVar)
+		for (LogRelation s : (ArrayList<LogRelation>) subRels) {
+		    //LogMap.ProblemBounds.bound(s.kodkodRel(), range_log2(false, null));
+	            //o.append("\nbounds " + s.id() + ": [{}, " +  listInstVarDomain_log() + range_log(false, null) + "] ");
+		}
+	    if (lower == null) 
+		LogMap.ProblemBounds.bound(kodkodRel, upper);
+	    else
+		LogMap.ProblemBounds.bound(kodkodRel, lower, upper);
+	} else {
+	    LogMap.ProblemBounds.boundExactly(kodkodRel, lower);
+	}
     }
 
     public String funDef_log() {
@@ -256,6 +391,28 @@ public class LogRelation extends Hashtable {
 	    o.append("FUNCTION(" + id + ", " + d + "->one " + r + ") && ");
 	}
 	return o.toString();
+    }
+
+    public Formula funDef_log2() {
+	if (isResultVar)
+	    return kodkodRel.one();
+	Formula f = null;
+	Expression r = range_log2(false, null);
+	if (isaCollectionInstVar) {
+	    Expression d = listInstVarDomain_log2();	    
+	    for (LogRelation s : (ArrayList<LogRelation>) subRels) {
+		//o.append("FUNCTION(" + s.id() + ", " + d + "one " + r + ") && (" + 
+		// domain_log2() + "." + id + " = " + s.id() + ") && ");
+		Relation sRel = s.kodkodRel();
+		Formula fNew = sRel.function(d,r).and(domain_log2().join(kodkodRel).eq(sRel));
+		f = f == null ? fNew : f.and(fNew);
+	    }
+	} else {
+	    Expression d = domain_log2();	    
+	    //o.append("FUNCTION(" + id + ", " + d + "->one " + r + ") && ");
+	    f = kodkodRel.function(d,r);
+	}
+	return f;
     }
 
 }

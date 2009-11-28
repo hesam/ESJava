@@ -44,8 +44,8 @@ public class ESJList<E> extends ArrayList<E> {
     public void relationize() {
 	if (!isRelationized()) { 
 	    this.relationizerStep++;
-	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, false, false, true, false, true, size());
-	    old.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, false, false, false, false, true, size());
+	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, null, false, false, true, false, true, size());
+	    old.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, null, false, false, false, false, true, size());
 	    int i = 0;
 	    // FIXME
 	    for (Object e : (ESJList<Object>) this) {
@@ -120,7 +120,7 @@ public class ESJList<E> extends ArrayList<E> {
     /*
     public ESJList<E> copy(int from, int to) { 
 	ESJList<E> res = new ESJList<E>();
-	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, false, false, true, false, true, size());
+	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, null, false, false, true, false, true, size());
 	for (int i = from; i <= to; i++) {
 	    E itm = get(i);
 	    res.add(itm); 

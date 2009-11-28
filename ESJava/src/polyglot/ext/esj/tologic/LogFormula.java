@@ -2,6 +2,8 @@ package polyglot.ext.esj.tologic;
 
 import polyglot.ext.esj.primitives.*;
 
+import kodkod.ast.Formula;
+
 import java.util.Hashtable;
 import java.util.ArrayList;
 
@@ -40,6 +42,10 @@ public class LogFormula extends LogObject {
 
     public static LogFormula binaryOp(String o1, String kodkodiOp, String kodkodOp, String o2) {
 	return new LogFormula("( " + o1 + " " + kodkodiOp + " " + o2 + ")");
+    }
+
+    public static Formula binaryOp2(String o1, String kodkodiOp, String kodkodOp, String o2) {
+	return null;
     }
 
     public LogFormula notOp() {
