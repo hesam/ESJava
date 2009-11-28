@@ -145,7 +145,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 
 	JL5If fbCall = nf.JL5If(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "SolverOpt_Kodkodi", emptyArgs), nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback", args)), nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback2", args)));
 
-	catchBody.add(isVoid ? fbCall : nf.JL5Return(null, nf.JL5Conditional(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "SolverOpt_kodkodi", emptyArgs), nf.Call(null, null, methodDecl.name() + "_fallback", args), nf.Call(null, null, methodDecl.name() + "_fallback2", args))));
+	catchBody.add(isVoid ? fbCall : nf.JL5Return(null, nf.JL5Conditional(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "SolverOpt_Kodkodi", emptyArgs), nf.Call(null, null, methodDecl.name() + "_fallback", args), nf.Call(null, null, methodDecl.name() + "_fallback2", args))));
 	Block catchBlock = nf.Block(null,catchBody);
 	catches.add(nf.JL5Catch(null, methodDecl.catchFormal(), catchBlock));
 	List mainBody = new TypedList(new LinkedList(), Stmt.class, false);
@@ -552,10 +552,18 @@ public class ESJJavaTranslator extends ContextVisitor {
 	} else if (r instanceof CmpBinary) {
 	    CmpBinary b = (CmpBinary) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    Expr rt = (Expr) toLogicExpr2(b.right());
-	    Expr rts = nf.Call(null,rt, "sum", emptyArgs);
-	    args.add(rts);
-	    Call c = nf.Call(null,(Expr) toLogicExpr2(b.left()), b.kodkodOp(), args);
+	    Expr lf = b.left();
+	    Expr rt = b.right();
+	    Expr lfLog = (Expr) toLogicExpr2(b.left());
+	    Expr rtLog = (Expr) toLogicExpr2(b.right());
+	    
+	    // FIXME
+ 	    if (!(lf instanceof IntLit || lf instanceof Local || lf instanceof ESJBinary || (lfLog instanceof Call && ((Call)lfLog).name().equals("sum"))))
+		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
+	    if (!(rt instanceof IntLit || rt instanceof Local || rt instanceof ESJBinary || (rtLog instanceof Call && ((Call)rtLog).name().equals("sum"))))
+		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+	    args.add(rtLog);
+	    Call c = nf.Call(null, lfLog, b.kodkodOp(), args);
 	    if (b.operator().equals(Binary.NE)) {		
 		return nf.Call(null,c, "notOp", 
 			       new TypedList(new LinkedList(), Expr.class, false));
@@ -565,9 +573,17 @@ public class ESJJavaTranslator extends ContextVisitor {
 	} else if (r instanceof ESJBinary) {
 	    ESJBinary b = (ESJBinary) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    Expr rt = (Expr) toLogicExpr2(b.right());
-	    args.add(rt);
-	    return nf.Call(null,(Expr) toLogicExpr2(b.left()), b.kodkodOp(), args);
+	    Expr lf = b.left();
+	    Expr rt = b.right();
+	    Expr lfLog = (Expr) toLogicExpr2(b.left());
+	    Expr rtLog = (Expr) toLogicExpr2(b.right());
+	    // FIXME
+ 	    if (!(lf instanceof IntLit || lf instanceof Local || lf instanceof ESJBinary || (lfLog instanceof Call && ((Call)lfLog).name().equals("sum"))))
+		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
+	    if (!(rt instanceof IntLit || rt instanceof Local || rt instanceof ESJBinary || (rtLog instanceof Call && ((Call)rtLog).name().equals("sum"))))
+		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+	    args.add(rtLog);
+	    return nf.Call(null, lfLog, b.kodkodOp(), args);
 	} else if (r instanceof Binary) {
 	    Binary b = (Binary) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
@@ -693,6 +709,12 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    LocalDecl l = (LocalDecl) r;
 	    return r;
 	} else if (r instanceof Local) {
+	    // HACK FIXME
+	    if (((Expr)r).type().toString().equals("java.lang.Integer")) {
+		List args = new TypedList(new LinkedList(), Expr.class, false);
+		args.add(r);
+		return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.IntConstant")), "constant", args);
+	    }	      
 	    return r;
 	}  else if (r instanceof Special) {
 	    return r;

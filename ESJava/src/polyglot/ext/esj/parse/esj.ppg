@@ -431,7 +431,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
 		 TypeNode ivgRT2 = this.nf.CanonicalTypeNode(null, this.ts.typeForName("kodkod.ast.Expression"));
 		 List instVarGetBody2 = new TypedList(new LinkedList(), Stmt.class, false);
-		 Expr ivgExpr2 = isReservedField ? this.nf.Call(null, this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "getResultVarRel_log2", args3p), "id", emptyArgs) : this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objInstVarStr_log2", args3p);
+		 Expr ivgExpr2 = isReservedField ? this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "getResultVarRel_log2", args3p) : this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objInstVarStr_log2", args3p);
 		 instVarGetBody2.add(this.nf.JL5Return(null, ivgExpr2));
 		 l.add(this.nf.JL5MethodDecl(null, this.makeFlagAnnotations(fs), ivgRT2, dName+xtraAdder+"_log2", this.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), this.nf.Block(null, instVarGetBody2), new TypedList(new LinkedList(), TypeNode.class, false)));		     
 
@@ -1028,10 +1028,10 @@ relational_predicate_expr ::=
 	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.LE, c, "<=", "lte"); :}
     |   additive_predicate_expr:a GT   
         relational_predicate_expr:c
-	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.GT, c, ">=", "gte"); :}
+	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.GT, c, ">", "gt"); :}
     |   additive_predicate_expr:a  GTEQ
         relational_predicate_expr:c
-	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.GE, c, ">", "gt"); :}
+	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.GE, c, ">e", "gte"); :}
 
     ;
 

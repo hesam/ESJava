@@ -55,7 +55,7 @@ public class LogMap {
     static HashMap JtoLog2; // = new HashMap(); // Java Objs to Kodkod (singleton) relations
     static HashMap LogtoJ; // = new HashMap(); 
     static HashMap ProblemRels; // Holds relations for given problem  
-    static HashMap<Class,Expression> ClassRels; // Holds kodkod relations for each class
+    static HashMap<Object,Expression> ClassRels; // Holds kodkod relations for each class
     static ArrayList<Integer> ProblemAtoms; // = new HashSet(); // kodkod atoms
     static Bounds ProblemBounds; // kodkod bounds
     static TupleFactory ProblemFactory; // kodkod factory
@@ -110,7 +110,7 @@ public class LogMap {
     public static HashMap ProblemRels() { return ProblemRels; }
     public static TupleFactory ProblemFactory() { return ProblemFactory; }
     public static Bounds ProblemBounds() { return ProblemBounds; }
-    public static HashMap<Class,Expression> ClassRels() { return ClassRels; }
+    public static HashMap<Object,Expression> ClassRels() { return ClassRels; }
 
     public static void resetMaps() {
 	JtoLog = new HashMap();
@@ -127,7 +127,7 @@ public class LogMap {
 	ESJInteger.setBounds(ESJInteger.MIN_VALUE,ESJInteger.MAX_VALUE);
 	*/
 	ProblemRels = new HashMap();
-	ClassRels = new HashMap<Class,Expression>();
+	ClassRels = new HashMap<Object,Expression>();
 
 	AtomCtr = ESJInteger.BoundsSize()+1;
 	relationizerStep++;
@@ -299,7 +299,8 @@ public class LogMap {
 		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
 	    }
 	}
-	Relation r2 = Relation.nary(c.getName() + "." + k, 2);
+	String rN = c.getName() + "." + k;
+	Relation r2 = isResultVar ? Relation.unary(rN) : Relation.nary(rN, 2);
 	LogRelation r = new LogRelation(instVar, domain, range, indexingDomain, r2, isaList, isaMap, isUnknown, isResultVar);
 
 	if (!InstVarRels.containsKey(c)) {
@@ -345,6 +346,8 @@ public class LogMap {
     }
 
     public static Relation getResultVarRel_log2(Object obj) {
+	LogRelation r = getResultVarRel_log(obj);
+	LogMap.addAsProblemRel(r,r.id());
 	return (Relation) ((HashMap) InstVarRels2.get(obj.getClass())).get("result");
     }
 
@@ -364,11 +367,17 @@ public class LogMap {
     public static Expression objInstVarStr_log2(ESJObject obj, String instVar, Class c) {
 	Relation s1 = get1_log2(obj); //obj.isQuantifyVar() ? obj.var_log().string() : get1_log2(obj); 
 	Relation s2 = instVarRel_log2(obj, instVar);
-	Integer objAtom = get1(obj); //(get1_log(obj);
-	Relation objRel = Relation.unary("A" + objAtom);
-	TupleSet obj_upper = ProblemFactory.noneOf(1);
-	obj_upper.add(ProblemFactory.tuple(objAtom));
-	ProblemBounds.boundExactly(objRel, obj_upper);
+	Relation objRel;
+	if (ClassRels.containsKey(obj))
+	    objRel = (Relation) ClassRels.get(obj);
+	else {
+	    Integer objAtom = get1(obj); //(get1_log(obj);
+	    objRel = Relation.unary("A" + objAtom);
+	    TupleSet obj_upper = ProblemFactory.noneOf(1);
+	    obj_upper.add(ProblemFactory.tuple(objAtom));
+	    ProblemBounds.boundExactly(objRel, obj_upper);
+	    ClassRels.put(obj,objRel);
+	}
 	return objRel.join(s2);
     }
 
@@ -419,9 +428,10 @@ public class LogMap {
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
 	boolean isNonVoid = resultVarType != null;
+	Set probRels = ProblemRels.keySet();
 	if (SolverOpt_debug1) {
 	    System.out.println("problem involves rels: ");
-	    for (Object k : ProblemRels.keySet() ) {
+	    for (Object k : probRels) {
 		LogRelation r =  (LogRelation) ProblemRels.get(k);
 		System.out.println(r.id() + ": " + r.instVar());
 	    }
@@ -436,7 +446,7 @@ public class LogMap {
 	problem.append("flatten: " + SolverOpt_Flatten + spacer);
 	problem.append("bit_width: " + ESJInteger.bitWidth() + spacer);
 	problem.append("univ: u" + AtomCtr + spacer);
-	for (Object k : ProblemRels.keySet() ) {
+	for (Object k : probRels) {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
 	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
@@ -501,9 +511,10 @@ public class LogMap {
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
 	boolean isNonVoid = resultVarType != null;
+	Set probRels = ProblemRels.keySet();
 	if (SolverOpt_debug1) {
 	    System.out.println("problem involves rels: ");
-	    for (Object k : ProblemRels.keySet() ) {
+	    for (Object k : probRels) {
 		LogRelation r =  (LogRelation) ProblemRels.get(k);
 		System.out.println(r.id() + ": " + r.instVar());
 	    }
@@ -524,15 +535,14 @@ public class LogMap {
 	Null_upper.add(ProblemFactory.tuple(get1(null))); //get1_log(null)));
 	ProblemBounds.boundExactly(Null, Null_upper);
 	ClassRels.put(null,Null);
-
-	for (Object k : ProblemRels.keySet() ) {
+	for (Object k : probRels) {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
 	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
 	    if (!r.isUnknown() || isModifiableRelation)
-		r.log2(isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType);
+		r.log2(r.kodkodRel(), isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType);
 	    else 
-		instVarRelOld_log(r).log2(null, null);
+		instVarRelOld_log(r).log2(r.kodkodRel(), null, null);
 	    if (isUnknown) {
 		unknowns.add(r);
 		funDefs = funDefs == null ? r.funDef_log2() : funDefs.and(r.funDef_log2());

@@ -17,6 +17,8 @@ import kodkod.ast.Expression;
 import kodkod.ast.Formula;
 import kodkod.instance.Bounds;
 import kodkod.instance.TupleSet;
+import kodkod.instance.TupleFactory;
+
 
 
 public class LogRelation extends Hashtable {
@@ -146,9 +148,8 @@ public class LogRelation extends Hashtable {
 	Relation r = (Relation) range_log2(true, resultVarType);
 	TupleSet dB = LogMap.ProblemBounds.upperBound(d);
 	TupleSet rB = LogMap.ProblemBounds.upperBound(r);
-	TupleSet res = dB.product(rB);
+	TupleSet res = isResultVar ? rB : dB.product(rB);
 	//return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
-	System.out.println("hi: " + d + " " + dB + "\n" + r + " " + rB +  "\n" + res); // upperBound(r));
 	return res;
     }
 
@@ -278,16 +279,20 @@ public class LogRelation extends Hashtable {
 	    filterObjects = true;
 	    r = LogMap.instVarRelOld_log(this);
 	    HashSet sNew = new HashSet();
-	    System.out.println("howdy contents: " + r + " " + modifiableObjects);
 	    for (Object k : r.keySet())
 		if (!modifiableObjects.contains(k))
 		    sNew.add(k);
 	    s = sNew;
 	}
+
+	TupleFactory factory = LogMap.ProblemFactory();
+	TupleSet lower = factory.noneOf(2);
+
 	CharArrayWriter o = new CharArrayWriter();
 	o.append("{");
 	Iterator itr = s.iterator();
-	for (int i=0;i<s.size()-1;i++) {
+	//for (int i=0;i<s.size()-1;i++) {
+	while (itr.hasNext()) {
 	    Object k = itr.next();
 	    Object v = r.get(k);
 	    if (v instanceof ArrayList) {
@@ -308,40 +313,11 @@ public class LogRelation extends Hashtable {
 		    Object theKey = keys.get(c);
 		    o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "], ");
 		}
-	    } else
-		o.append("[A" + k + ", A" + v + "], ");
+	    } else {
+		lower.add(factory.tuple(k).product(factory.tuple(v)));
+	    }
 	}
-	if (itr.hasNext()) {
-	    Object k = itr.next();
-	    Object v = r.get(k);
-	    if (v instanceof ArrayList) {
-		ArrayList lv = (ArrayList) v;
-		int lvs = lv.size() - 1;
-		if (isaCollectionInstVar) {
-		    for(int c = 0; c < lvs; c++)
-			o.append("[A" + k + ", A" + ESJInteger.log(c) + ", A" + lv.get(c) + "],");
-		    o.append("[A" + k + ", A" + ESJInteger.log(lvs) + ", A" + lv.get(lvs) + "]");
-		} else {
-		    for(int c = 0; c < lvs; c++) {
-			o.append("[A" + k + ", A" + lv.get(c) + "],");
-		    }
-		    o.append("[A" + k + ", A" + lv.get(lvs) + "]");
-		}
-	    } else if (v instanceof HashMap) {
-		HashMap lv = (HashMap) v;
-		ArrayList keys = new ArrayList(lv.keySet());
-		int lvs = keys.size() - 1;
-		for(int c = 0; c < lvs; c++) {
-		    Object theKey = keys.get(c);
-		    o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "],");
-		}
-		Object theKey = keys.get(lvs);
-		o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "]");
-	    } else
-		o.append("[A" + k + ", A" + v + "]");
-	}
-	o.append("}");
-	return null;
+	return lower;
     }
 
     public String log(HashSet<?> modifiableObjects, Class resultVarType) {
@@ -357,11 +333,10 @@ public class LogRelation extends Hashtable {
 	return lower;
     }
 
-    public void log2(HashSet<?> modifiableObjects, Class resultVarType) {
+    public void log2(Relation kodkodRel, HashSet<?> modifiableObjects, Class resultVarType) {
 	TupleSet lower = lowerBound_log2(modifiableObjects);
 	if (isUnknown()) {
 	    TupleSet upper = fullDomainRange_log2(resultVarType);
-
 	    if (isaCollectionInstVar)
 		for (LogRelation s : (ArrayList<LogRelation>) subRels) {
 		    //LogMap.ProblemBounds.bound(s.kodkodRel(), range_log2(false, null));

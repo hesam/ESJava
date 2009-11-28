@@ -830,7 +830,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
       Bounds bounds = LogMap.ProblemBounds();
       TupleFactory factory = LogMap.ProblemFactory();
-      HashMap<Class,Expression> ClassRels = LogMap.ClassRels();
+      HashMap<Object,Expression> ClassRels = LogMap.ClassRels();
 
       Relation Ints = Relation.unary("Ints");
       TupleSet Ints_upper = factory.noneOf(1);

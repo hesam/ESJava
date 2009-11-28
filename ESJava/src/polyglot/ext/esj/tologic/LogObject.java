@@ -119,5 +119,11 @@ public class LogObject  {
 	return new LogFormula(sumValue_log2() + "." + o + "(" + o2.var_log().sumValue_log2() + ")");
     }
 
+    public LogFormula cmpOp(String kodkodiOp, String kodkodOp, Integer o2) {
+	LogInt nli = new LogInt(o2.toString());
+	return new LogFormula("(" + sumValue_log() + " " + kodkodiOp + " " + nli.sumValue_log() + ")",
+			      id_sumValue_log() + "." + kodkodOp + "(" + nli.id() + ")");
+  }
+
 
 }
