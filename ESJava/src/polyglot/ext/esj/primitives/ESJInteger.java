@@ -768,9 +768,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
   public void result(Object r) { this.result = r; }
 
-  public boolean isQuantifyVar() {
-      return this.var_log != null;
-  }
+  public boolean isQuantifyVar() { return this.var_log != null; }
+  public boolean isQuantifyVar2() { return this.var_log2 != null; }
 
   public ESJInteger old() { 
       return old; 
@@ -844,7 +843,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
       Bounds bounds = LogMap.ProblemBounds();
       TupleFactory factory = LogMap.ProblemFactory();
-      HashMap<Object,Expression> ClassRels = LogMap.ClassRels();
+      HashMap<Object,Relation> ClassRels = LogMap.ClassRels();
 
       Relation Ints = Relation.unary("Ints");
       TupleSet Ints_upper = factory.noneOf(1);
@@ -857,6 +856,14 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       bounds.boundExactly(Ints, Ints_upper);
       ClassRels.put(int.class, Ints); 
       ClassRels.put(Integer.class, Ints);
+
+      // add Null relation
+      Relation Null = Relation.unary("Null");
+      TupleSet Null_upper = factory.noneOf(1);
+      Null_upper.add(factory.tuple(LogMap.get1(null))); //get1_log(null)));
+      bounds.boundExactly(Null, Null_upper);
+      ClassRels.put(null,Null);
+
   }
 
   public static ESJList<Integer> allInstances() {

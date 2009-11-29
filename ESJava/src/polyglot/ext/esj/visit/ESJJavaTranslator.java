@@ -565,7 +565,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    args.add(rtLog);
 	    Call c = nf.Call(null, lfLog, b.kodkodOp(), args);
 	    if (b.operator().equals(Binary.NE)) {		
-		return nf.Call(null,c, "notOp", 
+		return nf.Call(null,c, "not", 
 			       new TypedList(new LinkedList(), Expr.class, false));
 	    } else {
 		return c;
@@ -726,7 +726,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return r;
 	} else if (r instanceof NullLit) {
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "null_log", args);
+	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "null_log2", args);
 	} else if (r instanceof BooleanLit) {
 	    return nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.Formula")), ((BooleanLit) r).value() ? "TRUE" : "FALSE");
 	}  else if (r instanceof JL5Cast) {

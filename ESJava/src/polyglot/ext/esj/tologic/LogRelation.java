@@ -67,13 +67,7 @@ public class LogRelation extends Hashtable {
 	super();
 	this.instVar = instVar;
 	this.domain = domain;
-	String longName = domain.getName();
-	int pi = longName.lastIndexOf(46); // char '.'
-	if (pi == -1) {
-	    this.domainName = longName;
-	} else {
-	    this.domainName = longName.substring(pi+1);
-	}
+	this.domainName = LogMap.shortClassName(domain);
 	this.range = range;
 	this.indexingDomain = indexingDomain;
 	this.fixedSize = fixedSize;
@@ -124,9 +118,9 @@ public class LogRelation extends Hashtable {
 	return isaList ? ESJInteger.zeroTo_log(fixedSize).string() : LogMap.bounds_log(domain, false, false).string();
     }
 
-    public Expression domain_log2() { 
+    public Relation domain_log2() { 
 	return isaList ? null /* FIXME ESJInteger.zeroTo_log(fixedSize).string()*/  : 
-	    LogMap.bounds_log2(domain, false, false);
+	    LogMap.bounds_log2(domain, false);
     }
 
     public String range_log(boolean isBoundsDef, Class resultVarType) { 
@@ -134,9 +128,9 @@ public class LogRelation extends Hashtable {
 	return LogMap.bounds_log(isResultVar ? resultVarType : range, !isRangeEnum, isBoundsDef).string();
     }
 
-    public Expression range_log2(boolean isBoundsDef, Class resultVarType) { 
+    public Relation range_log2(boolean isBoundsDef, Class resultVarType) { 
 	// have to add 'null' to the set of possible values for the ref field
-	return LogMap.bounds_log2(isResultVar ? resultVarType : range, !isRangeEnum, isBoundsDef);
+	return LogMap.bounds_log2(isResultVar ? resultVarType : range, isBoundsDef);
     }
 
     public String fullDomainRange_log(Class resultVarType) {
@@ -144,10 +138,16 @@ public class LogRelation extends Hashtable {
     }
 
     public TupleSet fullDomainRange_log2(Class resultVarType) {
-	Relation d = (Relation) domain_log2();
-	Relation r = (Relation) range_log2(true, resultVarType);
+	Relation d = domain_log2();
 	TupleSet dB = LogMap.ProblemBounds.upperBound(d);
-	TupleSet rB = LogMap.ProblemBounds.upperBound(r);
+	boolean addNull = !(isRangeEnum || range == Integer.class);
+	TupleSet rB;
+	if (addNull) {
+	    rB = LogMap.boundsPlusNull_log2(range);
+	} else {
+	    Relation r = range_log2(true, resultVarType);
+	    rB = LogMap.ProblemBounds.upperBound(r);
+	}
 	TupleSet res = isResultVar ? rB : dB.product(rB);
 	//return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
 	return res;
