@@ -148,6 +148,9 @@ public class LogRelation extends Hashtable {
 	    Relation r = range_log2(true, resultVarType);
 	    rB = LogMap.ProblemBounds.upperBound(r);
 	}
+	if (isaCollectionInstVar)
+	    dB = dB.product(LogMap.ProblemBounds.upperBound(listInstVarDomain_log2()));
+
 	TupleSet res = isResultVar ? rB : dB.product(rB);
 	//return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
 	return res;
@@ -160,8 +163,8 @@ public class LogRelation extends Hashtable {
 		LogMap.bounds_log(indexingDomain, false, false).string()) + "->";
     }
 
-    public Expression listInstVarDomain_log2() {
-	return null;
+    public Relation listInstVarDomain_log2() {
+	return LogMap.bounds_log2(indexingDomain, false);
     }
    
     // FIXME
@@ -337,6 +340,7 @@ public class LogRelation extends Hashtable {
 	TupleSet lower = lowerBound_log2(modifiableObjects);
 	if (isUnknown()) {
 	    TupleSet upper = fullDomainRange_log2(resultVarType);
+	    System.out.println("hi: " + id + " " + lower + " " + upper);
 	    if (isaCollectionInstVar)
 		for (LogRelation s : (ArrayList<LogRelation>) subRels) {
 		    //LogMap.ProblemBounds.bound(s.kodkodRel(), range_log2(false, null));
@@ -378,9 +382,9 @@ public class LogRelation extends Hashtable {
 	    for (LogRelation s : (ArrayList<LogRelation>) subRels) {
 		//o.append("FUNCTION(" + s.id() + ", " + d + "one " + r + ") && (" + 
 		// domain_log2() + "." + id + " = " + s.id() + ") && ");
-		Relation sRel = s.kodkodRel();
-		Formula fNew = sRel.function(d,r).and(domain_log2().join(kodkodRel).eq(sRel));
-		f = f == null ? fNew : f.and(fNew);
+		//Relation sRel = s.kodkodRel();
+		//Formula fNew = sRel.function(d,r).and(domain_log2().join(kodkodRel).eq(sRel));
+		//f = f == null ? fNew : f.and(fNew);
 	    }
 	} else {
 	    Expression d = domain_log2();	    

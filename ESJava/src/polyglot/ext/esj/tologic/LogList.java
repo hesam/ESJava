@@ -41,7 +41,7 @@ public class LogList extends LogObject {
 	else {
 	    String p =  " [" + quantVarN + ": one " + string + "] | " + quantClauseExpr.string();
 	    String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
-	    return new LogFormula("(" + quantKind + q + ")", quantClauseExpr.id() + ".forAll()");
+	    return new LogFormula("(" + quantKind + q + ")");
 	}
     }
 

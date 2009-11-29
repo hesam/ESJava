@@ -414,9 +414,14 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 
 		 // HACK FIXME
 		 if (isCollectionType) {
-		     ivgRT = this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogSet"));
+		     if (ctr == 0) {
+			 ivgRT = this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogSet"));
+			 rExp = this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objInstVarSet_log", args3p);
+		     } else {
+			 ivgRT = this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.Log2Set"));
+			 rExp = this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objInstVarSet_log2", args3p);
+		     }
 		     b2 = ivgRT;
-		     rExp = this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objInstVarSet_log", args3p);
 		 } else {
 		     List args2p = new TypedList(new LinkedList(), Expr.class, false);
 		     Expr ivfExprP = ctr == 0 ? this.nf.Call(null, this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "getResultVarRel_log", args5p), "id", emptyArgs) : this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "getResultVarRel_log2", args5p);
@@ -1304,7 +1309,7 @@ ensured_class_declaration ::=
 		  List argsCB = new TypedList(new LinkedList(), Expr.class, false);
 		  List args2CB = new TypedList(new LinkedList(), Expr.class, false);
 		  args2CB.add(parser.nf.NullLit(null));
-		  args2CB.add(parser.nf.NullLit(null));
+		  //args2CB.add(parser.nf.NullLit(null));
 		  argsCB.add(parser.nf.JL5New(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2CB, null, new TypedList(new LinkedList(), TypeNode.class, false)));
 		  argsCB.add(parser.nf.BooleanLit(null, false));		   
 		  cloneBody.add(parser.nf.JL5If(null, parser.nf.Call(null, null, "isCloned", parser.emptyArgs), parser.nf.JL5Return(null,parser.nf.This(null)), null));

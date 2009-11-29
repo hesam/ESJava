@@ -73,7 +73,7 @@ public class LogSet extends LogObject {
 	    String s = string + (isaListInstVar ? "[1]" : "");
 	    String p =  " [" + quantVarN + ": one " + s + "] | " + quantClauseExpr.string();
 	    String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
-	    return new LogFormula("(" + quantKind + q + ")", quantClauseExpr.id() + ".forAll()");
+	    return new LogFormula("(" + quantKind + q + ")");
 	}
 			   }
 

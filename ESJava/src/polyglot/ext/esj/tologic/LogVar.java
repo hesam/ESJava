@@ -7,18 +7,12 @@ import java.util.ArrayList;
 
 public class LogVar extends LogObject {
 
-    static int VarCtr = 0;
-
     public LogVar(String string) {
-	this(string, string, 0, false);
+	this(string, 0, false);
     }
 
-    public LogVar(String string, String decl) {
-	this(string, decl, 0, false);
-    }
-
-    public LogVar(String string, String decl, int listSize, boolean isaListInstVar) {
-	super(string, "e" + VarCtr++, "Expression", decl, listSize, isaListInstVar);
+    public LogVar(String string, int listSize, boolean isaListInstVar) {
+	super(string, listSize, isaListInstVar);
     }
 
     public LogObject intValue_log() { return this; }

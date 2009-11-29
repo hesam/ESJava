@@ -876,26 +876,22 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
 
   public LogFormula cmpOp(String kodkodiOp, String kodkodOp, LogObject o2) {
-      return new LogFormula("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.sumValue_log() + ")",
-			    var_log.id_sumValue_log() + "." + kodkodOp + "(" + o2.id() + ")");
+      return new LogFormula("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.sumValue_log() + ")");
   }
 
   public LogFormula cmpOp(String kodkodiOp, String kodkodOp, ESJObject o2) {
-      return new LogFormula("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")",
-			    var_log.id_sumValue_log() + "." + kodkodOp + "(" + o2 + ")");
+      return new LogFormula("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")");
   }
 
   public LogFormula cmpOp(String kodkodiOp, String kodkodOp, Integer o2) {
       LogInt nli = new LogInt(o2.toString());
-      return new LogFormula("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + nli.sumValue_log() + ")",
-			    var_log.id_sumValue_log() + "." + kodkodOp + "(" + nli.id() + ")");
+      return new LogFormula("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + nli.sumValue_log() + ")");
   }
 
 
   //FIXME:
   public LogIntComposite arithOp(String kodkodiOp, String kodkodOp, LogObject o2) {
-      return new LogIntComposite("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.sumValue_log() + ")",
-				 var_log.id_sumValue_log() + "." + kodkodOp + "(" + o2.id() + ")");
+      return new LogIntComposite("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.sumValue_log() + ")");
   }
   /*
   //FIXME:
@@ -905,8 +901,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
   //FIXME:
   public LogIntComposite arithOp(String kodkodiOp, String kodkodOp, ESJObject o2) {
-      return new LogIntComposite("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")",
-				 var_log.id_sumValue_log() + "." + kodkodOp + "(IntConstant.constant(" + o2 + "))");
+      return new LogIntComposite("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")");
   }
 
   public static void main(String[] args) {

@@ -295,6 +295,8 @@ public class LogMap {
 
     public static String newInstVarRel(Class c, String instVar, Class domain, Class range, Class indexingDomain, boolean isaList, boolean isaMap, boolean isUnknown, boolean isResultVar) {
 	String k = instVar;
+	boolean isaCollection = isaList || isaMap;
+	int relSize = isaCollection ? 3 : 2;
 	if (!isUnknown) {
 	    k += "_old";
 	    // mark enum and class
@@ -318,7 +320,7 @@ public class LogMap {
 	    }
 	}
 	String rN = c.getName() + "." + k;
-	Relation r2 = isResultVar ? Relation.unary(rN) : Relation.nary(rN, 2);
+	Relation r2 = isResultVar ? Relation.unary(rN) : Relation.nary(rN, relSize);
 	LogRelation r = new LogRelation(instVar, domain, range, indexingDomain, r2, isaList, isaMap, isUnknown, isResultVar);
 
 	if (!InstVarRels.containsKey(c)) {
@@ -379,7 +381,7 @@ public class LogMap {
     public static LogVar objInstVarStr_log(ESJObject obj, String instVar, Class c) {
 	String s1 = obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj); 
 	String s2 = instVarRel_log(obj, instVar).id();
-	return new LogVar("(" + s1 + "." + s2 + ")", s1 + ".join(" + s2 + ")");
+	return new LogVar("(" + s1 + "." + s2 + ")");
     }
 
     public static Log2Var objInstVarStr_log2(ESJObject obj, String instVar, Class c) {
@@ -409,13 +411,35 @@ public class LogMap {
 	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + r.id() + ")", 0, r.isaCollectionInstVar());
     }
 
+    public static Log2Set objInstVarSet_log2(ESJObject obj, String instVar) {
+	Expression s1;
+	Relation s2 = instVarRel_log2(obj, instVar);
+	if (obj.isQuantifyVar2()) {
+	    s1 = obj.var_log2().expression();
+	} else {
+	    Relation objRel;
+	    if (ClassRels.containsKey(obj))
+		objRel = ClassRels.get(obj);
+	    else {
+		Integer objAtom = get1(obj);
+		objRel = Relation.unary("A" + objAtom);
+		TupleSet obj_upper = ProblemFactory.noneOf(1);
+		obj_upper.add(ProblemFactory.tuple(objAtom));
+		ProblemBounds.boundExactly(objRel, obj_upper);
+		ClassRels.put(obj,objRel);
+	    }
+	    s1 = objRel;
+	}
+	return new Log2Set(s1.join(s2));
+    }
 
     public static LogObjAtom null_log() {
 	return new LogObjAtom(get1_log(null));
     }
 
-    public static Log2Object null_log2() {
-	return new Log2Object(ClassRels.get(null));
+    public static Relation null_log2() {
+	//return new Log2Object(ClassRels.get(null));
+	return ClassRels.get(null);
     }
 
     // FIXME
@@ -565,7 +589,7 @@ public class LogMap {
 	    }
 	}
 
-	Formula finalFormula = Formula.compose(FormulaOperator.AND, funDefs, (Formula) formula);
+	Formula finalFormula = funDefs == null ? (Formula) formula : Formula.compose(FormulaOperator.AND, funDefs, (Formula) formula);
 	//ch.append(csq);
 	//ch.flush();
 	if (SolverOpt_debug1) {
@@ -714,17 +738,17 @@ public class LogMap {
 			Method m = c.getDeclaredMethod(u.instVar(), paramTypes);
 			Integer lastSeen = null;
 			ArrayList l = null;
-			for (ArrayList v : (ArrayList<ArrayList>) val) {
-			    Integer last = (Integer) v.get(0);
+			while (iter.hasNext()) {
+			    Tuple itm = iter.next();
+			    Integer last = (Integer) itm.atom(0);
 			    if (l == null || lastSeen != last) {
 				l = (ArrayList) m.invoke(get2(last),args);
-				int vs = ((ArrayList<ArrayList>) val).size();
-				int dec = vs - l.size();
-				while (dec-- > 0) 
-				    l.add(null);
 				lastSeen = last;
 			    }
-			    l.set((Integer) get2((Integer) v.get(1)),get2((Integer) v.get(2)));
+			    Integer idx = (Integer) get2((Integer) itm.atom(1));
+			    while (idx >= l.size())
+				l.add(null);
+			    l.set(idx,get2((Integer) itm.atom(2)));
 			}
 		    } catch (Exception e) {
 			System.out.println("duh: " + e);

@@ -38,6 +38,8 @@ public class Test {
     
     public Integer a() { return a; }
     public Integer b() { return b; }
+    public ESJList<Point> points() { return points; }
+    //public ESJMap<Point,Integer> map() { return map; }
     public void a(Integer v) { this.a = v; }
     public void b(Integer v) { this.b = v; }
 
@@ -47,10 +49,15 @@ public class Test {
 	return 2*i+this.a;
     }
     
+
     public pure Point pick()
 	ensures result != null && result.x > 4 && result.y > 0 {
-	//int z = 1/0;
 	return this.points.get(0);
+    }
+
+    public void foo() 
+	modifies fields Test.points
+	ensures  this.points.size() == 2 && this.points.get(0) == null {
     }
 
     /*
@@ -61,12 +68,8 @@ public class Test {
     */
     
 
-    public void foo(Integer i) 
-	ensures this.a + this.b == i && this.b > 1 && this.a > 1
-    { }
 
-
-    public String toString() { return "(" + a + "," + b + ")"; }
+    public String toString() { return "a=" + a + "\tb=" + b + "\tpoint=" + points; }
 
 
     public static void main(String[] args) {	
@@ -75,10 +78,10 @@ public class Test {
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
-	//System.out.println(t1.twice(5));
+	System.out.println(t1.twice(5));
 	//System.out.println(t1.pick());
+	//t1.foo();
 	//t1.blah();
-	t1.foo(5);
 	System.out.println(t1);
     }
 

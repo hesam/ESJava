@@ -558,10 +558,18 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    Expr rtLog = (Expr) toLogicExpr2(b.right());
 	    
 	    // FIXME
+	    //System.out.println("hi2: " + lf + " " + lf.getClass() + rt + " " + rt.getClass());
+	    /*
  	    if (!(lf instanceof IntLit || lf instanceof Local || lf instanceof ESJBinary || (lfLog instanceof Call && ((Call)lfLog).name().equals("sum"))))
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
 	    if (!(rt instanceof IntLit || rt instanceof Local || rt instanceof ESJBinary || (rtLog instanceof Call && ((Call)rtLog).name().equals("sum"))))
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+	    */
+	    if (lf instanceof Field || lf instanceof Cast)
+		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
+	    if (rt instanceof Field || rt instanceof Cast)
+		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+
 	    args.add(rtLog);
 	    Call c = nf.Call(null, lfLog, b.kodkodOp(), args);
 	    if (b.operator().equals(Binary.NE)) {		
@@ -578,10 +586,18 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    Expr lfLog = (Expr) toLogicExpr2(b.left());
 	    Expr rtLog = (Expr) toLogicExpr2(b.right());
 	    // FIXME
+	    //System.out.println("hi: " + lf + " " + lf.getClass() + rt + " " + rt.getClass());
+	    /*
  	    if (!(lf instanceof IntLit || lf instanceof Local || lf instanceof ESJBinary || (lfLog instanceof Call && ((Call)lfLog).name().equals("sum"))))
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
 	    if (!(rt instanceof IntLit || rt instanceof Local || rt instanceof ESJBinary || (rtLog instanceof Call && ((Call)rtLog).name().equals("sum"))))
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+	    */
+	    if (lf instanceof Field || lf instanceof Cast)
+		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
+	    if (rt instanceof Field || rt instanceof Cast)
+		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+
 	    args.add(rtLog);
 	    return nf.Call(null, lfLog, b.kodkodOp(), args);
 	} else if (r instanceof Binary) {
