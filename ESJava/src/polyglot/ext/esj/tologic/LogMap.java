@@ -364,6 +364,24 @@ public class LogMap {
 	return new LogVar("(" + s1 + "." + s2 + ")", s1 + ".join(" + s2 + ")", c);
     }
 
+    public static Log2Var objInstVarStr_log2(ESJObject obj, String instVar, Class c) {
+	Relation s1 = get1_log2(obj); //obj.isQuantifyVar() ? obj.var_log().string() : get1_log2(obj); 
+	Relation s2 = instVarRel_log2(obj, instVar);
+	Relation objRel;
+	if (ClassRels.containsKey(obj))
+	    objRel = (Relation) ClassRels.get(obj);
+	else {
+	    Integer objAtom = get1(obj); //(get1_log(obj);
+	    objRel = Relation.unary("A" + objAtom);
+	    TupleSet obj_upper = ProblemFactory.noneOf(1);
+	    obj_upper.add(ProblemFactory.tuple(objAtom));
+	    ProblemBounds.boundExactly(objRel, obj_upper);
+	    ClassRels.put(obj,objRel);
+	}
+	return new Log2Var(objRel.join(s2));
+    }
+
+    /*
     public static Expression objInstVarStr_log2(ESJObject obj, String instVar, Class c) {
 	Relation s1 = get1_log2(obj); //obj.isQuantifyVar() ? obj.var_log().string() : get1_log2(obj); 
 	Relation s2 = instVarRel_log2(obj, instVar);
@@ -380,6 +398,7 @@ public class LogMap {
 	}
 	return objRel.join(s2);
     }
+    */
 
     public static LogSet objInstVarSet_log(ESJObject obj, String instVar) {
 	LogRelation r = instVarRel_log(obj, instVar);

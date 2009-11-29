@@ -3,6 +3,8 @@ package polyglot.ext.esj.primitives;
 import polyglot.ext.esj.tologic.*;
 
 import kodkod.ast.Expression;
+import kodkod.ast.IntExpression;
+import kodkod.ast.IntConstant;
 import kodkod.ast.Relation;
 import kodkod.instance.TupleSet;
 import kodkod.instance.TupleFactory;
@@ -738,8 +740,10 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   // ESJInteger class init
 
   public LogVar var_log;
+  public Log2Var var_log2;
   public ESJInteger old;
   public LogVar var_log() { return var_log; }
+  public Log2Var var_log2() { return var_log2; }
   public Object result;
 
   static {
@@ -751,6 +755,14 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       this.value = 0;
       if (isQuantifyVar)
 	  this.var_log =
+	      dontcare;
+    }
+
+  public ESJInteger(Log2Var dontcare, boolean isQuantifyVar) {
+      super();
+      this.value = 0;
+      if (isQuantifyVar)
+	  this.var_log2 =
 	      dontcare;
     }
 
@@ -767,6 +779,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   public boolean isOld() { 
       return old == null;
   }
+
+  public IntExpression sum() { return var_log2.expression().sum(); }
 
   public void relationize() { 
 
@@ -870,18 +884,6 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 			    var_log.id_sumValue_log() + "." + kodkodOp + "(" + nli.id() + ")");
   }
 
-
-  public LogFormula cmpOp2(String o, LogObject o2) {
-      return new LogFormula(var_log.sumValue_log2() + "." + o + "(" + o2.sumValue_log2() + ")");
-  }
-
-  public LogFormula cmpOp2(String o, ESJObject o2) {
-      return new LogFormula(var_log.sumValue_log2() + "." + o + "(" + o2.var_log().sumValue_log2() + ")");
-  }
-
-  public LogFormula cmpOp2(String o, Integer o2) {
-      return new LogFormula(var_log.sumValue_log2() + "." + o + "(" + new LogInt(o2.toString()).sumValue_log2() + ")");
-  }
 
   //FIXME:
   public LogIntComposite arithOp(String kodkodiOp, String kodkodOp, LogObject o2) {
