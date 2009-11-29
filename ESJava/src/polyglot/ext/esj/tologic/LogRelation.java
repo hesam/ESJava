@@ -81,8 +81,10 @@ public class LogRelation extends Hashtable {
 	this.id = isResultVar ? "s0" : ((isaCollectionInstVar ? "m3_" : "r") + this.RelCtr++);
 	this.isRangeEnum = range.isEnum();
 	if (isaCollectionInstVar && isUnknown) {
-	    this.subRels = new ArrayList();	    
-	    this.subRels.add(new LogRelation(instVar + "_subrel", indexingDomain, range, null, null, false, false, true, false));
+	    this.subRels = new ArrayList();
+	    String sRelN = instVar + "_subrel";
+	    Relation r2 = Relation.nary(sRelN, 2);
+	    this.subRels.add(new LogRelation(sRelN, indexingDomain, range, null, r2, false, false, true, false));
 	}
 	if (LogMap.SolverOpt_debug1())
 	    System.out.println("new relation " + this.id + " " + instVar + " old: " + !isUnknown);
@@ -340,12 +342,16 @@ public class LogRelation extends Hashtable {
 	TupleSet lower = lowerBound_log2(modifiableObjects);
 	if (isUnknown()) {
 	    TupleSet upper = fullDomainRange_log2(resultVarType);
-	    System.out.println("hi: " + id + " " + lower + " " + upper);
-	    if (isaCollectionInstVar)
-		for (LogRelation s : (ArrayList<LogRelation>) subRels) {
-		    //LogMap.ProblemBounds.bound(s.kodkodRel(), range_log2(false, null));
-	            //o.append("\nbounds " + s.id() + ": [{}, " +  listInstVarDomain_log() + range_log(false, null) + "] ");
-		}
+	    if (isaCollectionInstVar) {
+		Relation i = LogMap.bounds_log2(indexingDomain, false);
+		TupleSet iB = LogMap.ProblemBounds.upperBound(i);
+		boolean addNull = (range != Integer.class);
+		TupleSet rB = addNull ? LogMap.boundsPlusNull_log2(range) :		    
+		    LogMap.ProblemBounds.upperBound(LogMap.bounds_log2(range, false));
+		TupleSet sRelB = iB.product(rB);
+		for (LogRelation s : (ArrayList<LogRelation>) subRels)		    
+		    LogMap.ProblemBounds.bound(s.kodkodRel(), sRelB);
+	    }
 	    if (lower == null) 
 		LogMap.ProblemBounds.bound(kodkodRel, upper);
 	    else
@@ -379,12 +385,15 @@ public class LogRelation extends Hashtable {
 	Expression r = range_log2(false, null);
 	if (isaCollectionInstVar) {
 	    Expression d = listInstVarDomain_log2();	    
+	    Expression dl = domain_log2().join(kodkodRel);
+	    System.out.println(d + "\n" + dl + " " + subRels);
 	    for (LogRelation s : (ArrayList<LogRelation>) subRels) {
 		//o.append("FUNCTION(" + s.id() + ", " + d + "one " + r + ") && (" + 
 		// domain_log2() + "." + id + " = " + s.id() + ") && ");
-		//Relation sRel = s.kodkodRel();
-		//Formula fNew = sRel.function(d,r).and(domain_log2().join(kodkodRel).eq(sRel));
-		//f = f == null ? fNew : f.and(fNew);
+		Relation sRel = s.kodkodRel();
+		System.out.println(sRel);
+		Formula fNew = sRel.function(d,r).and(dl.eq(sRel));
+		f = f == null ? fNew : f.and(fNew);
 	    }
 	} else {
 	    Expression d = domain_log2();	    

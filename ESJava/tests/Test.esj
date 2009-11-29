@@ -13,7 +13,7 @@ public class Test {
     spec protected Integer a;
     spec protected Integer b;
     spec protected ESJList<Point> points;
-    //spec protected ESJMap<Point,Integer> map;
+    spec protected ESJMap<Point,Integer> map;
 
 
     public Test(Integer a, Integer b) {
@@ -29,17 +29,16 @@ public class Test {
 	this.points.add(p2);
 	this.points.add(p3); 
 
-	/*
 	this.map = new ESJMap<Point,Integer>();
 	this.map.put(p1,0);
 	this.map.put(p2,1);
-        this.map.put(p3,2);*/
+        this.map.put(p3,2);
     }
     
     public Integer a() { return a; }
     public Integer b() { return b; }
     public ESJList<Point> points() { return points; }
-    //public ESJMap<Point,Integer> map() { return map; }
+    public ESJMap<Point,Integer> map() { return map; }
     public void a(Integer v) { this.a = v; }
     public void b(Integer v) { this.b = v; }
 
@@ -57,19 +56,15 @@ public class Test {
 
     public void foo() 
 	modifies fields Test.points
-	ensures  this.points.size() == 2 && this.points.get(0) == null {
+	ensures this.points.get(0) == null {
     }
 
-    /*
     public void blah() 
 	modifies fields Test.points,Test.map
-	ensures this.map.get(this.points.get(0)) == 0//this.map.get(this.points.get(0)) == 12 
-    {  }
-    */
-    
+	ensures this.map.get(this.points.get(0)) == 12 {
+    }
 
-
-    public String toString() { return "a=" + a + "\tb=" + b + "\tpoint=" + points; }
+    public String toString() { return "a=" + a + "\nb=" + b + "\npoints=" + points + "\nmap=" + map; }
 
 
     public static void main(String[] args) {	
@@ -78,10 +73,10 @@ public class Test {
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
-	System.out.println(t1.twice(5));
+	//System.out.println(t1.twice(5));
 	//System.out.println(t1.pick());
 	//t1.foo();
-	//t1.blah();
+	t1.blah();
 	System.out.println(t1);
     }
 

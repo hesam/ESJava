@@ -15,6 +15,10 @@ public class Log2Set extends Log2Object {
 	super(expression);
     }
 
+    public IntExpression get_log2(Expression obj) {
+	return obj.join(expression).sum();
+    }                              
+
     public Expression get_log2(IntExpression index) {
 	return index.toExpression().join(expression);
     }                              

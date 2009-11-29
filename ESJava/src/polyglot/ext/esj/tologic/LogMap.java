@@ -665,7 +665,7 @@ public class LogMap {
 			    l.set((Integer) get2((Integer) v.get(1)),get2((Integer) v.get(2)));
 			}
 		    } catch (Exception e) {
-			System.out.println("duh: " + e);
+			e.printStackTrace();
 			System.exit(1);
 		    }		    
 		} else if (u.isaMapInstVar()) {
@@ -685,7 +685,7 @@ public class LogMap {
 			    map.put(get2((Integer) v.get(1)),get2((Integer) v.get(2)));
 			}
 		    } catch (Exception e) {
-			System.out.println("duh: " + e);
+			e.printStackTrace();
 			System.exit(1);
 		    }		    
 		} else {
@@ -706,7 +706,7 @@ public class LogMap {
 			    m.invoke(get2((Integer) v.get(0)),args);
 			}
 		    } catch (Exception e) {
-			System.out.println("duh: " + e);
+			e.printStackTrace();
 			System.exit(1);
 		    }
 		}
@@ -751,7 +751,7 @@ public class LogMap {
 			    l.set(idx,get2((Integer) itm.atom(2)));
 			}
 		    } catch (Exception e) {
-			System.out.println("duh: " + e);
+			e.printStackTrace();
 			System.exit(1);
 		    }		    
 		} else if (u.isaMapInstVar()) {
@@ -762,16 +762,17 @@ public class LogMap {
 			Method m = c.getDeclaredMethod(u.instVar(), paramTypes);
 			Integer lastSeen = null;
 			HashMap map = null;
-			for (ArrayList v : (ArrayList<ArrayList>) val) {
-			    Integer last = (Integer) v.get(0);
+			while (iter.hasNext()) {
+			    Tuple itm = iter.next();
+			    Integer last = (Integer) itm.atom(0);
 			    if (map == null || lastSeen != last) {
 				map = (HashMap) m.invoke(get2(last),args);
 				lastSeen = last;
 			    }
-			    map.put(get2((Integer) v.get(1)),get2((Integer) v.get(2)));
+			    map.put(get2((Integer) itm.atom(1)),get2((Integer) itm.atom(2)));
 			}
 		    } catch (Exception e) {
-			System.out.println("duh: " + e);
+			e.printStackTrace();
 			System.exit(1);
 		    }		    
 		} else {
@@ -795,7 +796,7 @@ public class LogMap {
 			    m.invoke(get2((Integer) itm.atom(0)),args);
 			}
 		    } catch (Exception e) {
-			System.out.println("duh: " + e);
+			e.printStackTrace();
 			System.exit(1);
 		    }
 		}
