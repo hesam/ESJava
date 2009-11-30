@@ -13,7 +13,6 @@ import polyglot.ext.jl5.types.*;
 import polyglot.util.*;
 
 import kodkod.ast.Formula;
-import kodkod.ast.Expression;
 import kodkod.ast.Decl;
 import kodkod.ast.Decls;
 import kodkod.ast.Expression;
@@ -532,7 +531,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    if (!methodDecl.isFallback()) {
 		//methodDecl = (ESJLog2PredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName(methodDecl.isPredicate() ? "polyglot.ext.esj.tologic.LogFormula" : "polyglot.ext.esj.tologic.LogSet")));
 		String retTpN = methodDecl.returnType().toString();		
-		methodDecl = (ESJLog2PredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast." + (Log2MtdRetTypes.containsKey(retTpN) ? Log2MtdRetTypes.get(retTpN) : "Expression"))));
+		methodDecl = (ESJLog2PredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName(Log2MtdRetTypes.containsKey(retTpN) ? ("kodkod.ast." + Log2MtdRetTypes.get(retTpN)) : "polyglot.ext.esj.tologic.Log2Set")));
 	    }
 	    return methodDecl.body(nf.Block(null,inits)); //.formals(formals)
 	    				    
@@ -652,7 +651,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return r;
 	} else if (r instanceof ESJFieldClosureCall) {
 	    ESJFieldClosureCall c = (ESJFieldClosureCall) r;
-	    return instVarClosureGet_log(c.isSimple(), c.isSetFieldsMap(), c.target(), c.arguments());
+	    return instVarClosureGet_log2(c.isSimple(), c.isSetFieldsMap(), c.target(), c.arguments());
 	} else if (r instanceof ESJFieldCall) {
 	    ESJFieldCall c = (ESJFieldCall) r;
 	    //return instVarGet_log(c.target(), c.name(), c.type());
@@ -855,6 +854,16 @@ public class ESJJavaTranslator extends ContextVisitor {
 
     // FIXME
     public Node instVarClosureGet_log(boolean isSimple, boolean isSetFieldsMap, Receiver target, List origArgs) throws SemanticException {
+	List instVarGetArgs = instVarClosureGetHelper(isSimple, isSetFieldsMap, target, origArgs);
+	return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarClosure_log", instVarGetArgs);
+    }
+
+    public Node instVarClosureGet_log2(boolean isSimple, boolean isSetFieldsMap, Receiver target, List origArgs) throws SemanticException {
+	List instVarGetArgs = instVarClosureGetHelper(isSimple, isSetFieldsMap, target, origArgs);
+	return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarClosure_log2", instVarGetArgs);
+    }
+
+    List instVarClosureGetHelper(boolean isSimple, boolean isSetFieldsMap, Receiver target, List origArgs) throws SemanticException {
 	List instVarGetArgs = new TypedList(new LinkedList(), Expr.class, false);
 	if (isSetFieldsMap) {
 	    instVarGetArgs.add((Expr) toLogicExpr((Expr) origArgs.get(0)));
@@ -871,7 +880,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		instVarGetArgs.add(nf.BooleanLit(null, false));
 	    instVarGetArgs.addAll(origArgs);
 	}
-	return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarClosure_log", instVarGetArgs);
+	return instVarGetArgs;
     }
     
     FlagAnnotations makeFlagAnnotations() {

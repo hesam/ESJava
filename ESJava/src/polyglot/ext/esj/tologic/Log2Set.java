@@ -49,11 +49,9 @@ public class Log2Set extends Log2Object {
 	return quantClause.forAll(v.oneOf(quantSetExpr));
     }
 
-    public static Expression setComprehensionOp2(Log2Set quantSet, Log2Var quantVar, Formula quantClause) {
+    public static Log2Set setComprehensionOp2(Log2Set quantSet, Log2Var quantVar, Formula quantClause) {
 	Expression quantSetExpr = quantSet.expression();
 	Variable v = (Variable) quantVar.expression();
-	//if (quantSetExpr.arity() > 1)
-	//quantSetExpr = quantSetExpr.project(IntConstant.constant(1));
-	return quantClause.comprehension(v.oneOf(quantSetExpr));
+	return new Log2Set(quantClause.comprehension(v.oneOf(quantSetExpr)));
     }
 }

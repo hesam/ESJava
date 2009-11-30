@@ -456,6 +456,25 @@ public class LogMap {
 	return new LogSet("(" + obj.string() + "." + fNs + " - " + get1_log(null) + " )"); //FIXME: get_log(null) ?
     }
 
+    public static Log2Set instVarClosure_log2(ESJObject obj, boolean isOld, boolean isSimple, boolean isReflexive, String... instVars) {
+	//if (SolverOpt_debug1)
+	//System.out.println("instVarClosure_log -> idOld: " + isOld + " isVar: " + (obj.var_log() != null));
+	String fA = isOld ? "_old" : "";
+	Expression fNs = instVarRel_log2(obj, instVars[0]+fA);
+	for(int i=1;i<instVars.length;i++)
+	    fNs = fNs.union(instVarRel_log2(obj, instVars[i]+fA));
+	Expression s1 = obj.isQuantifyVar2() ? 
+	    obj.var_log2().expression() : objToSingletonRelation_log2(obj);
+	Expression res = s1.join(fNs);
+	if (!isSimple)
+	    if (isReflexive)
+		res = res.reflexiveClosure();
+	    else
+		res = res.closure();
+	res = res.difference(ClassRels.get(null));
+	return new Log2Set(res);
+    }
+
 
     public static boolean solve(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects) {
 

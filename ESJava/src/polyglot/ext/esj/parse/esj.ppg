@@ -423,7 +423,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		     Expr ivfExprP = ctr == 0 ? this.nf.Call(null, this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "getResultVarRel_log", args5p), "id", emptyArgs) : this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "getResultVarRel_log2", args5p);
 		     Expr ivgExpr = isReservedField ? ivfExprP : this.nf.Call(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objInstVarStr_log" + (ctr == 0 ? "" : "2"), args3p);
 		     if (isEnumFd)
-			 ivgExpr = this.nf.Call(null, ivgExpr, "string", emptyArgs);
+			 ivgExpr = this.nf.Call(null, ivgExpr, ctr == 0 ? "string" : "expression", emptyArgs);
 		     args2p.add(ivgExpr);
 		     //if (isReservedField)
 		     //args2p.add(this.nf.ClassLit(null, b2));
@@ -434,8 +434,8 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		     //List args4 = new TypedList(new LinkedList(), Expr.class, false);
 		     //args4.add(this.nf.Field(null, this.nf.This(null), "var_log"));
 		     //instVarGetBody.add(this.nf.Eval(null,this.nf.Call(null, this.nf.Field(null, this.nf.CanonicalTypeNode(null, this.ts.typeForName("java.lang.System")),"out"), "println", args4)));
-		     ivgRT = isEnumFd ? this.nf.CanonicalTypeNode(null, this.ts.typeForName("polyglot.ext.esj.tologic.LogObjAtom")) : b2;
-		     rExp = isEnumFd ? nExpr : this.nf.JL5New(null, b2, instVarGetArgs, null, new TypedList(new LinkedList(), TypeNode.class, false));			  
+		     ivgRT = isEnumFd ? this.nf.CanonicalTypeNode(null, this.ts.typeForName(ctr == 0 ? "polyglot.ext.esj.tologic.LogObjAtom" : "kodkod.ast.Expression")) : b2;
+		     rExp = isEnumFd ? (ctr == 0 ? nExpr : ivgExpr) : this.nf.JL5New(null, b2, instVarGetArgs, null, new TypedList(new LinkedList(), TypeNode.class, false));			  
 		     
 		     // HACK FIXME
 		     if (isReservedField && fTpN.equals("Object")) {
