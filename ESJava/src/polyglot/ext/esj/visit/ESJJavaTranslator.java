@@ -45,7 +45,7 @@ public class ESJJavaTranslator extends ContextVisitor {
     static String currLogPredMtdTpName;
     static HashMap LogMtdRetTypes = new HashMap();
     static HashMap Log2MtdRetTypes = new HashMap();
-    //static HashMap LogBinaryOps = new HashMap();
+    static HashMap<Binary.Operator, String> LogBinaryOps = new HashMap<Binary.Operator, String>();
     //static boolean isLogVarLogPredMtd;
 
     public ESJJavaTranslator(Job job, TypeSystem ts, NodeFactory jlnf) {
@@ -59,20 +59,17 @@ public class ESJJavaTranslator extends ContextVisitor {
 	Log2MtdRetTypes.put("boolean","Formula");
 	Log2MtdRetTypes.put("java.lang.Integer","IntExpression");
 
-	/*
 	// kodkod binaries
-	LogBinaryOps.put(Binary.NE, "ne");
+	LogBinaryOps.put(Binary.NE, "eq");
 	LogBinaryOps.put(Binary.EQ, "eq");
 	LogBinaryOps.put(Binary.LT, "lt");
 	LogBinaryOps.put(Binary.LE, "lte");
 	LogBinaryOps.put(Binary.GT, "gt");
 	LogBinaryOps.put(Binary.GE, "gte");
-	LogBinaryOps.put(Binary.ANDAND, "and");
-	LogBinaryOps.put(Binary.OROR, "or");
 	LogBinaryOps.put(Binary.ADD, "plus");
 	LogBinaryOps.put(Binary.SUB, "minus");
 	LogBinaryOps.put(Binary.MUL, "multiply");
-	LogBinaryOps.put(Binary.DIV, "divide");*/
+	LogBinaryOps.put(Binary.DIV, "divide");
     }
 
     // FIXME
@@ -269,7 +266,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		    List args = new TypedList(new LinkedList(), Expr.class, false);
 		    List args2 = new TypedList(new LinkedList(), Expr.class, false);
 		    args2.add(nf.StringLit(null, LogObject.genVar_log())); 
-		    args2.add(nf.ClassLit(null, tn));
+		    //args2.add(nf.ClassLit(null, tn));
 		    TypeNode logVarTN = nf.CanonicalTypeNode(null, ts.typeForName((tn.type().isPrimitive() ? "polyglot.ext.esj.primitives.ESJInteger" : tn.toString())));
 		    args.add(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2, null, new TypedList(new LinkedList(), TypeNode.class, false)));
 		    args.add(nf.BooleanLit(null, true));
@@ -514,10 +511,12 @@ public class ESJJavaTranslator extends ContextVisitor {
 		    quantVars.add(l.name());
 		    List args = new TypedList(new LinkedList(), Expr.class, false);
 		    List args2 = new TypedList(new LinkedList(), Expr.class, false);
-		    args2.add(nf.StringLit(null, LogObject.genVar_log())); 
-		    args2.add(nf.ClassLit(null, tn));
+		    List args3 = new TypedList(new LinkedList(), Expr.class, false);
+		    args3.add(nf.StringLit(null, l.name()));
+		    args2.add(nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.Variable")), "unary", args3));
+		    //args2.add(nf.ClassLit(null, tn));
 		    TypeNode logVarTN = nf.CanonicalTypeNode(null, ts.typeForName((tn.type().isPrimitive() ? "polyglot.ext.esj.primitives.ESJInteger" : tn.toString())));
-		    args.add(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2, null, new TypedList(new LinkedList(), TypeNode.class, false)));
+		    args.add(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.Log2Var")), args2, null, new TypedList(new LinkedList(), TypeNode.class, false)));
 		    args.add(nf.BooleanLit(null, true));
 		    //TypeNode logVarTN = nf.CanonicalTypeNode(null, ts.typeForName((tn.type().isPrimitive() ? "polyglot.ext.esj.tologic." : tn.toString()) + "LogVar"));
 		    
@@ -565,9 +564,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    if (!(rt instanceof IntLit || rt instanceof Local || rt instanceof ESJBinary || (rtLog instanceof Call && ((Call)rtLog).name().equals("sum"))))
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
 	    */
-	    if (lf instanceof Field || lf instanceof Cast)
+	    if (lf instanceof Field || lf instanceof Cast) // || (lfLog instanceof Call && !((Call)lfLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
-	    if (rt instanceof Field || rt instanceof Cast)
+	    if (rt instanceof Field || rt instanceof Cast) // || (rtLog instanceof Call && !((Call)rtLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
 
 	    args.add(rtLog);
@@ -602,11 +601,8 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    return nf.Call(null, lfLog, b.kodkodOp(), args);
 	} else if (r instanceof Binary) {
 	    Binary b = (Binary) r;
-	    List args = new TypedList(new LinkedList(), Expr.class, false);
-	    args.add(nf.StringLit(null, b.operator().toString()));
-	    args.add(nf.StringLit(null, b.operator().toString()));
-	    args.add((Expr) toLogicExpr2(b.right()));
-	    return nf.Call(null,(Expr) toLogicExpr2(b.left()), "arithOp", args);
+	    
+	    return (Expr) toLogicExpr2(nf.ESJBinary(null,b.left(), b.operator(), b.right(), null, LogBinaryOps.get(b.operator())));
 	} else if (r instanceof Unary) {
 	    Unary u = (Unary) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
@@ -629,24 +625,23 @@ public class ESJJavaTranslator extends ContextVisitor {
 		(Expr) toLogicExpr2(q.quantListExpr());
 	    String opM;
 	    Expr dExp;
+	    TypeNode log2SetTN = nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.Log2Set"));
 	    if (isComprehension) {
 		opM = "setComprehensionOp";
 		List args1 = new TypedList(new LinkedList(), Expr.class, false);
 		args1.add(nf.StringLit(null, "u0"));
-		dExp = nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogSet")), args1, null, new TypedList(new LinkedList(), TypeNode.class, false));
+		dExp = nf.JL5New(null, log2SetTN, args1, null, new TypedList(new LinkedList(), TypeNode.class, false));
 	    } else {
-		opM = "quantifyOp";
+		opM = "quantifyOp2";
 		dExp = (Expr) toLogicExpr2(nf.BooleanLit(null,true));
+		args.add(qListExpr);
 		args.add(nf.BooleanLit(null, quantKindIsaCount));
 		args.add(nf.StringLit(null, q.quantKind().toString()));
 	    }
-	    args.add(nf.Field(null, nf.Local(null, q.quantVarN()), "var_log"));
+	    args.add(nf.Field(null, nf.Local(null, q.quantVarN()), "var_log2"));
 	    args.add((Expr) toLogicExpr2(q.quantClauseExpr().expr()));
 
-	    return nf.JL5Conditional(null, 
-				     nf.Call(null, qListExpr, "isEmpty", emptyArgs), 
-				     dExp, 
-				     nf.Call(null, qListExpr, opM, args));
+	    return nf.Call(null, log2SetTN, opM, args);
 	} else if (r instanceof ESJQuantifyTypeExpr) {
 	    return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName(((ESJQuantifyTypeExpr) r).theType())), "allInstances_log",new TypedList(new LinkedList(), Expr.class, false));
 	    

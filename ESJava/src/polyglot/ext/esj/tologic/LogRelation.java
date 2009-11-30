@@ -91,8 +91,10 @@ public class LogRelation extends Hashtable {
     }
 
     public String instVar() { return instVar; }
-    public String getId() { return id; }
     public String id() { LogMap.addAsProblemRel(this,id); return id; }
+    public String getId() { return id; }
+    public Relation kodkodRel() { LogMap.addAsProblemRel(this,id); return kodkodRel; }
+    public Relation getKodkodRel() { return kodkodRel; }
     public Class domain() { return domain; }
     public Class range() { return range; }
     public ArrayList subRels() { return subRels; }
@@ -107,8 +109,8 @@ public class LogRelation extends Hashtable {
     public void fixedSize(int s) { fixedSize = s; }
     public void incrFixedSize() { fixedSize++; }
     public void range(Class range) { this.range = range; }
-    public Relation kodkodRel() { return kodkodRel; }
     public void kodkodRel(Relation rel) { this.kodkodRel = rel; }
+    public static int RelCtr() { return RelCtr; }
 
     public boolean isModifiable(HashMap modifiableFields) {
 	return modifiableFields == null || isResultVar ||
@@ -121,7 +123,7 @@ public class LogRelation extends Hashtable {
     }
 
     public Relation domain_log2() { 
-	return isaList ? null /* FIXME ESJInteger.zeroTo_log(fixedSize).string()*/  : 
+	return isaList ? (Relation) ESJInteger.zeroTo_log2(fixedSize).expression()  : 
 	    LogMap.bounds_log2(domain, false);
     }
 

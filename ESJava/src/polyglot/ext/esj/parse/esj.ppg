@@ -1153,6 +1153,7 @@ field_prefix ::=
            {: RESULT = parser.nf.ArrayAccess(parser.pos(a, c), a, b); :}
     ;
 
+
 // currently only allowing ints, booleans, and null   
 predicate_literal ::=
         INTEGER_LITERAL:a    

@@ -4,6 +4,10 @@ import polyglot.ext.esj.tologic.*;
 
 import java.util.ArrayList;
 
+import kodkod.ast.Relation;
+import kodkod.ast.IntExpression;
+import kodkod.ast.Expression;
+
 public class ESJList<E> extends ArrayList<E> {
 
     protected LogRelation rel_log;
@@ -44,8 +48,10 @@ public class ESJList<E> extends ArrayList<E> {
     public void relationize() {
 	if (!isRelationized()) { 
 	    this.relationizerStep++;
-	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, null, false, false, true, false, true, size());
-	    old.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, null, false, false, false, false, true, size());
+	    Relation r = Relation.nary("r" + LogRelation.RelCtr(), 2);
+	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, r, false, false, true, false, true, size());
+	    Relation rOld = Relation.nary("r" + LogRelation.RelCtr(), 2);
+	    old.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, rOld, false, false, false, false, true, size());
 	    int i = 0;
 	    // FIXME
 	    for (Object e : (ESJList<Object>) this) {
@@ -81,6 +87,11 @@ public class ESJList<E> extends ArrayList<E> {
 	return new LogSet(ESJInteger.zeroTo_log(s).string(), s, false); 
     }
 
+    public Log2Set indices_log2() {
+	int s = rel_log.hasFixedSize() ? rel_log.fixedSize() : size();	
+	return ESJInteger.zeroTo_log2(s);
+    }
+
     public LogSet lastIndex_log() {
 	int s = rel_log.hasFixedSize() ? rel_log.fixedSize() - 1 : size() - 1;	
 	return ESJInteger.atom_log(s);
@@ -94,12 +105,26 @@ public class ESJList<E> extends ArrayList<E> {
 	return new LogIntAtom(LogObject.join_log(index.var_log().intValue_log().string(),rel_log.id()));
     }                              
 
+    public IntExpression get_log2(ESJObject index) {
+	return index.var_log2().expression().join(rel_log.kodkodRel()).sum();
+    }                              
+
+    public IntExpression get_log2(IntExpression index) {
+	return index.toExpression().join(rel_log.kodkodRel()).sum();
+    }                              
+
+
     public LogInt count_log(LogObject itm) {
 	return new LogInt("#(" + rel_log.id() + "." + itm.string() + ")");
     }
 
     public LogInt count_log(ESJObject itm) {
 	return new LogInt("#(" + rel_log.id() + "." + itm.var_log().string() + ")");
+    }
+
+    public IntExpression count_log2(ESJObject itm) {
+	//String id = rel_log.id(); //marks problem involved
+	return rel_log.kodkodRel().join(itm.var_log2().expression()).count();
     }
 
     public LogInt size_log() {

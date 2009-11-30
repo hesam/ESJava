@@ -821,12 +821,37 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return new LogSet("A" + log(num));
   }
 
+  public static Expression atom_log2(int num) {
+      return IntConstant.constant(num).toExpression();
+  }
+
   public static LogSet zeroTo_log(int n) {
       return new LogSet("u" + n + (MIN_VALUE == 0 ? "" : "@" +  (-1 * MIN_VALUE)));
   }
 
+  public static Log2Set zeroTo_log2(int n) {
+
+      Bounds bounds = LogMap.ProblemBounds();
+      TupleFactory factory = LogMap.ProblemFactory();
+
+      Relation Idxs = Relation.unary("Idxs");
+      TupleSet Idxs_upper = factory.noneOf(1);
+
+      for(int i=0;i<n;i++) {
+	  Object ti = log(i);
+	  Idxs_upper.add(factory.tuple(ti));
+      }
+      bounds.boundExactly(Idxs, Idxs_upper);
+
+      return new Log2Set(Idxs, n);
+  }
+
   public static LogSet allInstances_log() {
       return new LogSet("u" + BoundsSize());
+  }
+
+  public static Relation allInstances_log2() {
+      return LogMap.ClassRels().get(Integer.class);
   }
 
   public static String intBounds_log() {
@@ -848,7 +873,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       Relation Ints = Relation.unary("Ints");
       TupleSet Ints_upper = factory.noneOf(1);
 
-      for(int i=MIN_VALUE;i<MAX_VALUE;i++) {
+      for(int i=MIN_VALUE;i<=MAX_VALUE;i++) {
 	  Object ti = log(i); //_str(i);
 	  bounds.boundExactly(i,factory.range(factory.tuple(ti),factory.tuple(ti)));
 	  Ints_upper.add(factory.tuple(ti));
@@ -902,6 +927,10 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   //FIXME:
   public LogIntComposite arithOp(String kodkodiOp, String kodkodOp, ESJObject o2) {
       return new LogIntComposite("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")");
+  }
+
+  public IntExpression plus(IntExpression o2) {
+      return var_log2.expression().sum().plus(o2);
   }
 
   public static void main(String[] args) {

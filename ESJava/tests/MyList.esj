@@ -6,11 +6,12 @@ import java.util.Random;
 public class MyList extends ESJList<Integer> {
 			    //ensures (no int e : this | e < 0) {
 
-    // SPEC METHODS    
+    // SPEC METHODS 
+    
     spec public boolean isSorted() {
 	all int i : indices().allButLast() | get(i) <= get(i+1)
     }
-    
+
     spec public boolean isPermutationOf(ESJList<Integer> l) {
 	all int i | count(i) == l.count(i)
     }
@@ -50,6 +51,7 @@ public class MyList extends ESJList<Integer> {
     public static void main(String[] args) {
 	
 	LogMap.SolverOpt_debugLevel(1);
+	//LogMap.SolverOpt_Kodkodi(true);
 
         MyList ta = new MyList();	
         MyList tb = new MyList();

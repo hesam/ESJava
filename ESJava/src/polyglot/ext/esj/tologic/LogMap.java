@@ -479,7 +479,7 @@ public class LogMap {
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
 	boolean isNonVoid = resultVarType != null;
-	Set probRels = ProblemRels.keySet();
+	Set probRels = new HashSet(ProblemRels.keySet());
 	if (SolverOpt_debug1) {
 	    System.out.println("problem involves rels: ");
 	    for (Object k : probRels) {
@@ -562,7 +562,7 @@ public class LogMap {
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
 	boolean isNonVoid = resultVarType != null;
-	Set probRels = ProblemRels.keySet();
+	Set probRels = new HashSet(ProblemRels.keySet());
 	if (SolverOpt_debug1) {
 	    System.out.println("problem involves rels: ");
 	    for (Object k : probRels) {
@@ -580,15 +580,14 @@ public class LogMap {
 	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
 	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
 	    if (!r.isUnknown() || isModifiableRelation)
-		r.log2(r.kodkodRel(), isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType);
+		r.log2(r.getKodkodRel(), isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType);
 	    else 
-		instVarRelOld_log(r).log2(r.kodkodRel(), null, null);
+		instVarRelOld_log(r).log2(r.getKodkodRel(), null, null);
 	    if (isUnknown) {
 		unknowns.add(r);
 		funDefs = funDefs == null ? r.funDef_log2() : funDefs.and(r.funDef_log2());
 	    }
 	}
-
 	Formula finalFormula = funDefs == null ? (Formula) formula : Formula.compose(FormulaOperator.AND, funDefs, (Formula) formula);
 	//ch.append(csq);
 	//ch.flush();
@@ -623,7 +622,9 @@ public class LogMap {
     }
 
 
-    public static void addAsProblemRel(LogRelation r, String id) { ProblemRels.put(id,r); }
+    public static void addAsProblemRel(LogRelation r, String id) { 
+	ProblemRels.put(id,r); 
+    }
 
     public static void addAsProblemRel(Object obj, String instVar) { 
 	LogRelation r = instVarRel_log(obj, instVar);
@@ -718,16 +719,16 @@ public class LogMap {
     public static void commitModel2(Object obj, ArrayList unknowns, Instance model) {
 	ArrayList val = null;
 	for (LogRelation u : (ArrayList<LogRelation>) unknowns) {
-	    Iterator<Tuple> iter = model.tuples(u.kodkodRel()).iterator();
+	    Iterator<Tuple> iter = model.tuples(u.getKodkodRel()).iterator();
 	    System.out.println(iter);
 	    if (u.isResultVar) {
 		((ESJObject) obj).result(get2((Integer) iter.next().atom(0)));
 		continue;
 	    }
-	    //System.out.println(val);
 	    if (obj instanceof ArrayList) {
-		for (ArrayList v : (ArrayList<ArrayList>) val) {
-		    ((ESJList<Integer>) obj).set((Integer) get2((Integer) v.get(0)), (Integer) get2((Integer) v.get(1)));
+		while (iter.hasNext()) {
+		    Tuple itm = iter.next();
+		    ((ESJList<Integer>) obj).set((Integer) get2((Integer) itm.atom(0)), (Integer) get2((Integer) itm.atom(1)));
 		}
 	    } else {
 		if (u.isaListInstVar()) {
