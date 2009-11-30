@@ -442,21 +442,7 @@ public class LogMap {
 	return new LogSet("(" + (obj.isQuantifyVar() ? obj.var_log().string() : get1_log(obj)) + "." + (isSimple ? "" : (isReflexive ? "*" : "^")) + fNs + " - " + get1_log(null) + ")", obj.getClass()); //FIXME: get_log(null) ?
     }
 
-    //FIXME: this is not closure: a setmap of fields
-    public static LogSet instVarClosure_log(LogSet obj, boolean isOld, boolean isSimple, boolean isReflexive, String... instVars) {
-	Class range = obj.range();
-	String fA = isOld ? "_old" : "";
-	String fNs = instVarRel_log(range, instVars[0]+fA).id();
-	if (instVars.length > 1) {
-	    fNs = "(" + fNs;
-	    for(int i=1;i<instVars.length;i++)
-		fNs += (" + " + instVarRel_log(range, instVars[i]+fA).id());
-	    fNs += ")";
-	}
-	return new LogSet("(" + obj.string() + "." + fNs + " - " + get1_log(null) + " )"); //FIXME: get_log(null) ?
-    }
-
-    public static Log2Set instVarClosure_log2(ESJObject obj, boolean isOld, boolean isSimple, boolean isReflexive, String... instVars) {
+   public static Log2Set instVarClosure_log2(ESJObject obj, boolean isOld, boolean isSimple, boolean isReflexive, String... instVars) {
 	//if (SolverOpt_debug1)
 	//System.out.println("instVarClosure_log -> idOld: " + isOld + " isVar: " + (obj.var_log() != null));
 	String fA = isOld ? "_old" : "";
@@ -471,6 +457,33 @@ public class LogMap {
 		res = res.reflexiveClosure();
 	    else
 		res = res.closure();
+	res = res.difference(ClassRels.get(null));
+	return new Log2Set(res, 0, obj.getClass());
+    }
+
+    //FIXME: this is not closure: a setmap of fields
+    public static LogSet instVarClosure_log(LogSet obj, boolean isOld, boolean isSimple, boolean isReflexive, String... instVars) {
+	Class range = obj.range();
+	String fA = isOld ? "_old" : "";
+	String fNs = instVarRel_log(range, instVars[0]+fA).id();
+	if (instVars.length > 1) {
+	    fNs = "(" + fNs;
+	    for(int i=1;i<instVars.length;i++)
+		fNs += (" + " + instVarRel_log(range, instVars[i]+fA).id());
+	    fNs += ")";
+	}
+	return new LogSet("(" + obj.string() + "." + fNs + " - " + get1_log(null) + " )"); //FIXME: get_log(null) ?
+    }
+
+    //FIXME: this is not closure: a setmap of fields
+    public static Log2Set instVarClosure_log2(Log2Set obj, boolean isOld, boolean isSimple, boolean isReflexive, String... instVars) {
+	Class range = obj.range();
+	String fA = isOld ? "_old" : "";
+	Expression fNs = instVarRel_log2(obj, instVars[0]+fA);
+	for(int i=1;i<instVars.length;i++)
+	    fNs = fNs.union(instVarRel_log2(obj, instVars[i]+fA));
+	Expression s1 = obj.expression();
+	Expression res = s1.join(fNs);
 	res = res.difference(ClassRels.get(null));
 	return new Log2Set(res);
     }

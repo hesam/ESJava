@@ -124,6 +124,10 @@ public class LogSet extends LogObject {
 	return arithOp("+", new LogObjAtom(LogMap.get1_log(o2)));
     }
 
+    public LogSet plus_log(Integer o2) { //FIXME
+	return arithOp("+", new LogObjAtom(LogMap.get1_log(o2)));
+    }
+
     public LogSet minus_log(LogSet o2) {
 	return arithOp("-", o2);
     }

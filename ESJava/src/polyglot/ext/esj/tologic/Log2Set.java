@@ -15,15 +15,24 @@ import kodkod.ast.IntConstant;
 public class Log2Set extends Log2Object {
 
     protected int listSize;
+    protected Class range;
 
     public Log2Set(Expression expression) {
-	this(expression, 0);
+	this(expression, 0, null);
     }
 
     public Log2Set(Expression expression, int listSize) {
+	this(expression, listSize, null);
+    }
+
+    public Log2Set(Expression expression, int listSize, Class range) {
 	super(expression);
 	this.listSize = listSize;
+	this.range = range;
     }
+
+    public int listSize() { return listSize; }
+    public Class range() { return range; }
 
     public IntExpression get_log2(Expression obj) {
 	return obj.join(expression).sum();
@@ -32,6 +41,38 @@ public class Log2Set extends Log2Object {
     public Expression get_log2(IntExpression index) {
 	return index.toExpression().join(expression);
     }                              
+
+    public Formula contains_log2(Log2Object itm) {
+	return expression.intersection(itm.expression()).some();
+    }
+
+    public Formula contains_log2(ESJObject itm) {
+	return expression.intersection(itm.var_log2().expression()).some();
+    }
+
+    public Log2Set plus_log2(Log2Set o2) {
+	return new Log2Set(expression.union(o2.expression()));
+    }
+
+    public Log2Set plus_log2(ESJObject o2) { //FIXME
+	return new Log2Set(expression.union(LogMap.objToSingletonRelation_log2(o2)));
+    }
+
+    public Log2Set plus_log2(IntConstant o2) { //FIXME
+	return new Log2Set(expression.union(o2.toExpression()));
+    }
+
+    public Log2Set minus_log2(Log2Set o2) {
+	return new Log2Set(expression.difference(o2.expression()));
+    }
+
+    public Log2Set minus_log2(ESJObject o2) { //FIXME
+	return new Log2Set(expression.difference(LogMap.objToSingletonRelation_log2(o2)));
+    }
+
+    public Log2Set minus_log2(IntConstant o2) { //FIXME
+	return new Log2Set(expression.difference(o2.toExpression()));
+    }
 
     public IntExpression size_log2() {
 	return expression.count();

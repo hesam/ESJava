@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.ArrayList;
 
 import kodkod.ast.Expression;
+import kodkod.ast.Formula;
 
 public class Log2Object  {
     protected Expression expression;
@@ -18,4 +19,13 @@ public class Log2Object  {
     }
 
     public Expression sum() { return expression; }
+
+    public Formula equals_log2(Log2Object o2) {
+	return expression.eq(o2.expression());
+    }
+
+    public Formula equals_log2(ESJObject o2) {
+	return expression.eq(o2.var_log2().expression());
+    }
+
 }

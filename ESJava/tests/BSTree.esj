@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 public class BSTree 
-    ensures isBinarySearchTree()
+    ensures true //isBinarySearchTree()
 {
 
     private static final int INDENT_STEP = 4;
@@ -20,11 +20,8 @@ public class BSTree
 
     spec public ESJSet<Node> nodes() { root.*(left+right) }
 
-    spec public ESJSet<Integer> nodeValues() { this.nodes().<value }
 
-    spec public boolean isBinarySearchTree() {
-	isAcyclic() && parentDef() && isValidBinarySearch() 
-    }
+    spec public ESJSet<Integer> nodeValues() { this.nodes().<value }
 
     spec public boolean isAcyclic() { 
 	no Node n | n.descendants().contains(n) //|| n.ancestors().contains(n)) 
@@ -41,6 +38,10 @@ public class BSTree
         	     (n.right == null || all Node rc : n.rightDescendants() | rc.value > n.value))
     }
 
+    spec public boolean isBinarySearchTree() {
+	isAcyclic() && parentDef() && isValidBinarySearch() 
+    }
+
     public void insert(Integer value) {
         Node insertedNode = new Node(value, null, null);
 	insert(insertedNode);
@@ -48,7 +49,7 @@ public class BSTree
 
     public void insert(Node node)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-	modifies objects getNewNodeParentToBe(node)
+    //modifies objects getNewNodeParentToBe(node)
 	ensures this.nodes().equals(this.old.nodes().plus(node)) {	
 	// no implementation...
 	if (!TEST_DELETE)
@@ -65,7 +66,7 @@ public class BSTree
 
     public void delete(Integer value)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-	modifies objects getParentAndChildren(value)
+    //modifies objects getParentAndChildren(value)
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
     }
@@ -197,9 +198,9 @@ public class BSTree
         
     public static void main(String[] args) {
 	LogMap.SolverOpt_debugLevel(1);
-	MAX_SIZE = 30;
+	MAX_SIZE = 10;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
-	TEST_DELETE = true;
+	TEST_DELETE = false;
 	Random rand = new Random(1111L);
 
         BSTree t = new BSTree();
@@ -230,6 +231,6 @@ public class BSTree
 	}
 	
     }
-    
+
 }
 
