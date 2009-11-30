@@ -1037,7 +1037,7 @@ relational_predicate_expr ::=
 	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.GT, c, ">", "gt"); :}
     |   additive_predicate_expr:a  GTEQ
         relational_predicate_expr:c
-	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.GE, c, ">e", "gte"); :}
+	{: RESULT = parser.nf.CmpBinary(parser.pos(a), a, Binary.GE, c, ">=", "gte"); :}
 
     ;
 

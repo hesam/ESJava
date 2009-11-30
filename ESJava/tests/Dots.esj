@@ -33,10 +33,10 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     spec public boolean distributed() { 
 	all Dot d1 : this.dots | 
 	    all Dot d2 : this.dots | (d1 == d2 || 
-				 (d1.x >= d2.x && d1.x - d2.x > Dots.minDistance) || 
-				 (d2.x >= d1.x && d2.x - d1.x > Dots.minDistance) ||
-				 (d1.y >= d2.y && d1.y - d2.y > Dots.minDistance) ||  
-				 (d2.y >= d1.y && d2.y - d1.y > Dots.minDistance))
+				      (d1.x >= d2.x && d1.x - d2.x > Dots.minDistance) ||
+				      (d2.x >= d1.x && d2.x - d1.x > Dots.minDistance) ||
+				      (d1.y >= d2.y && d1.y - d2.y > Dots.minDistance) ||  
+				      (d2.y >= d1.y && d2.y - d1.y > Dots.minDistance))
     }
 
     spec public boolean unperturbed() { 
@@ -47,12 +47,14 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 	      (d.y >= d.yOrig && d.y - d.yOrig < Dots.maxWiggleRoom)))
     }
 
+    /*
     spec public ESJSet<Dot> surrounds(Dot d) {
 	{ Dot d1 | (((d1.x >= d.x && d1.x - d.x <= Dots.minDistance) ||
 		     (d.x >= d1.x && d.x - d1.x <= Dots.minDistance)) &&
 		    ((d1.y >= d.y && d1.y - d.y <= Dots.minDistance) ||
 		     (d.y >= d1.y && d.y - d1.y <= Dots.minDistance))) }
     }
+    */
 
     public void mousePressed( MouseEvent e ) { ; }    
     public void mouseDragged( MouseEvent e ) { ; }
@@ -65,19 +67,19 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 	int x = (int) Math.floor(e.getX() / grid), y = (int) Math.floor(e.getY() / grid);
 	Dot d = new Dot(x, y);
 	dots.add(d);
-	System.out.println("surroundings: " + surroundsTransitiveClosure(d));
+	//System.out.println("surroundings: " + surroundsTransitiveClosure(d));
 	addDot(d);
 	draw();
     }
 
     public void addDot(Dot d) 
 	modifies fields Dot.x, Dot.y
-	modifies objects surroundsTransitiveClosure(d)
+    //modifies objects surroundsTransitiveClosure(d)
 	ensures distributed() && unperturbed() {
 	System.out.println(Dot.allInstances());
 	System.out.println(dots);
 	System.out.println("distributed: " + distributed());
-	System.out.println("unperturbed: " + unperturbed());
+	//System.out.println("unperturbed: " + unperturbed());
     }
 
     public void draw() {
@@ -98,6 +100,7 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 	paint(g);
     }
 
+    /*
     public HashSet<Dot> surroundsTransitiveClosure(Dot d) {
 	int x = d.x, y = d.y;
 	
@@ -116,9 +119,11 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 	}
         return res;	
     }
+    */
     
     public static void main( String[] args ) {
 	LogMap.SolverOpt_debugLevel(1);
+	//LogMap.SolverOpt_Kodkodi(true);
 	ESJInteger.setBounds(0,(canvasSize-100)/grid);
 	Frame myFrame = new Frame( "Distributed Dots" );
 	Dots myCanvas = new Dots();

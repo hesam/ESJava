@@ -293,12 +293,11 @@ public class LogRelation extends Hashtable {
 	}
 
 	TupleFactory factory = LogMap.ProblemFactory();
-	TupleSet lower = factory.noneOf(2);
+	TupleSet lower = factory.noneOf(kodkodRel.arity());
 
 	CharArrayWriter o = new CharArrayWriter();
 	o.append("{");
 	Iterator itr = s.iterator();
-	//for (int i=0;i<s.size()-1;i++) {
 	while (itr.hasNext()) {
 	    Object k = itr.next();
 	    Object v = r.get(k);
@@ -307,10 +306,10 @@ public class LogRelation extends Hashtable {
 		    ArrayList lv = (ArrayList) v;
 		    int lvs = lv.size() - 1;
 		    for(int c = 0; c <= lvs; c++)
-			o.append("[A" + k + ", A" + ESJInteger.log(c) + ", A" + lv.get(c) + "], ");
+			lower.add(factory.tuple(k).product(factory.tuple(c)).product(factory.tuple(lv.get(c))));
 		} else {
 		    for(Object e : (ArrayList) v)
-			o.append("[A" + k + ", A" + e + "], ");
+			lower.add(factory.tuple(k).product(factory.tuple(e)));
 		}
 	    } else if (v instanceof HashMap) {
 		HashMap lv = (HashMap) v;
@@ -318,7 +317,7 @@ public class LogRelation extends Hashtable {
 		int lvs = keys.size() - 1;
 		for(int c = 0; c <= lvs; c++) {
 		    Object theKey = keys.get(c);
-		    o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "], ");
+		    lower.add(factory.tuple(k).product(factory.tuple(theKey)).product(factory.tuple(lv.get(theKey))));
 		}
 	    } else {
 		lower.add(factory.tuple(k).product(factory.tuple(v)));
@@ -387,13 +386,11 @@ public class LogRelation extends Hashtable {
 	Expression r = range_log2(false, null);
 	if (isaCollectionInstVar) {
 	    Expression d = listInstVarDomain_log2();	    
-	    Expression dl = domain_log2().join(kodkodRel);
-	    System.out.println(d + "\n" + dl + " " + subRels);
+	    Expression dl = domain_log2().join(kodkodRel);	    
 	    for (LogRelation s : (ArrayList<LogRelation>) subRels) {
 		//o.append("FUNCTION(" + s.id() + ", " + d + "one " + r + ") && (" + 
 		// domain_log2() + "." + id + " = " + s.id() + ") && ");
 		Relation sRel = s.kodkodRel();
-		System.out.println(sRel);
 		Formula fNew = sRel.function(d,r).and(dl.eq(sRel));
 		f = f == null ? fNew : f.and(fNew);
 	    }

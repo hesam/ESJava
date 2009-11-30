@@ -850,8 +850,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return new LogSet("u" + BoundsSize());
   }
 
-  public static Relation allInstances_log2() {
-      return LogMap.ClassRels().get(Integer.class);
+  public static Log2Set allInstances_log2() {
+      return new Log2Set(LogMap.ClassRels().get(Integer.class));
   }
 
   public static String intBounds_log() {

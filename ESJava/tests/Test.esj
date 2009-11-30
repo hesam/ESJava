@@ -68,12 +68,12 @@ public class Test {
 
 
     public static void main(String[] args) {	
-	LogMap.SolverOpt_debugLevel(1);
+	//LogMap.SolverOpt_debugLevel(1);
 	//LogMap.SolverOpt_Kodkodi(true);
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
-	//System.out.println(t1.twice(5));
+	System.out.println(t1.twice(5));
 	//System.out.println(t1.pick());
 	//t1.foo();
 	t1.blah();

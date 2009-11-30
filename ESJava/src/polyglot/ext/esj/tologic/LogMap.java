@@ -274,7 +274,6 @@ public class LogMap {
 
       	TupleSet cRel_upper = ProblemFactory.noneOf(1);
 	ArrayList atoms = (ArrayList) ClassAtoms.get(c);
-	System.out.println(atoms);
 	for (Object a : atoms)
 	    cRel_upper.add(ProblemFactory.tuple(a)); //"A"+a));
 	ProblemBounds.boundExactly(cRel, cRel_upper);
@@ -385,24 +384,9 @@ public class LogMap {
     }
 
     public static Log2Var objInstVarStr_log2(ESJObject obj, String instVar, Class c) {
-	Expression s1;
 	Relation s2 = instVarRel_log2(obj, instVar);
-	if (obj.isQuantifyVar2()) {
-	    s1 = obj.var_log2().expression();
-	} else {
-	    Relation objRel;
-	    if (ClassRels.containsKey(obj))
-		objRel = ClassRels.get(obj);
-	    else {
-		Integer objAtom = get1(obj);
-		objRel = Relation.unary("A" + objAtom);
-		TupleSet obj_upper = ProblemFactory.noneOf(1);
-		obj_upper.add(ProblemFactory.tuple(objAtom));
-		ProblemBounds.boundExactly(objRel, obj_upper);
-		ClassRels.put(obj,objRel);
-	    }
-	    s1 = objRel;
-	}
+	Expression s1 = obj.isQuantifyVar2() ? 
+	    obj.var_log2().expression() : objToSingletonRelation_log2(obj);
 	return new Log2Var(s1.join(s2));
     }
 
@@ -412,11 +396,13 @@ public class LogMap {
     }
 
     public static Log2Set objInstVarSet_log2(ESJObject obj, String instVar) {
-	Expression s1;
 	Relation s2 = instVarRel_log2(obj, instVar);
-	if (obj.isQuantifyVar2()) {
-	    s1 = obj.var_log2().expression();
-	} else {
+	Expression s1 = obj.isQuantifyVar2() ? 
+	    obj.var_log2().expression() : objToSingletonRelation_log2(obj);
+	return new Log2Set(s1.join(s2));
+    }
+
+    public static Relation objToSingletonRelation_log2(Object obj) {
 	    Relation objRel;
 	    if (ClassRels.containsKey(obj))
 		objRel = ClassRels.get(obj);
@@ -428,9 +414,7 @@ public class LogMap {
 		ProblemBounds.boundExactly(objRel, obj_upper);
 		ClassRels.put(obj,objRel);
 	    }
-	    s1 = objRel;
-	}
-	return new Log2Set(s1.join(s2));
+	    return objRel;
     }
 
     public static LogObjAtom null_log() {
@@ -556,8 +540,6 @@ public class LogMap {
     }
 
     public static boolean solve2(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects) {
-	System.out.println(LogMap.ProblemAtoms);
-
 	Formula funDefs = null;
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
@@ -639,7 +621,6 @@ public class LogMap {
 		((ESJObject) obj).result(get2((Integer) ((ArrayList) val.get(0)).get(0)));
 		continue;
 	    }
-	    //System.out.println(val);
 	    if (obj instanceof ArrayList) {
 		for (ArrayList v : (ArrayList<ArrayList>) val) {
 		    ((ESJList<Integer>) obj).set((Integer) get2((Integer) v.get(0)), (Integer) get2((Integer) v.get(1)));
@@ -720,7 +701,6 @@ public class LogMap {
 	ArrayList val = null;
 	for (LogRelation u : (ArrayList<LogRelation>) unknowns) {
 	    Iterator<Tuple> iter = model.tuples(u.getKodkodRel()).iterator();
-	    System.out.println(iter);
 	    if (u.isResultVar) {
 		((ESJObject) obj).result(get2((Integer) iter.next().atom(0)));
 		continue;
@@ -779,20 +759,12 @@ public class LogMap {
 		} else {
 		    Class[] paramTypes = new Class[1];
 		    Object[] args = new Object[1];
-		    //boolean isResultVar = u.instVar().equals("result");
 		    paramTypes[0] = /*isResultVar ? Object.class :*/ u.range();
 		    Class c = u.domain();
-		    //System.out.println("relation " + u.instVar() + " of type: " + paramTypes[0] + " for class: " + u.domain());
-		    //System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);
 		    try { 
 			Method m = c.getDeclaredMethod(u.instVar(), paramTypes); 
-			//System.out.println(m);
-			//for (ArrayList v : (ArrayList<ArrayList>) val) {
 			while (iter.hasNext()) {
-			    //System.out.println(get2((Integer) v.get(0)));
-			    //System.out.println(get2((Integer) v.get(1)));
 			    Tuple itm = iter.next();		
-			    System.out.println("itm=" + itm);
 			    args[0] = get2((Integer) itm.atom(1));
 			    m.invoke(get2((Integer) itm.atom(0)),args);
 			}
