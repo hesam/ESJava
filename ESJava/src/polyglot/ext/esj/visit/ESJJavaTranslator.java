@@ -625,15 +625,11 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    String opM;
 	    Expr dExp;
 	    TypeNode log2SetTN = nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.Log2Set"));
+	    args.add(qListExpr);
 	    if (isComprehension) {
-		opM = "setComprehensionOp";
-		List args1 = new TypedList(new LinkedList(), Expr.class, false);
-		args1.add(nf.StringLit(null, "u0"));
-		dExp = nf.JL5New(null, log2SetTN, args1, null, new TypedList(new LinkedList(), TypeNode.class, false));
+		opM = "setComprehensionOp2";
 	    } else {
 		opM = "quantifyOp2";
-		dExp = (Expr) toLogicExpr2(nf.BooleanLit(null,true));
-		args.add(qListExpr);
 		args.add(nf.BooleanLit(null, quantKindIsaCount));
 		args.add(nf.StringLit(null, q.quantKind().toString()));
 	    }

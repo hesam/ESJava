@@ -218,11 +218,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		}
 	    }
 	    l.add(d1);
-	    List args4 = new TypedList(new LinkedList(), Expr.class, false);
-	    args4.add(nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "ProblemRels", emptyArgs));
-	    l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args4)));
 	    l.add(d2);
-	    //l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args2)));
 	    l.add(nf.JL5Assert(null, nf.Local(null,"isSatisfiable"), nf.StringLit(null, "Formula UNSAT! Recovery failed...")));
 	    l.add(nf.Return(null, isVoid ? nf.Local(null,  "isSatisfiable") : nf.JL5Cast(null, retTp, nf.Field(null, nf.This(null), "result"))));
 
@@ -236,7 +232,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 					   new TypedList(new LinkedList(), TypeNode.class, false), 						  
 					   nf.Block(null,l),
 					     methodDecl.throwTypes(), new TypedList(new LinkedList(), LocalDecl.class, false), new TypedList(new LinkedList(), LocalDecl.class, false), false,true, false));
-	    l.set(3 + lCtr, nf.LocalDecl(null, fl.classicFlags(), nf.CanonicalTypeNode(null, ts.Boolean()), "isSatisfiable", nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "solve2", args3)));
+	    l.set(2 + lCtr, nf.LocalDecl(null, fl.classicFlags(), nf.CanonicalTypeNode(null, ts.Boolean()), "isSatisfiable", nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "solve2", args3)));
      	    newL.add(nf.ESJLog2PredMethodDecl(null, fl,
 					   isVoid ? nf.CanonicalTypeNode(null,ts.Boolean()) : methodDecl.returnType(),
 					   methodDecl.name() + "_fallback2", 
@@ -1359,6 +1355,11 @@ ensured_class_declaration ::=
 		 args2.add(parser.nf.BooleanLit(null, false));
 		 args2.add(parser.nf.BooleanLit(null, false));
 		 l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs2),  parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogSet")), "allInstances_log", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "bounds_log", args2))), new TypedList(new LinkedList(), TypeNode.class, false)));
+		 args2.remove(2);
+		 List args3 = new TypedList(new LinkedList(), Expr.class, false);
+		 args3.add(parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "bounds_log2", args2));
+		 TypeNode log2SetTN = parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.Log2Set"));		
+		 l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs2), log2SetTN, "allInstances_log2", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.JL5New(null, log2SetTN, args3, null, new TypedList(new LinkedList(), TypeNode.class, false)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 
 		 // define LogObject general log methods (cmpOp, etc.)
 		 TypeNode logFormulaTN = parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula"));  

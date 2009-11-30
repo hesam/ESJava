@@ -75,9 +75,9 @@ public class LogSet extends LogObject {
 	    String q = quantKindIsaOneOrLone ? " {" + p + "} " : p;
 	    return new LogFormula("(" + quantKind + q + ")");
 	}
-			   }
-
-	    public LogSet setComprehensionOp(LogObject quantVarN, LogFormula quantClauseExpr) {
+    }
+    
+    public LogSet setComprehensionOp(LogObject quantVarN, LogFormula quantClauseExpr) {
 	if (isEmpty())
 	    return new LogSet("u0");
 	else {

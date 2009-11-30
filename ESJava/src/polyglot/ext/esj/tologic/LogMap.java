@@ -167,7 +167,8 @@ public class LogMap {
 	LogMap.ProblemBounds = new Bounds(universe);
 
 	ESJInteger.intBounds_log2();
-	System.out.println(ClassRels);
+	if (SolverOpt_debug1)
+	    System.out.println(ClassRels);
     }
 
     public static void newAtoms(Class c, boolean isEnum) { // FIXME?
@@ -468,7 +469,7 @@ public class LogMap {
 	    System.out.println("problem involves rels: ");
 	    for (Object k : probRels) {
 		LogRelation r =  (LogRelation) ProblemRels.get(k);
-		System.out.println(r.id() + ": " + r.instVar());
+		System.out.println(r.getId() + ": " + r.instVar());
 	    }
 	    if (modifiableFields != null)
 		System.out.println("modifiable fields: " + modifiableFields);
@@ -549,7 +550,7 @@ public class LogMap {
 	    System.out.println("problem involves rels: ");
 	    for (Object k : probRels) {
 		LogRelation r =  (LogRelation) ProblemRels.get(k);
-		System.out.println(r.id() + ": " + r.instVar());
+		System.out.println(r.getId() + ": " + r.instVar());
 	    }
 	    if (modifiableFields != null)
 		System.out.println("modifiable fields: " + modifiableFields);
@@ -676,14 +677,9 @@ public class LogMap {
 		    boolean isResultVar = u.instVar().equals("result");
 		    paramTypes[0] = isResultVar ? Object.class : u.range();
 		    Class c = u.domain();
-		    //System.out.println("relation " + u.instVar() + " of type: " + paramTypes[0] + " for class: " + u.domain());
-		    //System.out.println("lookup mtd: " + u.instVar() + " " + paramTypes);
 		    try { 
 			Method m = c.getDeclaredMethod(u.instVar(), paramTypes); 
-			//System.out.println(m);
 			for (ArrayList v : (ArrayList<ArrayList>) val) {
-			    //System.out.println(get2((Integer) v.get(0)));
-			    //System.out.println(get2((Integer) v.get(1)));
 			    args[0] = get2((Integer) v.get(1));
 			    m.invoke(get2((Integer) v.get(0)),args);
 			}
@@ -769,7 +765,7 @@ public class LogMap {
 			    m.invoke(get2((Integer) itm.atom(0)),args);
 			}
 		    } catch (Exception e) {
-			e.printStackTrace();
+			    e.printStackTrace();
 			System.exit(1);
 		    }
 		}

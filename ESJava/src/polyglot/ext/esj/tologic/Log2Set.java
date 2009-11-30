@@ -43,9 +43,17 @@ public class Log2Set extends Log2Object {
 
     public static Formula quantifyOp2(Log2Set quantSet, boolean quantKindIsaOneOrLone, String quantKind, Log2Var quantVar, Formula quantClause) {
 	Expression quantSetExpr = quantSet.expression();
+	Variable v = (Variable) quantVar.expression();
 	if (quantSetExpr.arity() > 1)
 	    quantSetExpr = quantSetExpr.project(IntConstant.constant(1));
-	return quantClause.forAll(((Variable) quantVar.expression()).oneOf(quantSetExpr));
+	return quantClause.forAll(v.oneOf(quantSetExpr));
     }
 
+    public static Expression setComprehensionOp2(Log2Set quantSet, Log2Var quantVar, Formula quantClause) {
+	Expression quantSetExpr = quantSet.expression();
+	Variable v = (Variable) quantVar.expression();
+	//if (quantSetExpr.arity() > 1)
+	//quantSetExpr = quantSetExpr.project(IntConstant.constant(1));
+	return quantClause.comprehension(v.oneOf(quantSetExpr));
+    }
 }
