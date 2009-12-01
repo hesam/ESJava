@@ -555,17 +555,19 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    Expr rtLog = (Expr) toLogicExpr2(b.right());
 	    
 	    // FIXME
-	    //System.out.println("hi2: " + lf + " " + lf.getClass() + rt + " " + rt.getClass());
+	    //System.out.println("hi2: " + lf + " " + lf.type() + rt + " " + rt.type());
 	    /*
  	    if (!(lf instanceof IntLit || lf instanceof Local || lf instanceof ESJBinary || (lfLog instanceof Call && ((Call)lfLog).name().equals("sum"))))
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
 	    if (!(rt instanceof IntLit || rt instanceof Local || rt instanceof ESJBinary || (rtLog instanceof Call && ((Call)rtLog).name().equals("sum"))))
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
 	    */
-	    if (lf instanceof Field || lf instanceof Cast || lf instanceof Local) // || (lfLog instanceof Call && !((Call)lfLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
+	    if (lf instanceof Field || lf instanceof Cast || lf instanceof Local) { // || (lfLog instanceof Call && !((Call)lfLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
-	    if (rt instanceof Field || rt instanceof Cast || rt instanceof Local) // || (rtLog instanceof Call && !((Call)rtLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
+	    }
+	    if (rt instanceof Field || rt instanceof Cast || rt instanceof Local) { // || (rtLog instanceof Call && !((Call)rtLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+	    }
 
 	    args.add(rtLog);
 	    Call c = nf.Call(null, lfLog, b.kodkodOp(), args);
@@ -583,7 +585,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    Expr lfLog = (Expr) toLogicExpr2(b.left());
 	    Expr rtLog = (Expr) toLogicExpr2(b.right());
 	    // FIXME
-	    //System.out.println("hi: " + lf + " " + lf.getClass() + rt + " " + rt.getClass());
+	    //System.out.println("hi: " + lf + " " + lf.type() + rt + " " + rt.type());
 	    /*
  	    if (!(lf instanceof IntLit || lf instanceof Local || lf instanceof ESJBinary || (lfLog instanceof Call && ((Call)lfLog).name().equals("sum"))))
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
@@ -594,7 +596,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
 	    if (rt instanceof Field || rt instanceof Cast)
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
-
 	    args.add(rtLog);
 	    return nf.Call(null, lfLog, b.kodkodOp(), args);
 	} else if (r instanceof Binary) {
@@ -688,11 +689,11 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    Field f = (Field) r;
 	    List args = new TypedList(new LinkedList(), Expr.class, false);
 	    if (f.target() instanceof TypeNode) {
-		List args2 = new TypedList(new LinkedList(), Expr.class, false);
 		List args3 = new TypedList(new LinkedList(), Expr.class, false);
 		args3.add(f);
-		args2.add(nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "get1", args3));
-		return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objToSingletonRelation_log2", args2);
+		// FIXME
+		String fN = f.type().toString(); 
+		return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), (fN.equals("int") || fN.equals("java.lang.Integer") ? "intToSingletonRelation_log2" : "objToSingletonRelation_log2"), args3);
 	    } else {
 		
 		String m = f.name() + (f.name().equals("result") ? ("_" + currLogPredMtdTpName) : "") + (f.name().equals("old") ? "" : "_log2"); //FIXME

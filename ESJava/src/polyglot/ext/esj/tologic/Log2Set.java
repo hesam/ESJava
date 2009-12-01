@@ -55,7 +55,7 @@ public class Log2Set extends Log2Object {
     }
 
     public Log2Set plus_log2(ESJObject o2) { //FIXME
-	return new Log2Set(expression.union(LogMap.objToSingletonRelation_log2(o2)));
+	return new Log2Set(expression.union(LogMap.objToSingletonRelation_log2(o2).expression()));
     }
 
     public Log2Set plus_log2(IntConstant o2) { //FIXME
@@ -67,7 +67,7 @@ public class Log2Set extends Log2Object {
     }
 
     public Log2Set minus_log2(ESJObject o2) { //FIXME
-	return new Log2Set(expression.difference(LogMap.objToSingletonRelation_log2(o2)));
+	return new Log2Set(expression.difference(LogMap.objToSingletonRelation_log2(o2).expression()));
     }
 
     public Log2Set minus_log2(IntConstant o2) { //FIXME

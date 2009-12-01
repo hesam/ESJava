@@ -10,23 +10,15 @@ import kodkod.ast.Expression;
 import kodkod.ast.IntExpression;
 import kodkod.ast.Formula;
 
-public class Log2Object  {
+public class Log2IntAtom  {
     protected Expression expression;
     public Expression expression() { return expression; }
 
-    public Log2Object(Expression expression) {
+    public Log2IntAtom(Expression expression) {
 	super();
 	this.expression = expression;
     }
 
-    public Expression sum() { return expression; }
-
-    public Formula equals_log2(Log2Object o2) {
-	return expression.eq(o2.expression());
-    }
-
-    public Formula equals_log2(ESJObject o2) {
-	return expression.eq(o2.var_log2().expression());
-    }
+    public IntExpression sum() { return expression.sum(); }
 
 }

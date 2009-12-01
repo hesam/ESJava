@@ -395,7 +395,7 @@ public class LogMap {
     public static Log2Var objInstVarStr_log2(ESJObject obj, String instVar, Class c) {
 	Relation s2 = instVarRel_log2(obj, instVar);
 	Expression s1 = obj.isQuantifyVar2() ? 
-	    obj.var_log2().expression() : objToSingletonRelation_log2(obj);
+	    obj.var_log2().expression() : objToSingletonRelation_log2(obj).expression();
 	return new Log2Var(s1.join(s2));
     }
 
@@ -407,11 +407,11 @@ public class LogMap {
     public static Log2Set objInstVarSet_log2(ESJObject obj, String instVar) {
 	Relation s2 = instVarRel_log2(obj, instVar);
 	Expression s1 = obj.isQuantifyVar2() ? 
-	    obj.var_log2().expression() : objToSingletonRelation_log2(obj);
+	    obj.var_log2().expression() : objToSingletonRelation_log2(obj).expression();
 	return new Log2Set(s1.join(s2));
     }
 
-    public static Relation objToSingletonRelation_log2(Object obj) {
+    public static Log2Object objToSingletonRelation_log2(Object obj) {
 	    Relation objRel;
 	    if (ClassRels.containsKey(obj))
 		objRel = ClassRels.get(obj);
@@ -423,7 +423,11 @@ public class LogMap {
 		ProblemBounds.boundExactly(objRel, obj_upper);
 		ClassRels.put(obj,objRel);
 	    }
-	    return objRel;
+	    return new Log2Object(objRel);
+    }
+
+    public static Log2IntAtom intToSingletonRelation_log2(Integer i) {
+	return new Log2IntAtom(ESJInteger.atom_log2(i));
     }
 
     public static LogObjAtom null_log() {
@@ -458,7 +462,7 @@ public class LogMap {
 	for(int i=1;i<instVars.length;i++)
 	    fNs = fNs.union(instVarRel_log2(obj, instVars[i]+fA));
 	Expression s1 = obj.isQuantifyVar2() ? 
-	    obj.var_log2().expression() : objToSingletonRelation_log2(obj);
+	    obj.var_log2().expression() : objToSingletonRelation_log2(obj).expression();
 	if (!isSimple)
 	    if (isReflexive)
 		fNs = fNs.reflexiveClosure();
