@@ -2,6 +2,7 @@ package polyglot.ext.esj.primitives;
 
 import polyglot.ext.esj.tologic.*;
 
+import kodkod.ast.Formula;
 import kodkod.ast.Expression;
 import kodkod.ast.IntExpression;
 import kodkod.ast.IntConstant;
@@ -801,7 +802,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
   public static int bitWidth() {
       int b = BoundsSize() + 1;
-      return ((int) Math.ceil(Math.log(b) / Math.log(2))) + 1;
+      return ((int) Math.ceil(Math.log(b) / Math.log(2))) + 2;
 
   }
 
@@ -929,9 +930,82 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return new LogIntComposite("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")");
   }
 
-  public IntExpression plus(IntExpression o2) {
-      return var_log2.expression().sum().plus(o2);
+  public Log2IntAtom plus(IntExpression o2) {
+      return new Log2IntAtom(var_log2.expression().sum().plus(o2));
   }
+
+  public Log2IntAtom plus(ESJObject o2) {
+      return new Log2IntAtom(var_log2.expression().sum().plus(o2.var_log2().expression().sum()));
+  }
+
+  public Log2IntAtom minus(IntExpression o2) {
+      return new Log2IntAtom(var_log2.expression().sum().plus(o2));
+  }
+
+  public Log2IntAtom minus(ESJObject o2) {
+      return new Log2IntAtom(var_log2.expression().sum().plus(o2.var_log2().expression().sum()));
+  }
+
+  public Formula eq(IntExpression o2) {
+      return var_log2.expression().sum().eq(o2);
+  }
+
+  public Formula gt(IntExpression o2) {
+      return var_log2.expression().sum().gt(o2);
+  }
+
+  public Formula gte(IntExpression o2) {
+      return var_log2.expression().sum().gte(o2);
+  }
+
+  public Formula lt(IntExpression o2) {
+      return var_log2.expression().sum().lt(o2);
+  }
+
+  public Formula lte(IntExpression o2) {
+      return var_log2.expression().sum().lte(o2);
+  }
+
+  public Formula eq(ESJObject o2) {
+      return var_log2.expression().sum().eq(o2.var_log2().expression().sum());
+  }
+
+  public Formula gt(ESJObject o2) {
+      return var_log2.expression().sum().gt(o2.var_log2().expression().sum());
+  }
+
+  public Formula gte(ESJObject o2) {
+      return var_log2.expression().sum().gte(o2.var_log2().expression().sum());
+  }
+
+  public Formula lt(ESJObject o2) {
+      return var_log2.expression().sum().lt(o2.var_log2().expression().sum());
+  }
+
+  public Formula lte(ESJObject o2) {
+      return var_log2.expression().sum().lte(o2.var_log2().expression().sum());
+  }
+
+  public Formula eq(Log2IntAtom o2) {
+      return var_log2.expression().sum().eq(o2.sum());
+  }
+
+  public Formula gt(Log2IntAtom o2) {
+      return var_log2.expression().sum().gt(o2.sum());
+  }
+
+  public Formula gte(Log2IntAtom o2) {
+      return var_log2.expression().sum().gte(o2.sum());
+  }
+
+  public Formula lt(Log2IntAtom o2) {
+      return var_log2.expression().sum().lt(o2.sum());
+  }
+
+  public Formula lte(Log2IntAtom o2) {
+      return var_log2.expression().sum().lte(o2.sum());
+  }
+
 
   public static void main(String[] args) {
       ESJInteger.setBounds(0,30);

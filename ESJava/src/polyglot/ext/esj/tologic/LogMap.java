@@ -28,6 +28,7 @@ import kodkod.ast.Formula;
 import kodkod.ast.operator.FormulaOperator;
 import kodkod.ast.Expression;
 import kodkod.ast.Relation;
+import kodkod.ast.IntConstant;
 import kodkod.instance.TupleFactory;
 import kodkod.instance.TupleSet;
 import kodkod.instance.Tuple;
@@ -427,7 +428,7 @@ public class LogMap {
     }
 
     public static Log2IntAtom intToSingletonRelation_log2(Integer i) {
-	return new Log2IntAtom(ESJInteger.atom_log2(i));
+	return new Log2IntAtom(IntConstant.constant(i)); //ESJInteger.atom_log2(i));
     }
 
     public static LogObjAtom null_log() {

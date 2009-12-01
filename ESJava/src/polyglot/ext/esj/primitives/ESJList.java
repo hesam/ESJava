@@ -113,6 +113,10 @@ public class ESJList<E> extends ArrayList<E> {
 	return index.toExpression().join(rel_log.kodkodRel()).sum();
     }                              
 
+    public IntExpression get_log2(Log2IntAtom index) {
+	return index.sum().toExpression().join(rel_log.kodkodRel()).sum();
+    }                              
+
 
     public LogInt count_log(LogObject itm) {
 	return new LogInt("#(" + rel_log.id() + "." + itm.string() + ")");

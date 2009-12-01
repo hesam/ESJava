@@ -3,6 +3,7 @@ package polyglot.ext.esj.primitives;
 import polyglot.ext.esj.tologic.*;
 import java.util.*;
 
+import kodkod.ast.IntExpression;
 
 public interface ESJObject {
 
