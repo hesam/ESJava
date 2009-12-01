@@ -405,9 +405,13 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    //if ((c.target() instanceof Field && ((Field) c.target()).name().equals("old")) ||
 	    //(c.target() instanceof Call && ((Call) c.target()).name().equals("old"))) //FIXME
 	    //def = "_old_log";
-	    String m = c.name() + (c.name().equals("old") ? "" : "_log"); //FIXME
 	    for (Expr e : (List<Expr>) c.arguments())
 		args.add((Expr) toLogicExpr(e));
+	    // HACK FIXME
+	    if (c.name().equals("abs") &&  c.target().toString().equals("java.lang.Math")) {
+		return nf.Call(null, (Expr) args.get(0), "abs" , emptyArgs);
+	    }
+	    String m = c.name() + (c.name().equals("old") ? "" : "_log"); //FIXME
 	    if (c.target() instanceof Local && quantVars.contains(((Local) c.target()).name())) {
 		//return nf.Call(null, c.target(), c.name() + "_log2" , args);
 		return nf.Call(null, c.target(), m , args);
@@ -670,9 +674,13 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    //if ((c.target() instanceof Field && ((Field) c.target()).name().equals("old")) ||
 	    //(c.target() instanceof Call && ((Call) c.target()).name().equals("old"))) //FIXME
 	    //def = "_old_log";
-	    String m = c.name() + (c.name().equals("old") ? "" : "_log2"); //FIXME
 	    for (Expr e : (List<Expr>) c.arguments())
 		args.add((Expr) toLogicExpr2(e));
+	    // HACK FIXME
+	    if (c.name().equals("abs") &&  c.target().toString().equals("java.lang.Math")) {
+		return nf.Call(null, (Expr) args.get(0), "abs" , emptyArgs);
+	    }
+	    String m = c.name() + (c.name().equals("old") ? "" : "_log2"); //FIXME
 	    if (c.target() instanceof Local && quantVars.contains(((Local) c.target()).name())) {
 		//return nf.Call(null, c.target(), c.name() + "_log2" , args);
 		return nf.Call(null, c.target(), m , args);

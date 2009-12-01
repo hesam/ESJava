@@ -33,29 +33,20 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
     spec public boolean distributed() { 
 	all Dot d1 : this.dots | 
 	    all Dot d2 : this.dots | (d1 == d2 || 
-				      //(Math.abs(d1.x - d2.x) > Dots.minDistance) ||
-				      (d1.x >= d2.x && d1.x - d2.x > Dots.minDistance) ||
-				      (d2.x >= d1.x && d2.x - d1.x > Dots.minDistance) ||
-				      (d1.y >= d2.y && d1.y - d2.y > Dots.minDistance) ||  
-				      (d2.y >= d1.y && d2.y - d1.y > Dots.minDistance)
-				      )
+				      (Math.abs(d1.x - d2.x) > Dots.minDistance) ||
+				      (Math.abs(d1.y - d2.y) > Dots.minDistance))
     }
 
     spec public boolean unperturbed() { 
 	all Dot d : this.dots |
-	    (((d.xOrig >= d.x && d.xOrig - d.x < Dots.maxWiggleRoom) || 
-	     (d.x >= d.xOrig && d.x - d.xOrig < Dots.maxWiggleRoom)) && 
-	     ((d.yOrig >= d.y && d.yOrig - d.y < Dots.maxWiggleRoom) || 
-	      (d.y >= d.yOrig && d.y - d.yOrig < Dots.maxWiggleRoom)))
+	    ((Math.abs(d.xOrig - d.x) < Dots.maxWiggleRoom) && 
+	     (Math.abs(d.yOrig - d.y) < Dots.maxWiggleRoom))
     }
 
     spec public ESJSet<Dot> surrounds(Dot d) {
-	{ Dot d1 | (((d1.x >= d.x && d1.x - d.x <= Dots.minDistance) ||
-		     (d.x >= d1.x && d.x - d1.x <= Dots.minDistance)) &&
-		    ((d1.y >= d.y && d1.y - d.y <= Dots.minDistance) ||
-		     (d.y >= d1.y && d.y - d1.y <= Dots.minDistance))) }
+	{ Dot d1 | ((Math.abs(d1.x - d.x) <= Dots.minDistance) &&		     
+		    (Math.abs(d1.y - d.y) <= Dots.minDistance)) }
     }
-
 
     public void mousePressed( MouseEvent e ) { ; }    
     public void mouseDragged( MouseEvent e ) { ; }

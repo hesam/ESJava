@@ -27,5 +27,10 @@ public class LogIntComposite extends LogObject {
 	return new LogInt("(" + sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")");
     }
 
+    // FIXME
+    public LogIntComposite abs() {
+	return this;
+    }
+
 
 }
