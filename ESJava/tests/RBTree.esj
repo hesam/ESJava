@@ -68,7 +68,7 @@ public class RBTree
 
     public void insert(Node insertedNode)
 	modifies fields RBTree.root, Node.color, Node.left, Node.right, Node.parent
-	modifies objects getAffectedNodesOnInsert(insertedNode)
+    //modifies objects getAffectedNodesOnInsert(insertedNode)
 	ensures this.nodes().equals(this.old.nodes().plus(insertedNode)) {
 	// no implementation...
 	if (!TEST_DELETE)
@@ -85,9 +85,10 @@ public class RBTree
 
     public void delete(Integer value)
 	modifies fields RBTree.root, Node.color, Node.left, Node.right, Node.parent
-	modifies objects getAffectedNodesOnDelete(value)
+    //modifies objects getAffectedNodesOnDelete(value)
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
+	System.out.println("deleting: " + value);
     } 
 
     private static Color nodeColor(Node n) {
@@ -108,6 +109,7 @@ public class RBTree
     private HashSet<Object> getAffectedNodesOnDelete(Integer value) {
 	HashSet<Object> res = new HashSet<Object>();
 	Node node = lookupNode(value);
+	res.add(node);
 	if (node.parent != null)
 	    res.add(node.parent);
         if (node.left != null && node.right != null) {
