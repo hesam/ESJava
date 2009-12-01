@@ -137,18 +137,29 @@ public class LogRelation extends Hashtable {
 	return LogMap.bounds_log2(isResultVar ? resultVarType : range, isBoundsDef);
     }
 
+    public Expression rangePlusNull_log2(boolean isBoundsDef, Class resultVarType, HashSet<?> modifiableObjects) { 
+	Expression res = range_log2(isBoundsDef, resultVarType);
+	boolean addNull = !(isRangeEnum || range == Integer.class);
+	return addNull ? res.union(LogMap.null_log2()) : res;
+    }
+
     public String fullDomainRange_log(Class resultVarType) {
 	return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
     }
 
-    public TupleSet fullDomainRange_log2(Class resultVarType) {
-	Relation d = domain_log2();
-	TupleSet dB = LogMap.ProblemBounds.upperBound(d);
+    public TupleSet fullDomainRange_log2(Class resultVarType, HashSet<?> modifiableObjects, TupleSet lower) {
+	TupleSet dB;
+	if (modifiableObjects == null) {
+	    Relation d = domain_log2();
+	    dB = LogMap.ProblemBounds.upperBound(d);
+	} else
+	    dB = LogMap.tupleSetBounds_log2(domain, false, modifiableObjects);
+
 	boolean addNull = !(isRangeEnum || range == Integer.class);
 	TupleSet rB;
-	if (addNull) {
-	    rB = LogMap.boundsPlusNull_log2(range);
-	} else {
+	if (addNull)
+	    rB = LogMap.tupleSetBounds_log2(range, true, null);
+	else {
 	    Relation r = range_log2(true, resultVarType);
 	    rB = LogMap.ProblemBounds.upperBound(r);
 	}
@@ -156,7 +167,8 @@ public class LogRelation extends Hashtable {
 	    dB = dB.product(LogMap.ProblemBounds.upperBound(listInstVarDomain_log2()));
 
 	TupleSet res = isResultVar ? rB : dB.product(rB);
-	//return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
+	if (modifiableObjects != null)
+	    res.addAll(lower);
 	return res;
     }
 
@@ -342,12 +354,12 @@ public class LogRelation extends Hashtable {
     public void log2(Relation kodkodRel, HashSet<?> modifiableObjects, Class resultVarType) {
 	TupleSet lower = lowerBound_log2(modifiableObjects);
 	if (isUnknown()) {
-	    TupleSet upper = fullDomainRange_log2(resultVarType);
+	    TupleSet upper = fullDomainRange_log2(resultVarType, modifiableObjects, lower);
 	    if (isaCollectionInstVar) {
 		Relation i = LogMap.bounds_log2(indexingDomain, false);
 		TupleSet iB = LogMap.ProblemBounds.upperBound(i);
 		boolean addNull = (range != Integer.class);
-		TupleSet rB = addNull ? LogMap.boundsPlusNull_log2(range) :		    
+		TupleSet rB = addNull ? LogMap.tupleSetBounds_log2(range, true, null) :
 		    LogMap.ProblemBounds.upperBound(LogMap.bounds_log2(range, false));
 		TupleSet sRelB = iB.product(rB);
 		for (LogRelation s : (ArrayList<LogRelation>) subRels)		    
@@ -383,13 +395,11 @@ public class LogRelation extends Hashtable {
 	if (isResultVar)
 	    return kodkodRel.one();
 	Formula f = null;
-	Expression r = range_log2(false, null);
+	Expression r = rangePlusNull_log2(false, null, null);
 	if (isaCollectionInstVar) {
 	    Expression d = listInstVarDomain_log2();	    
 	    Expression dl = domain_log2().join(kodkodRel);	    
 	    for (LogRelation s : (ArrayList<LogRelation>) subRels) {
-		//o.append("FUNCTION(" + s.id() + ", " + d + "one " + r + ") && (" + 
-		// domain_log2() + "." + id + " = " + s.id() + ") && ");
 		Relation sRel = s.kodkodRel();
 		Formula fNew = sRel.function(d,r).and(dl.eq(sRel));
 		f = f == null ? fNew : f.and(fNew);

@@ -801,7 +801,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
   public static int bitWidth() {
       int b = BoundsSize() + 1;
-      return ((int) Math.ceil(Math.log(b) / Math.log(2))) + 2;
+      return ((int) Math.ceil(Math.log(b) / Math.log(2))) + 1;
 
   }
 

@@ -46,7 +46,7 @@ public class LogMap {
     static String SolverOpt_Host = "localhost";
     static int SolverOpt_Port = 9128;
     static String SolverOpt_Flatten = "false";
-    static int SolverOpt_SymmetryBreaking = 10;
+    static int SolverOpt_SymmetryBreaking = 20;
     static int SolverOpt_debugLevel = 0;
     static boolean SolverOpt_debug1 = false, SolverOpt_debug2 = false;
     static boolean SolverOpt_Kodkod = true, SolverOpt_Kodkodi = false;
@@ -276,20 +276,27 @@ public class LogMap {
       	TupleSet cRel_upper = ProblemFactory.noneOf(1);
 	ArrayList atoms = (ArrayList) ClassAtoms.get(c);
 	for (Object a : atoms)
-	    cRel_upper.add(ProblemFactory.tuple(a)); //"A"+a));
+	    cRel_upper.add(ProblemFactory.tuple(a));
+	    
 	ProblemBounds.boundExactly(cRel, cRel_upper);
 	ClassRels.put(c,cRel);
 	
-	return cRel; //addNull ? cRel.union(ClassRels.get(null)) : cRel;
+	return cRel;
     }
 
-    public static TupleSet boundsPlusNull_log2(Class range) {
+    public static TupleSet tupleSetBounds_log2(Class range, boolean addNull, HashSet<?> modifiableObjects) {
 	TupleFactory factory = LogMap.ProblemFactory();
 	TupleSet rB = factory.noneOf(1);
 	ArrayList atoms = (ArrayList) LogMap.ClassAtoms().get(range);
-	for (Object a : atoms)
-	    rB.add(factory.tuple(a));
-	rB.add(factory.tuple(LogMap.get1(null)));
+	if (modifiableObjects == null)
+	    for (Object a : atoms)
+		rB.add(ProblemFactory.tuple(a));
+	else
+	    for (Object a : atoms)
+		if (modifiableObjects.contains(a))
+		    rB.add(ProblemFactory.tuple(a));
+	if (addNull)
+	    rB.add(factory.tuple(LogMap.get1(null)));
 	return rB;
     }
 
@@ -350,6 +357,7 @@ public class LogMap {
     }
 
     public static Relation instVarRel_log2(Class c, String instVar) {
+	String id = instVarRel_log(c, instVar).id(); // marks it involved rel
 	return (Relation) ((HashMap) InstVarRels2.get(c)).get(instVar);
     }
 
@@ -451,13 +459,12 @@ public class LogMap {
 	    fNs = fNs.union(instVarRel_log2(obj, instVars[i]+fA));
 	Expression s1 = obj.isQuantifyVar2() ? 
 	    obj.var_log2().expression() : objToSingletonRelation_log2(obj);
-	Expression res = s1.join(fNs);
 	if (!isSimple)
 	    if (isReflexive)
-		res = res.reflexiveClosure();
+		fNs = fNs.reflexiveClosure();
 	    else
-		res = res.closure();
-	res = res.difference(ClassRels.get(null));
+		fNs = fNs.closure();
+	Expression res = s1.join(fNs).difference(ClassRels.get(null));
 	return new Log2Set(res, 0, obj.getClass());
     }
 
@@ -479,9 +486,9 @@ public class LogMap {
     public static Log2Set instVarClosure_log2(Log2Set obj, boolean isOld, boolean isSimple, boolean isReflexive, String... instVars) {
 	Class range = obj.range();
 	String fA = isOld ? "_old" : "";
-	Expression fNs = instVarRel_log2(obj, instVars[0]+fA);
+	Expression fNs = instVarRel_log2(range, instVars[0]+fA);
 	for(int i=1;i<instVars.length;i++)
-	    fNs = fNs.union(instVarRel_log2(obj, instVars[i]+fA));
+	    fNs = fNs.union(instVarRel_log2(range, instVars[i]+fA));
 	Expression s1 = obj.expression();
 	Expression res = s1.join(fNs);
 	res = res.difference(ClassRels.get(null));
@@ -607,6 +614,7 @@ public class LogMap {
 	//ch.append(csq);
 	//ch.flush();
 	if (SolverOpt_debug1) {
+	    System.out.println("int bits: " + ESJInteger.bitWidth());
 	    System.out.println("Bounds: " + ProblemBounds);
 	    System.out.println("Formula: " + finalFormula.toString());
 	}
@@ -626,7 +634,8 @@ public class LogMap {
 	System.out.println("solver done.");
 	if (SolverOpt_debug1)
 	    System.out.println(sol);
-
+	else 
+	    System.out.println(sol.stats());
 	Instance model = sol.instance();
 	if (model==null)
 	    return false;
