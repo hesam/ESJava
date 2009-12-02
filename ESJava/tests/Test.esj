@@ -48,7 +48,6 @@ public class Test {
 	return 2*i+this.a;
     }
     
-
     public pure Point pick()
 	ensures result != null && result.x > 4 && result.y > 0 {
 	return this.points.get(0);
@@ -59,6 +58,12 @@ public class Test {
 	ensures this.points.get(0) == null {
     }
 
+    public void baz() 
+	modifies fields Test.a, Test.b
+	ensures this.a + this.b == 5 && this.a > 1 && this.b > 1 {
+    }
+
+    
     public void blah() 
 	modifies fields Test.points,Test.map
 	ensures this.map.get(this.points.get(0)) == 12 {
@@ -73,11 +78,12 @@ public class Test {
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
-	System.out.println(t1.twice(5));
+	//t1.baz();
+	//System.out.println(t1.twice(5));
 	System.out.println(t1.pick());
 	//t1.foo();
-	t1.blah();
-	System.out.println(t1);
+	//t1.blah();
+	//System.out.println(t1);
     }
 
 }

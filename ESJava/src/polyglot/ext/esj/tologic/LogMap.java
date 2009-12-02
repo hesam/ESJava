@@ -327,7 +327,7 @@ public class LogMap {
 		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
 	    }
 	}
-	String rN = c.getName() + "." + k;
+	String rN = LogMap.shortClassName(c) + "." + k;
 	Relation r2 = isResultVar ? Relation.unary(rN) : Relation.nary(rN, relSize);
 	LogRelation r = new LogRelation(instVar, domain, range, indexingDomain, r2, isaList, isaMap, isUnknown, isResultVar);
 

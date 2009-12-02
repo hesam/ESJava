@@ -32,9 +32,10 @@ public class Dots extends Canvas implements MouseListener, MouseMotionListener {
 
     spec public boolean distributed() { 
 	all Dot d1 : this.dots | 
-	    all Dot d2 : this.dots | (d1 == d2 || 
-				      (Math.abs(d1.x - d2.x) > Dots.minDistance) ||
-				      (Math.abs(d1.y - d2.y) > Dots.minDistance))
+	    all Dot d2 : this.dots | 
+	        (d1 == d2 || 
+		 (Math.abs(d1.x - d2.x) > Dots.minDistance) ||
+		 (Math.abs(d1.y - d2.y) > Dots.minDistance))
     }
 
     spec public boolean unperturbed() { 

@@ -11,7 +11,8 @@ public class ESJButton extends JButton {
 
     static int SPEC_GRID;
     spec protected Integer xp,yp,wp,hp;
-    spec protected Integer gw,gh,ew,eh,ewp,gx,gy,iright,itop;
+    spec protected Integer gw,gh,ey,ew,eh,ewp,gx,gy,iright,itop;
+    spec protected Integer centerAnchor; 
 
     static public void setSpecGrid(int specGrid) { SPEC_GRID = specGrid; }
 
@@ -20,6 +21,7 @@ public class ESJButton extends JButton {
     public Integer wp() { return this.wp; }
     public Integer hp() { return this.hp; }
 
+    public Integer ey() { return this.ey; }
     public Integer ew() { return this.ew; }
     public Integer eh() { return this.eh; }
     public Integer ewp() { return this.ewp; }
@@ -29,6 +31,7 @@ public class ESJButton extends JButton {
     public Integer gh() { return this.gh; }
     public Integer iright() { return this.iright; }
     public Integer itop() { return this.itop; }
+    public Integer centerAnchor() { return this.centerAnchor; }
 
     public void xpSet(Integer xp) { this.xp = xp; }
     public void ypSet(Integer yp) { this.yp = yp; }
@@ -39,6 +42,7 @@ public class ESJButton extends JButton {
     public void yp(Integer yp) { this.yp = yp; setBounds(getX(),yp*SPEC_GRID,getWidth(),getHeight()); }
     public void wp(Integer wp) { this.wp = wp; setBounds(getX(),getY(),wp*SPEC_GRID,getHeight()); }
     public void hp(Integer hp) { this.hp = hp; setBounds(getX(),getY(),getWidth(),hp*SPEC_GRID); }
+    public void ey(Integer y) { this.ey = y; }
     public void ew(Integer w) { this.ew = w; this.wp = w; }
     public void eh(Integer h) { this.eh = h; this.hp = h; }
     public void ewp(Integer w) { this.ewp = w; this.wp = w; }
@@ -48,6 +52,7 @@ public class ESJButton extends JButton {
     public void gh(Integer h) { this.gh = h; }
     public void iright(Integer x) { this.iright = x; }
     public void itop(Integer y) { this.itop = y; }
+    public void centerAnchor(Integer a) { this.centerAnchor = a; }
 
     public ESJButton() {
         this(null, null);

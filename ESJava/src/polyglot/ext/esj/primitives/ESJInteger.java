@@ -939,11 +939,27 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   }
 
   public Log2IntAtom minus(IntExpression o2) {
-      return new Log2IntAtom(var_log2.expression().sum().plus(o2));
+      return new Log2IntAtom(var_log2.expression().sum().minus(o2));
   }
 
   public Log2IntAtom minus(ESJObject o2) {
-      return new Log2IntAtom(var_log2.expression().sum().plus(o2.var_log2().expression().sum()));
+      return new Log2IntAtom(var_log2.expression().sum().minus(o2.var_log2().expression().sum()));
+  }
+
+  public Log2IntAtom multiply(IntExpression o2) {
+      return new Log2IntAtom(var_log2.expression().sum().multiply(o2));
+  }
+
+  public Log2IntAtom multiply(ESJObject o2) {
+      return new Log2IntAtom(var_log2.expression().sum().multiply(o2.var_log2().expression().sum()));
+  }
+
+  public Log2IntAtom divide(IntExpression o2) {
+      return new Log2IntAtom(var_log2.expression().sum().divide(o2));
+  }
+
+  public Log2IntAtom divide(ESJObject o2) {
+      return new Log2IntAtom(var_log2.expression().sum().divide(o2.var_log2().expression().sum()));
   }
 
   public Formula eq(IntExpression o2) {

@@ -317,7 +317,7 @@ public class GridBag2Layout implements LayoutManager2,
   protected int SPEC_GRID;
   protected boolean FALLBACK;
   spec protected ESJSet<ESJButton> comps;
-  spec protected Integer parentW,parentH;
+  spec protected Integer parentW,parentH,parentGridW,parentGridH;
 
     /**
      * This field holds a gridbag constraints instance
@@ -765,19 +765,20 @@ public class GridBag2Layout implements LayoutManager2,
        }
 
        for (int compindex = 0 ; compindex < s.components.length ; compindex++) {
-	   Component comp = s.components[compindex];
+	   ESJButton comp = (ESJButton) s.components[compindex];
 	   if (!comp.isVisible())
 	       continue;
 	   GridBag2Constraints constraints = lookupConstraints(comp);
 	   System.out.print("x="+comp.getX() / SPEC_GRID+ " y=" + comp.getY() / SPEC_GRID + " w=" + comp.getWidth() / SPEC_GRID + " h=" + comp.getHeight() / SPEC_GRID);
+	   System.out.print(" xp=" + comp.xp() + " yp=" + comp.yp() + " wp=" + comp.wp() + " hp=" + comp.hp());
 	   //System.out.print(" tx="+constraints.tempX + " ty=" + constraints.tempY + " tw=" + constraints.tempWidth + " th=" + constraints.tempHeight);
-	   System.out.print(/*" gx="+constraints.gridx + " gy=" + constraints.gridy + */" gw=" +  ((ESJButton) comp).gw() + " gh=" + ((ESJButton) comp).gh());
+	   System.out.print(/*" gx="+constraints.gridx + " gy=" + constraints.gridy + */" gw=" +  comp.gw() + " gh=" + comp.gh());
 	   System.out.print(" mw="+constraints.minWidth + " mh="+constraints.minHeight);
-	   System.out.print(" ewp="+((ESJButton) comp).ewp() + " ew="+((ESJButton) comp).ew() + " eh="+((ESJButton) comp).eh()); 
-	   System.out.print(" gx="+((ESJButton) comp).gx() + " gy="+((ESJButton) comp).gy()); 
-	   System.out.println(" iright="+((ESJButton) comp).iright() + " itop="+((ESJButton) comp).itop()); 
+	   System.out.print(" ewp="+comp.ewp() + " ey="+comp.ey() + " ew="+comp.ew() + " eh="+comp.eh()); 
+	   System.out.print(" gx="+comp.gx() + " gy="+comp.gy()); 
+	   System.out.println(" iright="+comp.iright() + " itop="+ comp.itop()); 
        }
-       System.out.println("parentw: " + this.parentW + " parenth: " + this.parentH);
+       System.out.println("parentGW: " + parentGridW + " parentGH: " + parentGridH + " parentw: " + this.parentW + " parenth: " + this.parentH);
      }
    
 
@@ -1232,11 +1233,16 @@ public class GridBag2Layout implements LayoutManager2,
 	b.gh(constraints.gridheight);
 	b.ew(constraints.gridwidth*r.minWidth[constraints.gridx]/SPEC_GRID);
 	b.eh(constraints.gridheight*r.minHeight[constraints.gridy]/SPEC_GRID);
+	int totalMinHs = 0;
+	for (int idx=0; idx < constraints.gridy; idx++)
+	    totalMinHs += r.minHeight[idx];
+	b.ey(constraints.gridheight*totalMinHs/SPEC_GRID);
 	b.ewp(parent.getWidth() / SPEC_GRID / r.width * constraints.gridwidth);
 	b.gx(constraints.gridx);
 	b.gy(constraints.gridy);
 	b.iright(constraints.insets.right/SPEC_GRID);
 	b.itop(constraints.insets.top/SPEC_GRID);
+	b.centerAnchor(constraints.anchor == GridBag2Constraints.PAGE_END ? 1 : 0);
 	//HS END
 
       }
@@ -1245,7 +1251,8 @@ public class GridBag2Layout implements LayoutManager2,
     r.components = components; //HS
     this.parentW = parent.getWidth() / SPEC_GRID;
     this.parentH = parent.getHeight() / SPEC_GRID;
-
+    this.parentGridW = this.parentW / r.width;
+    this.parentGridH = this.parentH / r.height;
     return r;
    }
   }
@@ -1423,8 +1430,14 @@ public class GridBag2Layout implements LayoutManager2,
 	c1.xp() >= 0 && c1.yp() >= 0 && c1.wp() > 0 && c1.hp() > 0 &&
 	    c1.xp() + c1.wp() <= this.parentW &&
 	    c1.yp() + c1.hp() <= this.parentH &&
+	    c1.xp() == c1.gx() * this.parentGridW &&
 	    c1.wp() == c1.ewp() - c1.iright() &&
-	    c1.hp() == c1.eh() - c1.itop() 
+	    c1.hp() == c1.eh() - c1.itop()
+    }
+
+    spec protected boolean positionValid(ESJButton c1) {
+	(c1.centerAnchor() == 1 && c1.yp() + c1.hp() == this.parentH)
+	    || (c1.centerAnchor() == 0 && c1.yp() == c1.ey())
     }
 
     spec protected boolean noOverlaps(ESJButton c1, ESJButton c2) {
@@ -1447,6 +1460,7 @@ public class GridBag2Layout implements LayoutManager2,
     spec protected boolean gridLayoutValid() { 
 	all myjavax.swing.ESJButton c1 : this.comps |
 	    (boundsValid(c1) &&
+	     positionValid(c1) &&
 	     all myjavax.swing.ESJButton c2 : this.comps | 
 	       (c1 == c2  ||
 	        (noOverlaps(c1,c2) &&
@@ -1476,13 +1490,19 @@ public class GridBag2Layout implements LayoutManager2,
 	    }	
 	    //HS END	    
 	    ESJInteger.setBounds(0,Math.max(50,Math.max(this.parentW,this.parentH))); 
+	    System.out.println("Before:");
+	    DumpLayoutInfo(layoutInfo);
+
 	    ArrangeGridEnsured(parent);
+	    System.out.println("after:");
+	    DumpLayoutInfo(layoutInfo);
+
 	} else
 	    ArrangeGrid(parent);
     }
 
     protected void ArrangeGridEnsured(Container parent) 
-      modifies fields ESJButton.xp, ESJButton.yp, ESJButton.wp, ESJButton.hp
+	modifies fields ESJButton.xp, ESJButton.yp, ESJButton.wp, ESJButton.hp
 	ensures gridLayoutValid() {
 	int z = FALLBACK ? 1/0 : 0;
 	ArrangeGrid(parent);
