@@ -42,8 +42,6 @@ public class ESJList<E> extends ArrayList<E> {
     boolean isRelationized() { return this.relationizerStep == LogMap.relationizerStep(); }
     boolean isCloned() { return this.clonerStep == LogMap.clonerStep(); }
 
-
-
     // relationize me and my old
     public void relationize() {
 	if (!isRelationized()) { 

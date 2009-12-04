@@ -50,14 +50,14 @@ public class MyList extends ESJList<Integer> {
     
     public static void main(String[] args) {
 	
-	LogMap.SolverOpt_debugLevel(1);
+	//LogMap.SolverOpt_debugLevel(1);
 	//LogMap.SolverOpt_Kodkodi(true);
 
         MyList ta = new MyList();	
         MyList tb = new MyList();
 
 	Random rand = new Random(1111L);
-	int MAX_SIZE = 10;
+	int MAX_SIZE = 30;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 	// create an array of the given size
 	int[] a = new int[MAX_SIZE];

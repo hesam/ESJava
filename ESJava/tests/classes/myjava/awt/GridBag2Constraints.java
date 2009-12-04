@@ -1,508 +1,362 @@
-/*
- * @(#)GridBag2Constraints.java	1.34 04/03/15
- *
- * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package myjava.awt;
 
 import java.awt.*;
 
-/**
- * The <code>GridBag2Constraints</code> class specifies constraints 
- * for components that are laid out using the 
- * <code>GridBag2Layout</code> class.
- *
- * @version 	1.34, 03/15/04
- * @author Doug Stein
- * @see java.awt.GridBag2Layout
- * @since JDK1.0
- */
-public class GridBag2Constraints implements Cloneable, java.io.Serializable {
-
-   /**
-     * Specifies that this component is the next-to-last component in its 
-     * column or row (<code>gridwidth</code>, <code>gridheight</code>), 
-     * or that this component be placed next to the previously added 
-     * component (<code>gridx</code>, <code>gridy</code>). 
-     * @see      java.awt.GridBag2Constraints#gridwidth
-     * @see      java.awt.GridBag2Constraints#gridheight
-     * @see      java.awt.GridBag2Constraints#gridx
-     * @see      java.awt.GridBag2Constraints#gridy
-     */
-  public static final int RELATIVE = -1;
-
-   /**
-     * Specifies that this component is the 
-     * last component in its column or row. 
-     */
-  public static final int REMAINDER = 0;
-
-   /**
-     * Do not resize the component. 
-     */
-  public static final int NONE = 0;
-
-   /**
-     * Resize the component both horizontally and vertically. 
-     */
-  public static final int BOTH = 1;
-
-   /**
-     * Resize the component horizontally but not vertically. 
-     */
-  public static final int HORIZONTAL = 2;
-
-   /**
-     * Resize the component vertically but not horizontally. 
-     */
-  public static final int VERTICAL = 3;
-
-   /**
-    * Put the component in the center of its display area.
-    */
-  public static final int CENTER = 10;
-
-   /**
-     * Put the component at the top of its display area,
-     * centered horizontally. 
-     */
-  public static final int NORTH = 11;
-
-    /**
-     * Put the component at the top-right corner of its display area. 
-     */
-  public static final int NORTHEAST = 12;
-
-    /**
-     * Put the component on the right side of its display area, 
-     * centered vertically.
-     */
-  public static final int EAST = 13;
-
-    /**
-     * Put the component at the bottom-right corner of its display area. 
-     */
-  public static final int SOUTHEAST = 14;
-
-    /**
-     * Put the component at the bottom of its display area, centered 
-     * horizontally. 
-     */
-  public static final int SOUTH = 15;
-
-   /**
-     * Put the component at the bottom-left corner of its display area. 
-     */
-  public static final int SOUTHWEST = 16;
-
-    /**
-     * Put the component on the left side of its display area, 
-     * centered vertically.
-     */
-  public static final int WEST = 17;
-
-   /**
-     * Put the component at the top-left corner of its display area. 
-     */
-  public static final int NORTHWEST = 18;
-
-    /** 
-     * Place the component centered along the edge of its display area
-     * associated with the start of a page for the current
-     * <code>ComponentOrienation</code>.  Equal to NORTH for horizontal
-     * orientations. 
-     */
-  public static final int PAGE_START = 19;
-
-    /**
-     * Place the component centered along the edge of its display area  
-     * associated with the end of a page for the current
-     * <code>ComponentOrienation</code>.  Equal to SOUTH for horizontal
-     * orientations.
-     */
-  public static final int PAGE_END = 20;
-
-    /**
-     * Place the component centered along the edge of its display area where 
-     * lines of text would normally begin for the current 
-     * <code>ComponentOrienation</code>.  Equal to WEST for horizontal,
-     * left-to-right orientations and EAST for horizontal, right-to-left 
-     * orientations.
-     */
-  public static final int LINE_START = 21;
-
-    /**
-     * Place the component centered along the edge of its display area where 
-     * lines of text would normally end for the current 
-     * <code>ComponentOrienation</code>.  Equal to EAST for horizontal,
-     * left-to-right orientations and WEST for horizontal, right-to-left 
-     * orientations.
-     */
-  public static final int LINE_END = 22;
-
-    /**
-     * Place the component in the corner of its display area where 
-     * the first line of text on a page would normally begin for the current 
-     * <code>ComponentOrienation</code>.  Equal to NORTHWEST for horizontal,
-     * left-to-right orientations and NORTHEAST for horizontal, right-to-left 
-     * orientations.
-     */
-  public static final int FIRST_LINE_START = 23;
-
-    /**
-     * Place the component in the corner of its display area where 
-     * the first line of text on a page would normally end for the current 
-     * <code>ComponentOrienation</code>.  Equal to NORTHEAST for horizontal,
-     * left-to-right orientations and NORTHWEST for horizontal, right-to-left 
-     * orientations.
-     */
-  public static final int FIRST_LINE_END = 24;
-
-    /**
-     * Place the component in the corner of its display area where 
-     * the last line of text on a page would normally start for the current 
-     * <code>ComponentOrienation</code>.  Equal to SOUTHWEST for horizontal,
-     * left-to-right orientations and SOUTHEAST for horizontal, right-to-left 
-     * orientations.
-     */
-  public static final int LAST_LINE_START = 25;
-
-    /**
-     * Place the component in the corner of its display area where 
-     * the last line of text on a page would normally end for the current 
-     * <code>ComponentOrienation</code>.  Equal to SOUTHEAST for horizontal,
-     * left-to-right orientations and SOUTHWEST for horizontal, right-to-left 
-     * orientations.
-     */
-  public static final int LAST_LINE_END = 26;
-
-   /**
-     * Specifies the cell containing the leading edge of the component's 
-     * display area, where the first cell in a row has <code>gridx=0</code>. 
-     * The leading edge of a component's display area is its left edge for
-     * a horizontal, left-to-right container and its right edge for a
-     * horizontal, right-to-left container.
-     * The value 
-     * <code>RELATIVE</code> specifies that the component be placed 
-     * immediately following the component that was added to the container 
-     * just before this component was added. 
-     * <p>
-     * The default value is <code>RELATIVE</code>. 
-     * <code>gridx</code> should be a non-negative value.
-     * @serial
-     * @see #clone()
-     * @see java.awt.GridBag2Constraints#gridy
-     * @see java.awt.ComponentOrientation
-     */
-  public int gridx;
-
-   /**
-     * Specifies the cell at the top of the component's display area, 
-     * where the topmost cell has <code>gridy=0</code>. The value 
-     * <code>RELATIVE</code> specifies that the component be placed just 
-     * below the component that was added to the container just before 
-     * this component was added. 
-     * <p>
-     * The default value is <code>RELATIVE</code>.
-     * <code>gridy</code> should be a non-negative value.
-     * @serial
-     * @see #clone() 
-     * @see java.awt.GridBag2Constraints#gridx
-     */
-  public int gridy;
-
-   /**
-     * Specifies the number of cells in a row for the component's 
-     * display area. 
-     * <p>
-     * Use <code>REMAINDER</code> to specify that the component's
-     * display area will be from <code>gridx</code> to the last
-     * cell in the row.
-     * Use <code>RELATIVE</code> to specify that the component's
-     * display area will be from <code>gridx</code> to the next
-     * to the last one in its row.
-     * <p>
-     * <code>gridwidth</code> should be non-negative and the default
-     * value is 1.
-     * @serial
-     * @see #clone() 
-     * @see java.awt.GridBag2Constraints#gridheight
-     */
-  public int gridwidth;
-
-   /**
-     * Specifies the number of cells in a column for the component's 
-     * display area. 
-     * <p>
-     * Use <code>REMAINDER</code> to specify that the component's
-     * display area will be from <code>gridy</code> to the last
-     * cell in the column.
-     * Use <code>RELATIVE</code> to specify that the component's
-     * display area will be from <code>gridy</code> to the next
-     * to the last one in its column.
-     * <p>
-     * <code>gridheight</code> should be a non-negative value and the
-     * default value is 1.
-     * @serial
-     * @see #clone()
-     * @see java.awt.GridBag2Constraints#gridwidth
-     */
-  public int gridheight;
-
-   /**
-     * Specifies how to distribute extra horizontal space. 
-     * <p>
-     * The grid bag layout manager calculates the weight of a column to 
-     * be the maximum <code>weightx</code> of all the components in a 
-     * column. If the resulting layout is smaller horizontally than the area 
-     * it needs to fill, the extra space is distributed to each column in 
-     * proportion to its weight. A column that has a weight of zero receives 
-     * no extra space. 
-     * <p>
-     * If all the weights are zero, all the extra space appears between 
-     * the grids of the cell and the left and right edges. 
-     * <p>
-     * The default value of this field is <code>0</code>.
-     * <code>weightx</code> should be a non-negative value.
-     * @serial
-     * @see #clone() 
-     * @see java.awt.GridBag2Constraints#weighty
-     */
-  public double weightx;
-
-   /**
-     * Specifies how to distribute extra vertical space. 
-     * <p>
-     * The grid bag layout manager calculates the weight of a row to be 
-     * the maximum <code>weighty</code> of all the components in a row. 
-     * If the resulting layout is smaller vertically than the area it 
-     * needs to fill, the extra space is distributed to each row in 
-     * proportion to its weight. A row that has a weight of zero receives no 
-     * extra space. 
-     * <p>
-     * If all the weights are zero, all the extra space appears between 
-     * the grids of the cell and the top and bottom edges. 
-     * <p>
-     * The default value of this field is <code>0</code>. 
-     * <code>weighty</code> should be a non-negative value.
-     * @serial
-     * @see #clone()
-     * @see java.awt.GridBag2Constraints#weightx
-     */
-  public double weighty;
-
-   /** 
-    * This field is used when the component is smaller than its display
-     * area. It determines where, within the display area, to place the
-     * component. 
-     * <p>
-     * There are two kinds of possible values: relative and 
-     * absolute.  Relative values are interpreted relative to the container's
-     * component orientation property while absolute values are not.  The absolute
-     * values are:
-     * <code>CENTER</code>, <code>NORTH</code>, <code>NORTHEAST</code>,
-     * <code>EAST</code>, <code>SOUTHEAST</code>, <code>SOUTH</code>,
-     * <code>SOUTHWEST</code>, <code>WEST</code>, and <code>NORTHWEST</code>.
-     * The relative values are: <code>PAGE_START</code>, <code>PAGE_END</code>,
-     * <code>LINE_START</code>, <code>LINE_END</code>, 
-     * <code>FIRST_LINE_START</code>, <code>FIRST_LINE_END</code>, 
-     * <code>LAST_LINE_START</code> and <code>LAST_LINE_END</code>.
-     * The default value is <code>CENTER</code>. 
-     * @serial
-     * @see #clone() 
-     * @see java.awt.ComponentOrientation
-     */
-  public int anchor;
-
-   /**
-     * This field is used when the component's display area is larger 
-     * than the component's requested size. It determines whether to 
-     * resize the component, and if so, how. 
-     * <p>
-     * The following values are valid for <code>fill</code>: 
-     * <p>
-     * <ul>
-     * <li>
-     * <code>NONE</code>: Do not resize the component. 
-     * <li>
-     * <code>HORIZONTAL</code>: Make the component wide enough to fill 
-     *         its display area horizontally, but do not change its height. 
-     * <li>
-     * <code>VERTICAL</code>: Make the component tall enough to fill its 
-     *         display area vertically, but do not change its width. 
-     * <li>
-     * <code>BOTH</code>: Make the component fill its display area 
-     *         entirely. 
-     * </ul>
-     * <p>
-     * The default value is <code>NONE</code>. 
-     * @serial
-     * @see #clone()
-     */
-  public int fill;
-
-   /**
-     * This field specifies the external padding of the component, the 
-     * minimum amount of space between the component and the edges of its 
-     * display area. 
-     * <p>
-     * The default value is <code>new Insets(0, 0, 0, 0)</code>. 
-     * @serial
-     * @see #clone()
-     */
-  public Insets insets;
-
-   /**
-     * This field specifies the internal padding of the component, how much 
-     * space to add to the minimum width of the component. The width of 
-     * the component is at least its minimum width plus 
-     * <code>ipadx</code> pixels. 
-     * <p>
-     * The default value is <code>0</code>. 
-     * @serial
-     * @see #clone()
-     * @see java.awt.GridBag2Constraints#ipady
-     */
-  public int ipadx;
-
-   /**
-     * This field specifies the internal padding, that is, how much 
-     * space to add to the minimum height of the component. The height of 
-     * the component is at least its minimum height plus 
-     * <code>ipady</code> pixels. 
-     * <p>
-     * The default value is 0. 
-     * @serial
-     * @see #clone()
-     * @see java.awt.GridBag2Constraints#ipadx
-     */
-  public int ipady;
-
-   /**
-     * Temporary place holder for the x coordinate.
-     * @serial
-     */
-  int tempX;
-   /**
-     * Temporary place holder for the y coordinate.
-     * @serial
-     */
-  int tempY;
-   /**
-     * Temporary place holder for the Width of the component.
-     * @serial
-     */
-  int tempWidth;
-   /**
-     * Temporary place holder for the Height of the component.
-     * @serial
-     */
-  int tempHeight;
-   /**
-     * The minimum width of the component.  It is used to calculate
-     * <code>ipady</code>, where the default will be 0.
-     * @serial
-     * @see #ipady
-     */
-  int minWidth;
-   /**
-     * The minimum height of the component. It is used to calculate
-     * <code>ipadx</code>, where the default will be 0.
-     * @serial
-     * @see #ipadx
-     */
-  int minHeight;
-
-  /*
-   * JDK 1.1 serialVersionUID 
-   */
-  private static final long serialVersionUID = -1000070633030801713L;
-
-   /**
-     * Creates a <code>GridBag2Constraint</code> object with 
-     * all of its fields set to their default value. 
-     */
-  public GridBag2Constraints () {
-    gridx = RELATIVE;
-    gridy = RELATIVE;
-    gridwidth = 1;
-    gridheight = 1;
-
-    weightx = 0;
-    weighty = 0;
-    anchor = CENTER;
-    fill = NONE;
-
-    insets = new Insets(0, 0, 0, 0);
-    ipadx = 0;
-    ipady = 0;
-  }
-
-  /**
-    * Creates a <code>GridBag2Constraints</code> object with
-    * all of its fields set to the passed-in arguments.
-    * 
-    * Note: Because the use of this constructor hinders readability
-    * of source code, this constructor should only be used by
-    * automatic source code generation tools.
-    * 
-    * @param gridx	The initial gridx value.
-    * @param gridy	The initial gridy value.
-    * @param gridwidth	The initial gridwidth value.
-    * @param gridheight	The initial gridheight value.
-    * @param weightx	The initial weightx value.
-    * @param weighty	The initial weighty value.
-    * @param anchor	The initial anchor value.
-    * @param fill	The initial fill value.
-    * @param insets	The initial insets value.
-    * @param ipadx	The initial ipadx value.
-    * @param ipady	The initial ipady value.
-    * 
-    * @see java.awt.GridBag2Constraints#gridx
-    * @see java.awt.GridBag2Constraints#gridy
-    * @see java.awt.GridBag2Constraints#gridwidth
-    * @see java.awt.GridBag2Constraints#gridheight
-    * @see java.awt.GridBag2Constraints#weightx
-    * @see java.awt.GridBag2Constraints#weighty
-    * @see java.awt.GridBag2Constraints#anchor
-    * @see java.awt.GridBag2Constraints#fill
-    * @see java.awt.GridBag2Constraints#insets
-    * @see java.awt.GridBag2Constraints#ipadx
-    * @see java.awt.GridBag2Constraints#ipady
-    * 
-    * @since 1.2
-    */
-  public GridBag2Constraints(int gridx, int gridy,
-                            int gridwidth, int gridheight,
-                            double weightx, double weighty,
-                            int anchor, int fill,
-                            Insets insets, int ipadx, int ipady) {
-    this.gridx = gridx;
-    this.gridy = gridy;
-    this.gridwidth = gridwidth;
-    this.gridheight = gridheight;
-    this.fill = fill;
-    this.ipadx = ipadx;
-    this.ipady = ipady;
-    this.insets = insets;
-    this.anchor  = anchor;
-    this.weightx = weightx;
-    this.weighty = weighty;
-  }
-
-   /**
-    * Creates a copy of this grid bag constraint.
-    * @return     a copy of this grid bag constraint
-    */
-  public Object clone () {
-      try { 
-	  GridBag2Constraints c = (GridBag2Constraints)super.clone();
-	  c.insets = (Insets)insets.clone();
-	  return c;
-      } catch (CloneNotSupportedException e) { 
-	  // this shouldn't happen, since we are Cloneable
-	  throw new InternalError();
-      }
-  }
+public class GridBag2Constraints implements Cloneable, java.io.Serializable, polyglot.ext.esj.primitives.ESJObject {
+    public GridBag2Constraints(polyglot.ext.esj.tologic.LogVar dontcare,
+                               boolean isQuantifyVar) {
+        super();
+        if (isQuantifyVar) {
+            this.var_log =
+              dontcare;
+            this.old =
+              this.clone();
+            this.old.var_log =
+              dontcare;
+        }
+    }
+    
+    public GridBag2Constraints(polyglot.ext.esj.tologic.Log2Var dontcare,
+                               boolean isQuantifyVar) {
+        super();
+        if (isQuantifyVar) {
+            this.var_log2 =
+              dontcare;
+            this.old =
+              this.clone();
+            this.old.var_log2 =
+              dontcare;
+        }
+    }
+    
+    GridBag2Constraints old;
+    
+    public GridBag2Constraints old() {
+        return this.old;
+    }
+    
+    boolean isOld;
+    
+    public boolean isOld() {
+        return this.isOld;
+    }
+    
+    public polyglot.ext.esj.tologic.LogVar var_log;
+    
+    public polyglot.ext.esj.tologic.LogVar var_log() {
+        return this.var_log;
+    }
+    
+    public polyglot.ext.esj.tologic.Log2Var var_log2;
+    
+    public polyglot.ext.esj.tologic.Log2Var var_log2() {
+        return this.var_log2;
+    }
+    
+    public boolean isQuantifyVar() {
+        return this.var_log !=
+          null;
+    }
+    
+    public boolean isQuantifyVar2() {
+        return this.var_log2 !=
+          null;
+    }
+    
+    int relationizerStep =
+      0;
+    
+    boolean isRelationized() {
+        return this.relationizerStep ==
+          polyglot.ext.esj.tologic.LogMap.relationizerStep();
+    }
+    
+    int clonerStep =
+      0;
+    
+    public boolean isCloned() {
+        return this.clonerStep ==
+          polyglot.ext.esj.tologic.LogMap.clonerStep();
+    }
+    
+    static polyglot.ext.esj.primitives.ESJList<GridBag2Constraints> allInstances =
+      new polyglot.ext.esj.primitives.ESJList<GridBag2Constraints>();
+    
+    public static polyglot.ext.esj.primitives.ESJList<GridBag2Constraints> allInstances() {
+        return GridBag2Constraints.allInstances;
+    }
+    
+    public polyglot.ext.esj.primitives.ESJList<GridBag2Constraints> allInstances2() {
+        return GridBag2Constraints.allInstances;
+    }
+    
+    public static polyglot.ext.esj.tologic.LogSet allInstances_log() {
+        return polyglot.ext.esj.tologic.LogMap.bounds_log(GridBag2Constraints.class,
+                                                          false,
+                                                          false);
+    }
+    
+    public static polyglot.ext.esj.tologic.Log2Set allInstances_log2() {
+        return new polyglot.ext.esj.tologic.Log2Set(polyglot.ext.esj.tologic.LogMap.bounds_log2(GridBag2Constraints.class,
+                                                                                                false));
+    }
+    
+    public polyglot.ext.esj.tologic.LogFormula cmpOp(String kodkodiOp,
+                                                     String kodkodOp,
+                                                     polyglot.ext.esj.primitives.ESJObject o2) {
+        return polyglot.ext.esj.tologic.LogFormula.binaryOp(this.var_log.string(),
+                                                            kodkodiOp,
+                                                            kodkodOp,
+                                                            o2.var_log().string());
+    }
+    
+    public polyglot.ext.esj.tologic.LogFormula cmpOp(String kodkodiOp,
+                                                     String kodkodOp,
+                                                     polyglot.ext.esj.tologic.LogObject o2) {
+        return polyglot.ext.esj.tologic.LogFormula.binaryOp(this.var_log.string(),
+                                                            kodkodiOp,
+                                                            kodkodOp,
+                                                            o2.string());
+    }
+    
+    public kodkod.ast.Expression sum() {
+        return this.var_log2.expression();
+    }
+    
+    public void relationize() {
+        if (!isRelationized()) {
+            this.relationizerStep++;
+            relationizeOld();
+        }
+    }
+    
+    public void relationizeOld() {
+        
+    }
+    
+    public GridBag2Constraints clone() {
+        if (isCloned())
+            return this;
+        GridBag2Constraints res =
+          new GridBag2Constraints(new polyglot.ext.esj.tologic.LogVar(null),
+                                  false);
+        this.clonerStep++;
+        res.isOld =
+          true;
+        this.old =
+          res;
+        return res;
+    }
+    
+    boolean verifyInvariants() {
+        return true;
+    }
+    
+    Object result;
+    
+    public void result(Object r) {
+        this.result =
+          r;
+    }
+    
+    void initEnsuredMethod() {
+        polyglot.ext.esj.tologic.LogMap.initRelationize();
+        clone();
+    }
+    
+    polyglot.ext.esj.tologic.LogFormula verifyInvariants_log() {
+        return new polyglot.ext.esj.tologic.LogFormula(true);
+    }
+    
+    kodkod.ast.Formula verifyInvariants_log2() {
+        return kodkod.ast.Formula.TRUE;
+    }
+    
+    public static final int RELATIVE =
+      -1;
+    
+    public static final int REMAINDER =
+      0;
+    
+    public static final int NONE =
+      0;
+    
+    public static final int BOTH =
+      1;
+    
+    public static final int HORIZONTAL =
+      2;
+    
+    public static final int VERTICAL =
+      3;
+    
+    public static final int CENTER =
+      10;
+    
+    public static final int NORTH =
+      11;
+    
+    public static final int NORTHEAST =
+      12;
+    
+    public static final int EAST =
+      13;
+    
+    public static final int SOUTHEAST =
+      14;
+    
+    public static final int SOUTH =
+      15;
+    
+    public static final int SOUTHWEST =
+      16;
+    
+    public static final int WEST =
+      17;
+    
+    public static final int NORTHWEST =
+      18;
+    
+    public static final int PAGE_START =
+      19;
+    
+    public static final int PAGE_END =
+      20;
+    
+    public static final int LINE_START =
+      21;
+    
+    public static final int LINE_END =
+      22;
+    
+    public static final int FIRST_LINE_START =
+      23;
+    
+    public static final int FIRST_LINE_END =
+      24;
+    
+    public static final int LAST_LINE_START =
+      25;
+    
+    public static final int LAST_LINE_END =
+      26;
+    
+    public int gridx;
+    
+    public int gridy;
+    
+    public int gridwidth;
+    
+    public int gridheight;
+    
+    public double weightx;
+    
+    public double weighty;
+    
+    public int anchor;
+    
+    public int fill;
+    
+    public Insets insets;
+    
+    public int ipadx;
+    
+    public int ipady;
+    
+    int tempX;
+    
+    int tempY;
+    
+    int tempWidth;
+    
+    int tempHeight;
+    
+    int minWidth;
+    
+    int minHeight;
+    
+    private static final long serialVersionUID =
+      -1000070633030801713L;
+    
+    public GridBag2Constraints() {
+        super();
+        gridx =
+          RELATIVE;
+        gridy =
+          RELATIVE;
+        gridwidth =
+          1;
+        gridheight =
+          1;
+        weightx =
+          0;
+        weighty =
+          0;
+        anchor =
+          CENTER;
+        fill =
+          NONE;
+        insets =
+          new Insets(0,
+                     0,
+                     0,
+                     0);
+        ipadx =
+          0;
+        ipady =
+          0;
+        this.allInstances.add(this);
+    }
+    
+    public GridBag2Constraints(int gridx,
+                               int gridy,
+                               int gridwidth,
+                               int gridheight,
+                               double weightx,
+                               double weighty,
+                               int anchor,
+                               int fill,
+                               Insets insets,
+                               int ipadx,
+                               int ipady) {
+        super();
+        this.gridx =
+          gridx;
+        this.gridy =
+          gridy;
+        this.gridwidth =
+          gridwidth;
+        this.gridheight =
+          gridheight;
+        this.fill =
+          fill;
+        this.ipadx =
+          ipadx;
+        this.ipady =
+          ipady;
+        this.insets =
+          insets;
+        this.anchor =
+          anchor;
+        this.weightx =
+          weightx;
+        this.weighty =
+          weighty;
+        this.allInstances.add(this);
+    }
+    
+    public Object clone2() {
+        try {
+            GridBag2Constraints c =
+              (GridBag2Constraints)
+                super.clone();
+            c.insets =
+              (Insets)
+                insets.clone();
+            return c;
+        }
+        catch (CloneNotSupportedException e) {
+            throw new InternalError();
+        }
+    }
 }

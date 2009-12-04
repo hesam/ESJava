@@ -788,6 +788,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 
   public ESJInteger clone() { return this; }
 
+  public boolean isCloned() { return true; }
+
   public static int BoundsSize() {
       return  MAX_VALUE - MIN_VALUE + 1;
   }
@@ -1022,6 +1024,9 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return var_log2.expression().sum().lte(o2.sum());
   }
 
+  public Formula eq(Expression o2) {
+      return var_log2.expression().eq(o2);
+  }
 
   public static void main(String[] args) {
       ESJInteger.setBounds(0,30);

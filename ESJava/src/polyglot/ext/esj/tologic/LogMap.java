@@ -187,17 +187,22 @@ public class LogMap {
 	    if (SolverOpt_debug1)
 		System.out.println("objs: " + objs);
 
-	    for (Object obj : objs) {		
+	    for (Object obj : objs) {
 		classAs.add(AtomCtr);
 		LogtoJ.put(AtomCtr,obj);
 		LogMap.put1(obj,AtomCtr);
-		if (!isEnum)
-		    if (((ESJObject) obj).old() != null)
-			LogMap.put1(((ESJObject) obj).old(),AtomCtr);
+		if (!isEnum) {
+		    ESJObject o = (ESJObject) obj;
+		    // FIXME? (if new obj instantiated during faulty method...)
+		    //if (!o.isCloned())
+		    //continue;
+		    if (o.old() != null)
+			LogMap.put1(o.old(),AtomCtr);
+		}
 		AtomCtr++;
 	    }
 
-	} catch (Exception e) { System.out.println("oops " + e); System.exit(1); }
+	} catch (Exception e) { e.printStackTrace(); System.exit(1); }
     }
 
     public static void put1(Object key, int value) { 
@@ -308,13 +313,20 @@ public class LogMap {
 	if (!isUnknown) {
 	    k += "_old";
 	    // mark enum and class
-	    if (range.isEnum() && !ClassAtoms.containsKey(range)) {
+	    if (!(ClassAtoms.containsKey(range) || range == int.class || range == Integer.class)) {
 		try {
 		    ClassAtoms.put(range, new ArrayList());
-		    ArrayList es = new ArrayList();
-		    for (Object e : range.getEnumConstants())
-			es.add(e);
-		    Enums.put(range, es);
+		    if (range.isEnum()) {
+			ArrayList es = new ArrayList();
+			for (Object e : range.getEnumConstants())
+			    es.add(e);
+			Enums.put(range, es);
+		    } else {
+			Class[] parameterTypes = new Class[2];
+			parameterTypes[0] = LogVar.class;
+			parameterTypes[1] = boolean.class;
+			ClassConstrs.put(range, range.getConstructor(parameterTypes));
+		    }
 		} catch (Exception e) { System.out.println(e); System.exit(1); }		
 	    }
 	    if (!ClassAtoms.containsKey(c)) {
@@ -325,6 +337,11 @@ public class LogMap {
 		try {
 		    ClassConstrs.put(c, c.getConstructor(parameterTypes));
 		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
+		if (!InstVarRels.containsKey(range)) {
+		    InstVarRels.put(range, new HashMap());
+		    InstVarRels2.put(range, new HashMap());
+	}
+
 	    }
 	}
 	String rN = LogMap.shortClassName(c) + "." + k;

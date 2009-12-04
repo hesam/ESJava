@@ -35,7 +35,7 @@ public class ESJEnsuredClassDecl_c extends JL5ClassDecl_c
     public Expr ensuresExpr() {
 	return ensuresExpr;
     }
-
+    /*
     protected ClassDecl reconstruct(TypeNode superClass, List interfaces, ClassBody body,
 				    List annotations, List paramTypes, Expr ensuresExpr) {
         if (superClass != this.superClass || !CollectionUtil.equals(interfaces, this.interfaces)
@@ -63,6 +63,6 @@ public class ESJEnsuredClassDecl_c extends JL5ClassDecl_c
 	Expr ensuresExpr = (Expr) visitChild(this.ensuresExpr, v);
         return reconstruct(superClass, interfaces, body, annots, paramTypes, ensuresExpr);
     }
-
+    */
 
 }

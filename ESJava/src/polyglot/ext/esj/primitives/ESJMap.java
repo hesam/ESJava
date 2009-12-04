@@ -29,6 +29,9 @@ public class ESJMap<K,V> extends HashMap<K,V> {
 
     public ESJMap<K,V> clone() {
 	ESJMap<K,V> res = (ESJMap<K,V>) super.clone();
+	for (Object e : values())
+	    if (e instanceof ESJObject)
+		((ESJObject)e).clone();
 	this.old = res;
 	return res;
 	}
@@ -42,17 +45,11 @@ public class ESJMap<K,V> extends HashMap<K,V> {
     public void relationize() {
 	if (!isRelationized()) { 
 	    this.relationizerStep++;
-	    /*
-	    int i = 0;
 	    // FIXME
-	    for (Object e : (ESJMap<Object>) this) {
+	    for (Object e : values())
 		if (e instanceof ESJObject)
 		    ((ESJObject) e).relationize();
-		rel_log.put_log(i, e);
-		old.rel_log.put_log(i, e);
-		i++;
-	    }
-	    */
+	    relationizeOld(); 
 	}
     }
     

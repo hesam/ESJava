@@ -112,6 +112,10 @@ public class LogSet extends LogObject {
 	return new LogFormula("some (" + itm.var_log().string() + "." + string + ")");
     }
 
+    public LogSet values_log() {
+	return new LogSet(string + "[1]");
+    }
+
     public LogSet indices_log() {
 	return new LogSet(string + "[0]");
     }
@@ -128,6 +132,10 @@ public class LogSet extends LogObject {
 	return arithOp("+", new LogObjAtom(LogMap.get1_log(o2)));
     }
 
+    public LogSet plus_log(LogObject o2) { //FIXME
+	return arithOp("+", o2);
+    }
+
     public LogSet minus_log(LogSet o2) {
 	return arithOp("-", o2);
     }
@@ -138,6 +146,10 @@ public class LogSet extends LogObject {
 
     public LogSet minus_log(Integer o2) { //FIXME
 	return arithOp("-", new LogObjAtom(LogMap.get1_log(o2)));
+    }
+
+    public LogSet minus_log(LogObject o2) { //FIXME
+	return arithOp("-", o2);
     }
 
 }

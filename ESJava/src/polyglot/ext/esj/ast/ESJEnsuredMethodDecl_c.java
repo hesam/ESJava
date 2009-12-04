@@ -82,7 +82,7 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	else return false;
     }
 
-    /** Reconstruct the method. */
+    // Reconstruct the method.
     protected MethodDecl_c reconstruct(TypeNode returnType, List formals,
 				       List throwTypes, Block body, List paramTypes, 
 				       Expr ensuresExpr, JL5Formal catchFormal, 
@@ -108,7 +108,7 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	return this;
     }
 
-      /** Visit the children of the method. */
+    // Visit the children of the method.
     public Node visitChildren(NodeVisitor v) {
 	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 	List formals = visitList(this.formals, v);
@@ -121,13 +121,14 @@ public class ESJEnsuredMethodDecl_c extends JL5MethodDecl_c
 	return reconstruct(returnType, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal, resultVar);
     }
 
+        /*
     public Node typeCheck(TypeChecker tc) throws SemanticException {
 
 	JL5TypeSystem ts = (JL5TypeSystem) tc.typeSystem();
 	ESJEnsuredMethodDecl n = (ESJEnsuredMethodDecl) super.typeCheck(tc);	    
 	return n;
     }
-   
+   	*/
 
     public Context enterScope(Node child, Context c) {
 	if (child instanceof Expr) {

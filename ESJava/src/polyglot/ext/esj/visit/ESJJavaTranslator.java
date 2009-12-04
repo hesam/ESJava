@@ -135,13 +135,24 @@ public class ESJJavaTranslator extends ContextVisitor {
 	}
 
 
-	List args = new TypedList(new LinkedList(), Expr.class, false);
-	for (Formal f : (List<Formal>) methodDecl.formals())
-	    args.add(nf.Local(null,f.name()));
+	List args1 = new TypedList(new LinkedList(), Expr.class, false);
+	List args2 = new TypedList(new LinkedList(), Expr.class, false);
+	for (Formal f : (List<Formal>) methodDecl.formals()) {
+	    // HACK FIXME
+	    if (f.type().toString().equals("java.lang.Integer")) {
+		List argsa = new TypedList(new LinkedList(), Expr.class, false);
+		argsa.add(nf.Local(null,f.name()));
+		args1.add(nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")), argsa, null, new TypedList(new LinkedList(), TypeNode.class, false)));
+		args2.add(nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.IntConstant")), "constant", argsa));
+	    } else { 
+		args1.add(nf.Local(null,f.name()));
+		args2.add(nf.Local(null,f.name()));
+	    }
+	}
 
-	JL5If fbCall = nf.JL5If(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "SolverOpt_Kodkodi", emptyArgs), nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback", args)), nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback2", args)));
+	JL5If fbCall = nf.JL5If(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "SolverOpt_Kodkodi", emptyArgs), nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback", args1)), nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback2", args2)));
 
-	catchBody.add(isVoid ? fbCall : nf.JL5Return(null, nf.JL5Conditional(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "SolverOpt_Kodkodi", emptyArgs), nf.Call(null, null, methodDecl.name() + "_fallback", args), nf.Call(null, null, methodDecl.name() + "_fallback2", args))));
+	catchBody.add(isVoid ? fbCall : nf.JL5Return(null, nf.JL5Conditional(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "SolverOpt_Kodkodi", emptyArgs), nf.Call(null, null, methodDecl.name() + "_fallback", args1), nf.Call(null, null, methodDecl.name() + "_fallback2", args2))));
 	Block catchBlock = nf.Block(null,catchBody);
 	catches.add(nf.JL5Catch(null, methodDecl.catchFormal(), catchBlock));
 	List mainBody = new TypedList(new LinkedList(), Stmt.class, false);
@@ -243,14 +254,14 @@ public class ESJJavaTranslator extends ContextVisitor {
 	if (r instanceof ESJLogPredMethodDecl) {	 
 	    ESJLogPredMethodDecl methodDecl = (ESJLogPredMethodDecl) r;
 	    
-	    //List formals = new TypedList(new LinkedList(), Formal.class, false);
+	    List formals = new TypedList(new LinkedList(), Formal.class, false);
 	    // HACK FIXME
-	    //for (Formal f : (List<Formal>) methodDecl.formals()) {
-	    //TypeNode fTp = f.type(); 
-	    //String fTpN = fTp.toString();
-	    //boolean isPrimitive = fTpN.equals("int") || fTpN.equals("java.lang.Integer");
-	    //formals.add(f.type(isPrimitive ? nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")) : fTp));
-	    //}
+	    for (Formal f : (List<Formal>) methodDecl.formals()) {
+		TypeNode fTp = f.type(); 
+		String fTpN = fTp.toString();
+		boolean isPrimitive = fTpN.equals("int") || fTpN.equals("java.lang.Integer");
+		formals.add(f.type(isPrimitive ? nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")) : fTp));
+	    }
 	    //
 	    List inits = new TypedList(new LinkedList(), Stmt.class, false);
 	    //System.out.println(methodDecl.body().statements());
@@ -286,7 +297,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		String retTpN = methodDecl.returnType().toString();		
 		methodDecl = (ESJLogPredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic." + (LogMtdRetTypes.containsKey(retTpN) ? LogMtdRetTypes.get(retTpN) : "LogSet"))));
 	    }
-	    return methodDecl.body(nf.Block(null,inits)); //.formals(formals)
+	    return methodDecl.formals(formals).body(nf.Block(null,inits));
 	    				    
 	} else if (r instanceof Block) {
 	    List body = new TypedList(new LinkedList(), Stmt.class, false);
@@ -405,7 +416,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    //if ((c.target() instanceof Field && ((Field) c.target()).name().equals("old")) ||
 	    //(c.target() instanceof Call && ((Call) c.target()).name().equals("old"))) //FIXME
 	    //def = "_old_log";
-	    for (Expr e : (List<Expr>) c.arguments())
+	    for (Expr e : (List<Expr>) c.arguments())	
 		args.add((Expr) toLogicExpr(e));
 	    // HACK FIXME
 	    if (c.name().equals("abs") &&  c.target().toString().equals("java.lang.Math")) {
@@ -492,14 +503,14 @@ public class ESJJavaTranslator extends ContextVisitor {
 	if (r instanceof ESJLog2PredMethodDecl) {	 
 	    ESJLog2PredMethodDecl methodDecl = (ESJLog2PredMethodDecl) r;
 	    
-	    //List formals = new TypedList(new LinkedList(), Formal.class, false);
+	    List formals = new TypedList(new LinkedList(), Formal.class, false);
 	    // HACK FIXME
-	    //for (Formal f : (List<Formal>) methodDecl.formals()) {
-	    //TypeNode fTp = f.type(); 
-	    //String fTpN = fTp.toString();
-	    //boolean isPrimitive = fTpN.equals("int") || fTpN.equals("java.lang.Integer");
-	    //formals.add(f.type(isPrimitive ? nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")) : fTp));
-	    //}
+	    for (Formal f : (List<Formal>) methodDecl.formals()) {
+		TypeNode fTp = f.type(); 
+		String fTpN = fTp.toString();
+		boolean isPrimitive = fTpN.equals("int") || fTpN.equals("java.lang.Integer");
+		formals.add(f.type(isPrimitive ? nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.IntExpression")) : fTp));
+	    }
 	    //
 	    List inits = new TypedList(new LinkedList(), Stmt.class, false);
 	    //System.out.println(methodDecl.body().statements());
@@ -537,7 +548,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		String retTpN = methodDecl.returnType().toString();		
 		methodDecl = (ESJLog2PredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName(Log2MtdRetTypes.containsKey(retTpN) ? ("kodkod.ast." + Log2MtdRetTypes.get(retTpN)) : "polyglot.ext.esj.tologic.Log2Set")));
 	    }
-	    return methodDecl.body(nf.Block(null,inits)); //.formals(formals)
+	    return methodDecl.formals(formals).body(nf.Block(null,inits));
 	    				    
 	} else if (r instanceof Block) {
 	    List body = new TypedList(new LinkedList(), Stmt.class, false);
@@ -559,20 +570,25 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    Expr rtLog = (Expr) toLogicExpr2(b.right());
 	    
 	    // FIXME
-	    //System.out.println("hi2: " + lf + " " + lf.type() + rt + " " + rt.type());
+	    //System.out.println("hi2: " + lf + " " + lf.type() + " " + lfLog + " " + rt + " " + rt.type());
 	    /*
  	    if (!(lf instanceof IntLit || lf instanceof Local || lf instanceof ESJBinary || (lfLog instanceof Call && ((Call)lfLog).name().equals("sum"))))
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
 	    if (!(rt instanceof IntLit || rt instanceof Local || rt instanceof ESJBinary || (rtLog instanceof Call && ((Call)rtLog).name().equals("sum"))))
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
 	    */
-	    if (lf instanceof Field || lf instanceof Cast || lf instanceof Local) { // || (lfLog instanceof Call && !((Call)lfLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
-		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
-	    }
-	    if (rt instanceof Field || rt instanceof Cast || rt instanceof Local) { // || (rtLog instanceof Call && !((Call)rtLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
-		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
-	    }
+	    
 
+	    if (!(rt.toString().equals("null") && lf.type().toString().equals("java.lang.Integer"))) { //HACK FIXME
+		if (lf instanceof Field || lf instanceof Cast || 
+		    (lf instanceof Local && !(lfLog instanceof Call && ((Call)lfLog).target().toString().equals("kodkod.ast.IntConstant")))) { // || (lfLog instanceof Call && !((Call)lfLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
+		    lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
+		}
+		if (rt instanceof Field || rt instanceof Cast || 
+		    rt instanceof Local && !(rtLog instanceof Call && ((Call)rtLog).target().toString().equals("kodkod.ast.IntConstant"))) { // || (rtLog instanceof Call && !((Call)rtLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
+		    rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+		}
+	    }
 	    args.add(rtLog);
 	    Call c = nf.Call(null, lfLog, b.kodkodOp(), args);
 	    if (b.operator().equals(Binary.NE)) {		
@@ -722,13 +738,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	} else if (r instanceof LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    return r;
-	} else if (r instanceof Local) {
-	    // HACK FIXME
-	    if (((Expr)r).type().toString().equals("java.lang.Integer")) {
-		List args = new TypedList(new LinkedList(), Expr.class, false);
-		args.add(r);
-		return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.IntConstant")), "constant", args);
-	    }	      
+	} else if (r instanceof Local) {	    	      
 	    return r;
 	}  else if (r instanceof Special) {
 	    return r;
@@ -817,7 +827,6 @@ public class ESJJavaTranslator extends ContextVisitor {
 
     protected Node leaveCall(Node n) throws SemanticException {
 	//System.out.println("have: " + n.getClass() + " " + n);
-
 	 if (n instanceof ESJPredMethodDecl) {	    
 	    return super.leaveCall(DesugarPredMethodDecl((ESJPredMethodDecl)n));
 	} else if (n instanceof ESJLogPredMethodDecl) {	    

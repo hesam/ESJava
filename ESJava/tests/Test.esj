@@ -69,11 +69,18 @@ public class Test {
 	ensures this.map.get(this.points.get(0)) == 12 {
     }
 
+    public pure Integer IntSqrt(Integer i) 
+	ensures result > 0 && 
+	        result <= i/result && 
+	        i/(result+1) < result + 1 {
+	return 1;
+    }	
+
     public String toString() { return "a=" + a + "\nb=" + b + "\npoints=" + points + "\nmap=" + map; }
 
 
     public static void main(String[] args) {	
-	//LogMap.SolverOpt_debugLevel(1);
+	LogMap.SolverOpt_debugLevel(1);
 	//LogMap.SolverOpt_Kodkodi(true);
 	ESJInteger.setBounds(0,60);
 	Test t1 = new Test(13, 10);
@@ -83,7 +90,8 @@ public class Test {
 	System.out.println(t1.pick());
 	//t1.foo();
 	//t1.blah();
-	//System.out.println(t1);
+	//System.out.println(t1.IntSqrt(10));
+	System.out.println(t1);
     }
 
 }

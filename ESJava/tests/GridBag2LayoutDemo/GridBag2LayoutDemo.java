@@ -48,13 +48,16 @@ public class GridBag2LayoutDemo {
 
     //HS
     static boolean fallbackOn;
-    final static int SPEC_GRID = 5; 
+    final static int SPEC_GRID = 9; //9; 
     static { ESJButton.setSpecGrid(SPEC_GRID); }
     //HS END
     
     final static boolean shouldFill = true;
     final static boolean shouldWeightX = true;
     final static boolean RIGHT_TO_LEFT = false;
+    final static int GRIDCOLS = 3; 
+    final static int GRIDROWS = 3; 
+
 
     public static void addComponentsToPane(Container pane) {
         if (RIGHT_TO_LEFT) {
@@ -62,7 +65,7 @@ public class GridBag2LayoutDemo {
         }
 
         ESJButton button;
-	pane.setLayout(new GridBag2Layout(fallbackOn, SPEC_GRID));
+	pane.setLayout(new GridBag2Layout(fallbackOn, SPEC_GRID, GRIDCOLS, GRIDROWS)); //HS
 	GridBag2Constraints c = new GridBag2Constraints();
 	if (shouldFill) {
 	//natural height, maximum width
@@ -78,6 +81,7 @@ public class GridBag2LayoutDemo {
 	c.gridy = 0;
 	pane.add(button, c);
 
+	c = new GridBag2Constraints(); //HS
 	button = new ESJButton("Button 2");
 	c.fill = GridBag2Constraints.HORIZONTAL;
 	c.weightx = 0.5;
@@ -85,6 +89,7 @@ public class GridBag2LayoutDemo {
 	c.gridy = 0;
 	pane.add(button, c);
 
+	c = new GridBag2Constraints(); //HS
 	button = new ESJButton("Button 3");
 	c.fill = GridBag2Constraints.HORIZONTAL;
 	c.weightx = 0.5;
@@ -92,6 +97,7 @@ public class GridBag2LayoutDemo {
 	c.gridy = 0;
 	pane.add(button, c);
 
+	c = new GridBag2Constraints(); //HS
 	button = new ESJButton("Long-Named Button 4");
 	c.fill = GridBag2Constraints.HORIZONTAL;
 	c.ipady = 40;      //make this component tall
@@ -101,6 +107,7 @@ public class GridBag2LayoutDemo {
 	c.gridy = 1;
 	pane.add(button, c);
 
+	c = new GridBag2Constraints(); //HS
 	button = new ESJButton("5");
 	c.fill = GridBag2Constraints.HORIZONTAL;
 	c.ipady = 0;       //reset to default
@@ -134,7 +141,7 @@ public class GridBag2LayoutDemo {
 
     public static void main(String[] args) {
 	fallbackOn = args.length > 0;
-	//LogMap.SolverOpt_debugLevel(1);
+	LogMap.SolverOpt_debugLevel(1);
 	//ESJInteger.setBounds(0,Math.max(100,600/SPEC_GRID));
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.

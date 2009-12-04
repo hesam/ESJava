@@ -42,12 +42,30 @@ public class Log2Set extends Log2Object {
 	return index.toExpression().join(expression);
     }                              
 
+    /*
+    public Expression get_log2(ESJObject itm) {
+	return itm.var_log2().expression().join(expression);
+    }
+    */
+
     public Formula contains_log2(Log2Object itm) {
 	return expression.intersection(itm.expression()).some();
     }
 
     public Formula contains_log2(ESJObject itm) {
 	return expression.intersection(itm.var_log2().expression()).some();
+    }
+
+    public Formula containsKey_log2(Log2Object itm) {
+	return itm.expression().join(expression).some();
+    }
+
+    public Formula containsKey_log2(ESJObject itm) {
+	return itm.var_log2().expression().join(expression).some();
+    }
+
+    public Log2Set values_log2() {
+	return new Log2Set(expression.project(IntConstant.constant(1)));
     }
 
     public Log2Set plus_log2(Log2Set o2) {
@@ -62,6 +80,10 @@ public class Log2Set extends Log2Object {
 	return new Log2Set(expression.union(o2.toExpression()));
     }
 
+    public Log2Set plus_log2(IntExpression o2) { //FIXME
+	return new Log2Set(expression.union(o2.toExpression()));
+    }
+
     public Log2Set minus_log2(Log2Set o2) {
 	return new Log2Set(expression.difference(o2.expression()));
     }
@@ -71,6 +93,10 @@ public class Log2Set extends Log2Object {
     }
 
     public Log2Set minus_log2(IntConstant o2) { //FIXME
+	return new Log2Set(expression.difference(o2.toExpression()));
+    }
+
+    public Log2Set minus_log2(IntExpression o2) { //FIXME
 	return new Log2Set(expression.difference(o2.toExpression()));
     }
 
