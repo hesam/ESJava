@@ -289,10 +289,10 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		     instVarGetArgs2.add(nf.This(null));
 		     instVarGetArgs2.add(nf.StringLit(null, fi.name()+"_old"));
 		     Expr e1 = nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "instVarRel_log", instVarGetArgs2);
-		     instVarGetArgs3.add(nf.Field(null, nf.This(null), "old"));
+		     instVarGetArgs3.add(nf.This(null));
 		     instVarGetArgs3.add(nf.Field(null, nf.This(null), fi.name()));
 		     Expr e2 = nf.Call(null, e1, "put_log", instVarGetArgs3);
-		     relationizeOldMtdBody.add(nf.Eval(null, e2));		     
+		     relationizeOldMtdBody.add(nf.Eval(null, e2));   
 		     // have to do deep relationizing for reference types... 
 
 		     // HACK FIXME:

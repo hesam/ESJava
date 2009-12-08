@@ -10,7 +10,9 @@ public class BSTree
 
     private static final int INDENT_STEP = 4;
     private static int MAX_SIZE = 0;
+    private static boolean TEST_INSERT = false;
     private static boolean TEST_DELETE = false;
+    private static boolean TEST_BALANCE = false;
 
     spec public Node root;
 
@@ -43,6 +45,16 @@ public class BSTree
         isValidBinarySearch()
     }
 
+    spec public boolean isBalanced() {
+	all Node n | 
+	    Math.abs(n.leftDescendants().size() - n.rightDescendants().size()) <= 1
+    }
+
+    public void rebalance()
+	modifies fields BSTree.root, Node.left, Node.right, Node.parent
+	ensures this.nodes().equals(this.old.nodes()) && isBalanced() {
+    }
+
     public void insert(Integer value) {
         Node insertedNode = new Node(value, null, null);
 	insert(insertedNode);
@@ -53,7 +65,7 @@ public class BSTree
     //modifies objects getNewNodeParentToBe(node)
 	ensures this.nodes().equals(this.old.nodes().plus(node)) {	
 	// no implementation...
-	if (!TEST_DELETE)
+	if (TEST_INSERT)
 	    assert nodes().size() != MAX_SIZE - 1;
 
 	if (root == null) {
@@ -203,6 +215,7 @@ public class BSTree
 	MAX_SIZE = 10;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 	TEST_DELETE = false;
+	TEST_BALANCE = true;
 	Random rand = new Random(1111L);
 
         BSTree t = new BSTree();
@@ -231,6 +244,9 @@ public class BSTree
 		t.print();
 		i = 0; /// fixme
 	    }
+	} else if (TEST_BALANCE) {
+	    t.rebalance();
+	    t.print();
 	}
 
     }

@@ -1,0 +1,27 @@
+import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.tologic.*;
+
+public class LLNode
+{
+    spec public Integer value;
+    spec public LLNode next;
+
+    public LLNode(Integer value) {
+	this(value, null);
+    }
+
+    public LLNode(Integer value, LLNode next) {
+        this.value = value;
+        this.next = next;
+    }
+
+    spec public ESJSet<LLNode> subsequents() { this.^next }
+
+    public void value(Integer v) { this.value = v; }
+    public void next(LLNode n) { this.next = n; }
+
+    public String toString() { 
+	return "LLNode(" + value + ")";
+    }
+
+}

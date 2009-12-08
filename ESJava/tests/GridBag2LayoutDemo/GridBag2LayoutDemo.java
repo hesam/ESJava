@@ -48,7 +48,7 @@ public class GridBag2LayoutDemo {
 
     //HS
     static boolean fallbackOn;
-    final static int SPEC_GRID = 9; //9; 
+    final static int SPEC_GRID = 9; 
     static { ESJButton.setSpecGrid(SPEC_GRID); }
     //HS END
     
@@ -128,7 +128,7 @@ public class GridBag2LayoutDemo {
      */
     private static void createAndShowGUI() {
         //Create and set up the window.
-        JFrame frame = new JFrame("GridBag2LayoutDemo");
+        JFrame frame = new JFrame("GridBagLayoutDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Set up the content pane.

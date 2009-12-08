@@ -36,30 +36,31 @@ public class ESJList<E> extends ArrayList<E> {
 	    if (e instanceof ESJObject)
 		((ESJObject)e).clone();
 	this.old = res;
+
+	Relation r = Relation.nary("r" + LogRelation.RelCtr(), 2);
+	this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, r, false, false, true, false, true, size());
+
 	return res;
     }
 
     boolean isRelationized() { return this.relationizerStep == LogMap.relationizerStep(); }
     boolean isCloned() { return this.clonerStep == LogMap.clonerStep(); }
 
-    // relationize me and my old
+    // relationize me (receiver will be old)
     public void relationize() {
 	if (!isRelationized()) { 
 	    this.relationizerStep++;
-	    Relation r = Relation.nary("r" + LogRelation.RelCtr(), 2);
-	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, r, false, false, true, false, true, size());
 	    Relation rOld = Relation.nary("r" + LogRelation.RelCtr(), 2);
-	    old.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, rOld, false, false, false, false, true, size());
+	    this.rel_log = new LogRelation("ESJList" , Integer.class, Integer.class, Integer.class, rOld, false, false, false, false, true, size());
 	    int i = 0;
 	    // FIXME
 	    for (Object e : (ESJList<Object>) this) {
 		if (e instanceof ESJObject)
 		    ((ESJObject) e).relationize();
-		rel_log.put_log(i, e);
-		old.rel_log.put_log(i, e);
-		i++;
+		rel_log.put_log(i++, e);
 	    }
 	}
+
     }
 
     public void relationizeOld() { 

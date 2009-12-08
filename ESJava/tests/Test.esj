@@ -28,7 +28,6 @@ public class Test {
 	this.points.add(p1);
 	this.points.add(p2);
 	this.points.add(p3); 
-
 	this.map = new ESJMap<Point,Integer>();
 	this.map.put(p1,0);
 	this.map.put(p2,1);
@@ -71,12 +70,14 @@ public class Test {
 
     public pure Integer IntSqrt(Integer i) 
 	ensures result > 0 && 
-	        result <= i/result && 
-	        i/(result+1) < result + 1 {
+	        result <= i / result && 
+	        result + 1 >  i / (result + 1) {
 	return 1;
     }	
 
-    public String toString() { return "a=" + a + "\nb=" + b + "\npoints=" + points + "\nmap=" + map; }
+    public String toString() { 
+	return "a=" + a + "\nb=" + b + "\npoints=" + points + "\nmap=" + map; 
+    }
 
 
     public static void main(String[] args) {	
@@ -87,9 +88,9 @@ public class Test {
 	System.out.println(t1);
 	//t1.baz();
 	//System.out.println(t1.twice(5));
-	System.out.println(t1.pick());
+	//System.out.println(t1.pick());
 	//t1.foo();
-	//t1.blah();
+	t1.blah();
 	//System.out.println(t1.IntSqrt(10));
 	System.out.println(t1);
     }

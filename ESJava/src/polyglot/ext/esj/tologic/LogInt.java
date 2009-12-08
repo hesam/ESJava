@@ -39,4 +39,10 @@ public class LogInt extends LogObject {
 	return new LogInt("(" + string + " " + kodkodiOp + " " + (o2+"") + ")");
     }
 
+    //FIXME
+    public LogInt abs() {
+	return this;
+    }
+
+
 }

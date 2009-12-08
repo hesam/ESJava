@@ -1,0 +1,147 @@
+import polyglot.ext.esj.primitives.*;
+import polyglot.ext.esj.tologic.*;
+
+import java.util.Random;
+
+public class LList ensures isAcyclic()  {
+    
+    spec public LLNode header;
+
+    public void header(LLNode h) { this.header = h; }
+
+    public LList() { super(); }
+
+    // SPEC METHODS 
+
+    spec public ESJSet<LLNode> nodes() { header.*next }
+    //spec public ESJSet<LLNode> allButLast() { { LLNode n : nodes() | n.next != null } }
+    //spec public ESJSet<Integer> values() { nodes().<value }
+
+    spec public ESJSet<LLNode> equalNodes(LLNode m) { 
+	{ LLNode n : nodes() | n.value == m.value  } 
+    }    
+
+    spec public boolean isAcyclic() { 
+	no LLNode n | n.subsequents().contains(n)
+    }
+
+    spec public Integer count(LLNode m) { this.equalNodes(m).size() }
+
+    spec public boolean isSorted() {
+	all LLNode n : nodes() | (n.next == null || n.value <= n.next.value)
+    }
+
+    spec public boolean isPermutationOf(LList l) {
+	all LLNode n | count(n) == l.count(n)
+    }
+
+    // ENSURED METHODS    
+    public void bubbleSort() 
+	modifies fields LList.header, LLNode.next
+	ensures (this.isPermutationOf(this.old()) && this.isSorted()) {
+	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED	
+	header = null; //<-- TEST: RUN TIME ERROR INTRODUCED	
+	LLNode n, t, p = header, last = null;
+	while (last != header) {
+	    n = header;
+	    while (n.next != last) { // (n != last) <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
+		if (n.value > n.next.value) {
+		    if (n == header)
+			header = n.next;
+		    else
+			p.next = n.next;
+		    p = n.next; // p = n; <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
+		    t = n.next.next;
+		    n.next.next = n;
+		    n.next = t;
+		} else {
+		    p = n;
+		    n = n.next;
+		}
+	    }
+	    last = n;
+	}
+	System.out.println(this);
+    }
+
+
+    public void add(Integer v) {
+	LLNode res = new LLNode(v);
+	if (header == null) { 
+	    header = res;
+	} else {
+	    LLNode n = header;
+	    while (n.next != null)
+		n = n.next;
+	    n.next = res;
+	}
+    }
+
+    public String toString() { 
+	String res = "[ ";
+	LLNode n = header;
+	while (n != null) {
+	    res += n.value + " ";
+	    n = n.next;
+	}
+	res += "]";
+	return res;
+    }
+    
+    public static void main(String[] args) {
+	
+	//LogMap.SolverOpt_debugLevel(1);
+	//LogMap.SolverOpt_Kodkodi(true);
+
+        LList ta = new LList();	
+        LList tb = new LList();
+
+	Random rand = new Random(1111L);
+	int MAX_SIZE = 6;
+	ESJInteger.setBounds(0,MAX_SIZE-1);
+
+
+	// create an array of the given size
+	int[] a = new int[MAX_SIZE];
+	  	
+	for (int i = 0 ; i < MAX_SIZE; ++i)
+	    a[i] = i;
+	for (int i = MAX_SIZE; i>0; --i) {
+	    int n = rand.nextInt(MAX_SIZE);
+	    int temp = a[n];
+	    a[n] = a[i-1];
+	    tb.add(temp); //new Integer(temp));
+	    }
+
+	/*
+
+	//int [] a = {1,2,3,4,4,5};
+	int [] b = {4,3,2,4,5,1};
+	for(int i=0;i<b.length;i++) {
+	    //ta.add(new Integer(a[i]));
+	    tb.add(new Integer(b[i]));
+	    }*/
+
+	//System.out.print("A=");
+        //System.out.println(ta);
+	//System.out.print("A sorted: ");
+	//System.out.println(ta.isSorted());
+	System.out.print("B=");
+        System.out.println(tb);
+	System.out.print("B sorted: ");
+	System.out.println(tb.isSorted());
+	System.out.print("permutations: ");
+	System.out.println(tb.isPermutationOf(tb));
+
+	System.out.println("sorting B...");
+	tb.bubbleSort();
+	System.out.print("B=");
+        System.out.println(tb);
+	//System.out.print("now B sorted: ");
+	//System.out.println(tb.isSorted());
+
+
+    }
+
+}
+
