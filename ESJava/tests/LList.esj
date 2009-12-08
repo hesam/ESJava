@@ -5,15 +5,15 @@ import java.util.Random;
 
 public class LList ensures isAcyclic()  {
     
-    spec public LLNode header;
+    spec public LLNode head;
 
-    public void header(LLNode h) { this.header = h; }
+    public void head(LLNode h) { this.head = h; }
 
     public LList() { super(); }
 
     // SPEC METHODS 
 
-    spec public ESJSet<LLNode> nodes() { header.*next }
+    spec public ESJSet<LLNode> nodes() { head.*next }
     //spec public ESJSet<LLNode> allButLast() { { LLNode n : nodes() | n.next != null } }
     //spec public ESJSet<Integer> values() { nodes().<value }
 
@@ -22,7 +22,9 @@ public class LList ensures isAcyclic()  {
     }    
 
     spec public boolean isAcyclic() { 
-	no LLNode n | n.subsequents().contains(n)
+	//no LLNode n | n.tail().contains(n)
+	this.head == null || 
+	    some LLNode n : nodes() | n.next == null
     }
 
     spec public Integer count(LLNode m) { this.equalNodes(m).size() }
@@ -37,17 +39,17 @@ public class LList ensures isAcyclic()  {
 
     // ENSURED METHODS    
     public void bubbleSort() 
-	modifies fields LList.header, LLNode.next
+	modifies fields LList.head, LLNode.next
 	ensures (this.isPermutationOf(this.old()) && this.isSorted()) {
 	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED	
-	header = null; //<-- TEST: RUN TIME ERROR INTRODUCED	
-	LLNode n, t, p = header, last = null;
-	while (last != header) {
-	    n = header;
+	head = null; //<-- TEST: RUN TIME ERROR INTRODUCED	
+	LLNode n, t, p = head, last = null;
+	while (last != head) {
+	    n = head;
 	    while (n.next != last) { // (n != last) <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
 		if (n.value > n.next.value) {
-		    if (n == header)
-			header = n.next;
+		    if (n == head)
+			head = n.next;
 		    else
 			p.next = n.next;
 		    p = n.next; // p = n; <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
@@ -67,10 +69,10 @@ public class LList ensures isAcyclic()  {
 
     public void add(Integer v) {
 	LLNode res = new LLNode(v);
-	if (header == null) { 
-	    header = res;
+	if (head == null) { 
+	    head = res;
 	} else {
-	    LLNode n = header;
+	    LLNode n = head;
 	    while (n.next != null)
 		n = n.next;
 	    n.next = res;
@@ -79,7 +81,7 @@ public class LList ensures isAcyclic()  {
 
     public String toString() { 
 	String res = "[ ";
-	LLNode n = header;
+	LLNode n = head;
 	while (n != null) {
 	    res += n.value + " ";
 	    n = n.next;
@@ -97,7 +99,7 @@ public class LList ensures isAcyclic()  {
         LList tb = new LList();
 
 	Random rand = new Random(1111L);
-	int MAX_SIZE = 6;
+	int MAX_SIZE = 20;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 
 

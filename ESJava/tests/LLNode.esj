@@ -15,7 +15,7 @@ public class LLNode
         this.next = next;
     }
 
-    spec public ESJSet<LLNode> subsequents() { this.^next }
+    spec public ESJSet<LLNode> tail() { this.^next }
 
     public void value(Integer v) { this.value = v; }
     public void next(LLNode n) { this.next = n; }

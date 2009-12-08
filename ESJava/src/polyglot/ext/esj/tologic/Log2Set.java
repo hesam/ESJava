@@ -11,6 +11,7 @@ import kodkod.ast.Formula;
 import kodkod.ast.Expression;
 import kodkod.ast.IntExpression;
 import kodkod.ast.IntConstant;
+import kodkod.ast.Decls;
 
 public class Log2Set extends Log2Object {
 
@@ -108,12 +109,14 @@ public class Log2Set extends Log2Object {
 	return new Log2Set(expression.difference(ESJInteger.atom_log2(listSize-1)), listSize - 1);
     }
 
+    // FIXME
     public static Formula quantifyOp2(Log2Set quantSet, boolean quantKindIsaOneOrLone, String quantKind, Log2Var quantVar, Formula quantClause) {
 	Expression quantSetExpr = quantSet.expression();
 	Variable v = (Variable) quantVar.expression();
 	if (quantSetExpr.arity() > 1)
 	    quantSetExpr = quantSetExpr.project(IntConstant.constant(1));
-	return quantClause.forAll(v.oneOf(quantSetExpr));
+	Decls varDecl = v.oneOf(quantSetExpr);
+	return quantKind.equals("all") ? quantClause.forAll(varDecl) : quantClause.forSome(varDecl);
     }
 
     public static Log2Set setComprehensionOp2(Log2Set quantSet, Log2Var quantVar, Formula quantClause) {
