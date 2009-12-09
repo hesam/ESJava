@@ -1,6 +1,5 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
-
 import java.util.Random;
 
 public class LList ensures isAcyclic()  {
@@ -94,12 +93,13 @@ public class LList ensures isAcyclic()  {
 	
 	//LogMap.SolverOpt_debugLevel(1);
 	//LogMap.SolverOpt_Kodkodi(true);
+	//LogMap.SolverOpt_Solver2(kodkod.engine.satlab.SATFactory.DefaultSAT4J);
 
         LList ta = new LList();	
         LList tb = new LList();
 
 	Random rand = new Random(1111L);
-	int MAX_SIZE = 20;
+	int MAX_SIZE = 10;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 
 
@@ -128,6 +128,7 @@ public class LList ensures isAcyclic()  {
         //System.out.println(ta);
 	//System.out.print("A sorted: ");
 	//System.out.println(ta.isSorted());
+
 	System.out.print("B=");
         System.out.println(tb);
 	System.out.print("B sorted: ");
@@ -139,9 +140,10 @@ public class LList ensures isAcyclic()  {
 	tb.bubbleSort();
 	System.out.print("B=");
         System.out.println(tb);
+
+
 	//System.out.print("now B sorted: ");
 	//System.out.println(tb.isSorted());
-
 
     }
 

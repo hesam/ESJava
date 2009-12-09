@@ -35,8 +35,8 @@ public class BSTree
     }
 
     spec public boolean isValidBinarySearch() {
-       all Node n | ((n.left == null  || all Node lc : n.leftDescendants()  | lc.value < n.value) &&
-        	     (n.right == null || all Node rc : n.rightDescendants() | rc.value > n.value))
+       all Node n | ((n.left == null  || all Node lc : n.leftSubtree()  | lc.value < n.value) &&
+        	     (n.right == null || all Node rc : n.rightSubtree() | rc.value > n.value))
     }
 
     spec public boolean isBinarySearchTree() {
@@ -47,7 +47,7 @@ public class BSTree
 
     spec public boolean isBalanced() {
 	all Node n | 
-	    Math.abs(n.leftDescendants().size() - n.rightDescendants().size()) <= 1
+	    Math.abs(n.leftSubtree().size() - n.rightSubtree().size()) <= 1
     }
 
     public void rebalance()

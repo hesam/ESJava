@@ -59,5 +59,11 @@ public class ESJSet<E> extends HashSet<E> {
 	return this;
     }
 
+    public boolean containsPtrEqCmp(Object o) {
+	for (Object e : (ESJSet<Object>) this)
+	    if (e == o) 
+		return true;	
+	return false;
+    }
 
 }

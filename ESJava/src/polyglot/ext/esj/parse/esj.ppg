@@ -477,7 +477,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		 // also define field closure access for recursive fields
 		 if (b.toString().equals(this.currClassName+"{amb}") && this.noClosureDefYet) { //FIXME
 		     this.noClosureDefYet(false);
-		     l.add(this.makeFieldClosureMethod(cl, tn, asettn));
+		     l.add(this.makeFieldClosureMethod(cl, tn, asettn, atn));
 		     l.add(this.makeMultiFieldsMethod(cl, tn, asettn));
 		 }
 	     }
@@ -485,7 +485,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 
      }
 
-     public JL5MethodDecl makeFieldClosureMethod (AmbTypeNode cl, AmbTypeNode tn, AmbTypeNode asettn) throws Exception {
+     public JL5MethodDecl makeFieldClosureMethod (AmbTypeNode cl, AmbTypeNode tn, AmbTypeNode asettn, AmbTypeNode alisttn) throws Exception {
 
 	 List extraMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, nf.CanonicalTypeNode(null, ts.Class()), "c", nf.ClassLit(null, cl)));
@@ -494,11 +494,11 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 TypeNode strtn = nf.ArrayTypeNode(null, nf.CanonicalTypeNode(null, ts.String()));
 	 frms.add(nf.JL5Formal(null, emptyFlags, strtn, "fieldNs", true));
 	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, asettn, "res", nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
-	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, asettn, "unExpanded", nf.JL5New(null, asettn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
+	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, alisttn, "workList", nf.JL5New(null, alisttn, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
 	 extraMtdBody.add(nf.JL5LocalDecl(null, emptyFlags, cl, "n", nf.This(null)));
 	 List argsW = new TypedList(new LinkedList(), Expr.class, false);
 	 argsW.add(nf.Local(null, "n"));
-	 extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.Local(null, "unExpanded"), "add", argsW)));
+	 extraMtdBody.add(nf.Eval(null, nf.Call(null, nf.Local(null, "workList"), "add", argsW)));
 	 
 	 List tryBody = new TypedList(new LinkedList(), Stmt.class, false);
 	 List catches = new TypedList(new LinkedList(), Catch.class, false);
@@ -510,10 +510,9 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 List argsW2 = new TypedList(new LinkedList(), Expr.class, false);
 	 List argsW0 = new TypedList(new LinkedList(), Expr.class, false);
 	 argsW2.add(nf.This(null));
-	 
+	 argsW0.add(nf.IntLit(null, IntLit.INT, 0));
 	 List whileLoopStmts = new TypedList(new LinkedList(), Stmt.class, false);
-	 whileLoopStmts.add(nf.Eval(null, nf.Assign(null, nf.Local(null, "n"), Assign.ASSIGN, nf.Call(null, nf.Call(null, nf.Local(null, "unExpanded"), "iterator", argsW0), "next", argsW0))));
-	 whileLoopStmts.add(nf.Eval(null, nf.Call(null, nf.Local(null, "unExpanded"), "remove", argsW)));
+	 whileLoopStmts.add(nf.Eval(null, nf.Assign(null, nf.Local(null, "n"), Assign.ASSIGN, nf.Call(null, nf.Local(null, "workList"), "get", argsW0))));
 	 whileLoopStmts.add(nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "add", argsW)));
 	 List fldgt = new TypedList(new LinkedList(), TypeNode.class, false);
 	 AmbTypeNode fldtn = nf.AmbTypeNode(null, "java.lang.reflect.Field");
@@ -538,22 +537,24 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	 List forLoop2Stmts = new TypedList(new LinkedList(), Stmt.class, false);
 	 
 	 List argsW2a = new TypedList(new LinkedList(), Expr.class, false);
-	 
-	 argsW2a.add(nf.Local(null, "n"));
-	 forLoop2Stmts.add(nf.JL5LocalDecl(null, emptyFlags, cl, "childN", nf.JL5Cast(null, cl, nf.Call(null, nf.Local(null, "f"), "get", argsW2a))));
-	 Expr forLoop2Ife1 = nf.ESJBinary(null, nf.Local(null, "childN"), Binary.NE, nf.NullLit(null));
-	 
 	 List argsW2b = new TypedList(new LinkedList(), Expr.class, false);
+	 argsW2a.add(nf.Local(null, "n"));
 	 argsW2b.add(nf.Local(null, "childN"));
+
+
+	 forLoop2Stmts.add(nf.JL5LocalDecl(null, emptyFlags, cl, "childN", nf.JL5Cast(null, cl, nf.Call(null, nf.Local(null, "f"), "get", argsW2a))));
+	 Expr forLoop2Ife1 = nf.Unary(null, Unary.NOT, nf.ESJBinary(null, nf.ESJBinary(null, nf.Local(null, "childN"), Binary.EQ, nf.NullLit(null)), Binary.COND_OR, nf.Call(null, nf.Local(null, "res"), "containsPtrEqCmp", argsW2b)));
 	 
-	 Stmt forLoop2Ife2 = nf.Eval(null, nf.Call(null, nf.Local(null, "unExpanded"), "add", argsW2b));			
+	 
+	 Stmt forLoop2Ife2 = nf.Eval(null, nf.Call(null, nf.Local(null, "workList"), "add", argsW2b));			
 	 forLoop2Stmts.add(nf.JL5If(null, forLoop2Ife1, forLoop2Ife2, null));
 	 
 	 Stmt forLoop2Body = nf.Block(null, forLoop2Stmts);
 	 Stmt forLoop2 = nf.ExtendedFor(null, forLoop2VarD, nf.Local(null, "fields"), forLoop2Body);
 	 whileLoopStmts.add(forLoop2);
+	 whileLoopStmts.add(nf.Eval(null, nf.Call(null, nf.Local(null, "workList"), "remove", argsW)));
 	 Block whileLoopBody = nf.Block(null, whileLoopStmts);
-	 tryBody.add(nf.While(null, nf.ESJBinary(null, nf.Call(null, nf.Local(null, "unExpanded"), "size", argsW0), Binary.GT, nf.IntLit(null, IntLit.INT, 0)), whileLoopBody));
+	 tryBody.add(nf.While(null, nf.ESJBinary(null, nf.Call(null, nf.Local(null, "workList"), "size", emptyArgs), Binary.GT, nf.IntLit(null, IntLit.INT, 0)), whileLoopBody));
 	 tryBody.add(nf.JL5If(null, nf.Unary(null, Unary.NOT, nf.Local(null,"isReflexive")), nf.Eval(null, nf.Call(null, nf.Local(null, "res"), "remove", argsW2)), null));
 	 Block tryBlock = nf.Block(null, tryBody);
 	 extraMtdBody.add(nf.Try(null, tryBlock, catches));

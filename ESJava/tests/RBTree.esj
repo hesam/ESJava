@@ -57,8 +57,8 @@ public class RBTree
     }
 
     spec public boolean isValidBinarySearch() {
-       all Node n | ((n.left == null  || all Node lc : n.leftDescendants()  | lc.value < n.value) &&
-        	     (n.right == null || all Node rc : n.rightDescendants() | rc.value > n.value))
+       all Node n | ((n.left == null  || all Node lc : n.leftSubtree()  | lc.value < n.value) &&
+        	     (n.right == null || all Node rc : n.rightSubtree() | rc.value > n.value))
     }
 
     public void insert(Integer value) {
