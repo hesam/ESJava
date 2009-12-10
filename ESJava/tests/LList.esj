@@ -21,9 +21,9 @@ public class LList ensures isAcyclic()  {
     }    
 
     spec public boolean isAcyclic() { 
-	//no LLNode n | n.tail().contains(n)
-	this.head == null || 
-	    some LLNode n : nodes() | n.next == null
+	no LLNode n | n.tail().contains(n)
+	    //this.head == null || 
+	    //  some LLNode n : nodes() | n.next == null
     }
 
     spec public Integer count(LLNode m) { this.equalNodes(m).size() }
@@ -39,7 +39,7 @@ public class LList ensures isAcyclic()  {
     // ENSURED METHODS    
     public void bubbleSort() 
 	modifies fields LList.head, LLNode.next
-	ensures (this.isPermutationOf(this.old()) && this.isSorted()) {
+	ensures (this.isSorted() && this.isPermutationOf(this.old())) {
 	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED	
 	head = null; //<-- TEST: RUN TIME ERROR INTRODUCED	
 	LLNode n, t, p = head, last = null;
@@ -94,12 +94,13 @@ public class LList ensures isAcyclic()  {
 	//LogMap.SolverOpt_debugLevel(1);
 	//LogMap.SolverOpt_Kodkodi(true);
 	//LogMap.SolverOpt_Solver2(kodkod.engine.satlab.SATFactory.DefaultSAT4J);
+	//LogMap.SolverOpt_SymmetryBreaking(10);
 
         LList ta = new LList();	
         LList tb = new LList();
 
 	Random rand = new Random(1111L);
-	int MAX_SIZE = 10;
+	int MAX_SIZE = 50;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 
 

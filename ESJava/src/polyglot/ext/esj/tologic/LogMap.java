@@ -47,7 +47,7 @@ public class LogMap {
     static String SolverOpt_Host = "localhost";
     static int SolverOpt_Port = 9128;
     static String SolverOpt_Flatten = "false";
-    static int SolverOpt_SymmetryBreaking = 20;
+    static int SolverOpt_SymmetryBreaking = 10;
     static int SolverOpt_debugLevel = 0;
     static boolean SolverOpt_debug1 = false, SolverOpt_debug2 = false;
     static boolean SolverOpt_Kodkod = true, SolverOpt_Kodkodi = false;
@@ -96,7 +96,8 @@ public class LogMap {
     public static void SolverOpt_Kodkod(boolean b) { SolverOpt_Kodkod = b; }
     public static void SolverOpt_Kodkodi(boolean b) { SolverOpt_Kodkodi = b; }
     public static void SolverOpt_Solver(String s) {  SolverOpt_Solver = s; }
-    public static void SolverOpt_Solver2(SATFactory s) {  SolverOpt_Solver2 = s; }
+    public static void SolverOpt_Solver2(SATFactory s) { SolverOpt_Solver2 = s; }
+    public static void SolverOpt_SymmetryBreaking(int s) { SolverOpt_SymmetryBreaking = s; }
 
     public static void SolverOpt_debugLevel(int l) {
 	SolverOpt_debugLevel = l;
@@ -520,7 +521,7 @@ public class LogMap {
     }
 
 
-    public static boolean solve(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects) {
+    public static boolean solve(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects, long startMethodTime) {
 
 	CharArrayWriter problem = new CharArrayWriter();
 	CharArrayWriter funDefs = new CharArrayWriter();
@@ -603,7 +604,7 @@ public class LogMap {
 	return false;
     }
 
-    public static boolean solve2(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects) {
+    public static boolean solve2(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects, long startMethodTime) {
 	Formula funDefs = null;
 	ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
@@ -658,8 +659,10 @@ public class LogMap {
 	System.out.println("solver done.");
 	if (SolverOpt_debug1)
 	    System.out.println(sol);
-	else 
+	else {
 	    System.out.println(sol.stats());
+	}
+	System.out.println("total method invocation time: " + (System.currentTimeMillis() - startMethodTime) + " ms");
 	Instance model = sol.instance();
 	if (model==null)
 	    return false;

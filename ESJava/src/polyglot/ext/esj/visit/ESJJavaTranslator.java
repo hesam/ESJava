@@ -139,6 +139,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List args2 = new TypedList(new LinkedList(), Expr.class, false);
 	for (Formal f : (List<Formal>) methodDecl.formals()) {
 	    // HACK FIXME
+	    /*
 	    if (f.type().toString().equals("java.lang.Integer")) {
 		List argsa = new TypedList(new LinkedList(), Expr.class, false);
 		argsa.add(nf.Local(null,f.name()));
@@ -147,8 +148,15 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    } else { 
 		args1.add(nf.Local(null,f.name()));
 		args2.add(nf.Local(null,f.name()));
-	    }
+		}*/
+
+		args1.add(nf.Local(null,f.name()));
+		args2.add(nf.Local(null,f.name()));
+
 	}
+
+
+
 
 	JL5If fbCall = nf.JL5If(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "SolverOpt_Kodkodi", emptyArgs), nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback", args1)), nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback2", args2)));
 
@@ -256,12 +264,13 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    
 	    List formals = new TypedList(new LinkedList(), Formal.class, false);
 	    // HACK FIXME
+	    /*
 	    for (Formal f : (List<Formal>) methodDecl.formals()) {
 		TypeNode fTp = f.type(); 
 		String fTpN = fTp.toString();
 		boolean isPrimitive = fTpN.equals("int") || fTpN.equals("java.lang.Integer");
 		formals.add(f.type(isPrimitive ? nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")) : fTp));
-	    }
+		}*/
 	    //
 	    List inits = new TypedList(new LinkedList(), Stmt.class, false);
 	    //System.out.println(methodDecl.body().statements());
@@ -297,7 +306,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		String retTpN = methodDecl.returnType().toString();		
 		methodDecl = (ESJLogPredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic." + (LogMtdRetTypes.containsKey(retTpN) ? LogMtdRetTypes.get(retTpN) : "LogSet"))));
 	    }
-	    return methodDecl.formals(formals).body(nf.Block(null,inits));
+	    return methodDecl.body(nf.Block(null,inits)); // .formals(formals)
 	    				    
 	} else if (r instanceof Block) {
 	    List body = new TypedList(new LinkedList(), Stmt.class, false);
@@ -504,13 +513,15 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    ESJLog2PredMethodDecl methodDecl = (ESJLog2PredMethodDecl) r;
 	    
 	    List formals = new TypedList(new LinkedList(), Formal.class, false);
+
 	    // HACK FIXME
+	    /*
 	    for (Formal f : (List<Formal>) methodDecl.formals()) {
 		TypeNode fTp = f.type(); 
 		String fTpN = fTp.toString();
 		boolean isPrimitive = fTpN.equals("int") || fTpN.equals("java.lang.Integer");
 		formals.add(f.type(isPrimitive ? nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.IntExpression")) : fTp));
-	    }
+		} */
 	    //
 	    List inits = new TypedList(new LinkedList(), Stmt.class, false);
 	    //System.out.println(methodDecl.body().statements());
@@ -548,7 +559,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		String retTpN = methodDecl.returnType().toString();		
 		methodDecl = (ESJLog2PredMethodDecl) methodDecl.returnType(nf.CanonicalTypeNode(null, ts.typeForName(Log2MtdRetTypes.containsKey(retTpN) ? ("kodkod.ast." + Log2MtdRetTypes.get(retTpN)) : "polyglot.ext.esj.tologic.Log2Set")));
 	    }
-	    return methodDecl.formals(formals).body(nf.Block(null,inits));
+	    return methodDecl.body(nf.Block(null,inits)); // .formals(formals)
 	    				    
 	} else if (r instanceof Block) {
 	    List body = new TypedList(new LinkedList(), Stmt.class, false);
@@ -739,7 +750,13 @@ public class ESJJavaTranslator extends ContextVisitor {
 	} else if (r instanceof LocalDecl) {
 	    LocalDecl l = (LocalDecl) r;
 	    return r;
-	} else if (r instanceof Local) {	    	      
+	} else if (r instanceof Local) {
+            // HACK FIXME
+            if (((Expr)r).type().toString().equals("java.lang.Integer")) {
+                List args = new TypedList(new LinkedList(), Expr.class, false);
+                args.add(r);
+                return nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.IntConstant")), "constant", args);
+            } 	    	      
 	    return r;
 	}  else if (r instanceof Special) {
 	    return r;

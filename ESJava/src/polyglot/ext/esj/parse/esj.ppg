@@ -197,6 +197,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    args3.add(isVoid ? nf.NullLit(null) : nf.ClassLit(null, retTp));
 	    args3.add(modifiableFields == null ? nf.NullLit(null) : nf.Local(null,"modifiableFields"));
 	    args3.add(modifiableObjects == null ? nf.NullLit(null) : modifiableObjects);
+	    args3.add(nf.Field(null,nf.This(null), "startMethodTime"));
 	    List l = new TypedList(new LinkedList(), Stmt.class, false);
 	    LocalDecl d2 = nf.LocalDecl(null, fl.classicFlags(), nf.CanonicalTypeNode(null, ts.Boolean()), "isSatisfiable", nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "solve", args3));
 	    l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args)));
@@ -1332,7 +1333,9 @@ ensured_class_declaration ::=
 
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isQuantifyVar", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), Binary.NE, parser.nf.NullLit(null)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isQuantifyVar2", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "var_log2"), Binary.NE, parser.nf.NullLit(null)))), new TypedList(new LinkedList(), TypeNode.class, false)));
-
+		  
+		  // define fallback timer field
+		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Long()),"startMethodTime", null));
 		  // define a isRelationized mtd and isCloned mtd
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Int()),"relationizerStep", parser.nf.IntLit(null, IntLit.INT, 0)));
 		  l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isRelationized", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "relationizerStep"), Binary.EQ, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "relationizerStep", parser.emptyArgs)))), new TypedList(new LinkedList(), TypeNode.class, false)));
@@ -1418,6 +1421,7 @@ ensured_class_declaration ::=
 	      
 	      // define an initEnsuredMethod mtd
 	      List initEM = new TypedList(new LinkedList(), Stmt.class, false);
+	      initEM.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), "startMethodTime"), Assign.ASSIGN, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("java.lang.System")), "currentTimeMillis", parser.emptyArgs))));
 	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "initRelationize", new TypedList(new LinkedList(), Expr.class, false))));
 	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "clone", parser.emptyArgs)));
 	      l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Void()), "initEnsuredMethod", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, initEM), new TypedList(new LinkedList(), TypeNode.class, false)));

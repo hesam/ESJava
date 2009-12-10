@@ -10,7 +10,7 @@ public class BSTree
 
     private static final int INDENT_STEP = 4;
     private static int MAX_SIZE = 0;
-    private static boolean TEST_INSERT = false;
+    private static boolean TEST_INSERT = true;
     private static boolean TEST_DELETE = false;
     private static boolean TEST_BALANCE = false;
 
@@ -35,8 +35,9 @@ public class BSTree
     }
 
     spec public boolean isValidBinarySearch() {
-       all Node n | ((n.left == null  || all Node lc : n.leftSubtree()  | lc.value < n.value) &&
-        	     (n.right == null || all Node rc : n.rightSubtree() | rc.value > n.value))
+	all Node n | ((n.left == null  || all Node lc : n.leftSubtree()  | lc.value < n.value) &&
+		      (n.right == null || all Node rc : n.rightSubtree() | rc.value > n.value))
+
     }
 
     spec public boolean isBinarySearchTree() {
@@ -212,10 +213,11 @@ public class BSTree
     public static void main(String[] args) {
 	//LogMap.SolverOpt_debugLevel(1);
 	//LogMap.SolverOpt_Kodkodi(true);
+	//LogMap.SolverOpt_SymmetryBreaking(20);
 	MAX_SIZE = 10;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 	TEST_DELETE = false;
-	TEST_BALANCE = true;
+	TEST_BALANCE = false;
 	Random rand = new Random(1111L);
 
         BSTree t = new BSTree();
