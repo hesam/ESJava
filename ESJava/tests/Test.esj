@@ -88,9 +88,9 @@ public class Test {
 	System.out.println(t1);
 	//t1.baz();
 	//System.out.println(t1.twice(5));
-	//System.out.println(t1.pick());
+	System.out.println(t1.pick());
 	//t1.foo();
-	t1.blah();
+	//t1.blah();
 	//System.out.println(t1.IntSqrt(10));
 	System.out.println(t1);
     }

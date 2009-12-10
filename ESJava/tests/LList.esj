@@ -100,7 +100,7 @@ public class LList ensures isAcyclic()  {
         LList tb = new LList();
 
 	Random rand = new Random(1111L);
-	int MAX_SIZE = 50;
+	int MAX_SIZE = 20;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 
 

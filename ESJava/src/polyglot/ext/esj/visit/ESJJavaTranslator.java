@@ -475,6 +475,13 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    LocalDecl l = (LocalDecl) r;
 	    return r;
 	} else if (r instanceof Local) {
+            // HACK FIXME
+            if (((Expr)r).type().toString().equals("java.lang.Integer")) {
+                List args = new TypedList(new LinkedList(), Expr.class, false);
+		args.add(r); //nf.StringLit(null, "" + ((IntLit) r).value() ));
+		return nf.JL5New(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogInt")), args, null, new TypedList(new LinkedList(), TypeNode.class, false));
+
+            }
 	    return r;
 	}  else if (r instanceof Special) {
 	    return r;

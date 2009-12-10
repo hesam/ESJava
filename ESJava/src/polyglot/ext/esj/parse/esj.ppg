@@ -1334,8 +1334,6 @@ ensured_class_declaration ::=
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isQuantifyVar", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), Binary.NE, parser.nf.NullLit(null)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		  l.add(parser.nf.JL5MethodDecl(null, fl, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isQuantifyVar2", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null,parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "var_log2"), Binary.NE, parser.nf.NullLit(null)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 		  
-		  // define fallback timer field
-		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Long()),"startMethodTime", null));
 		  // define a isRelationized mtd and isCloned mtd
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Int()),"relationizerStep", parser.nf.IntLit(null, IntLit.INT, 0)));
 		  l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Boolean()), "isRelationized", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.ESJBinary(null, parser.nf.Field(null, parser.nf.This(null), "relationizerStep"), Binary.EQ, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "relationizerStep", parser.emptyArgs)))), new TypedList(new LinkedList(), TypeNode.class, false)));
@@ -1411,6 +1409,9 @@ ensured_class_declaration ::=
 	     	 l.add(cloneMtdDecl);
 	      }
 	      l.add(invariantMtdDecl);
+
+	      // define fallback timer field
+	      l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Long()),"startMethodTime", null));
 
 	      // add a result field
 	      // HACK FIXME
