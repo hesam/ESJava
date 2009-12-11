@@ -1313,6 +1313,7 @@ ensured_class_declaration ::=
 		  argsCB.add(parser.nf.JL5New(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogVar")), args2CB, null, new TypedList(new LinkedList(), TypeNode.class, false)));
 		  argsCB.add(parser.nf.BooleanLit(null, false));		   
 		  cloneBody.add(parser.nf.JL5If(null, parser.nf.Call(null, null, "isCloned", parser.emptyArgs), parser.nf.JL5Return(null,parser.nf.This(null)), null));
+		  cloneBody.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), "clonerStep"), Assign.ASSIGN, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "clonerStep", parser.emptyArgs))));
 		  cloneBody.add(parser.nf.JL5LocalDecl(null, parser.emptyFlags, parser.nf.AmbTypeNode(null, parser.currClassName), "res", parser.nf.JL5New(null, parser.nf.AmbTypeNode(null, parser.currClassName), argsCB, null, new TypedList(new LinkedList(), TypeNode.class, false))));
 		  // add an old field and old_log, isOld mtds
 		  l.add(parser.nf.JL5FieldDecl(null,parser.emptyFlags, parser.nf.AmbTypeNode(null, parser.currClassName) ,"old", null));
@@ -1387,7 +1388,6 @@ ensured_class_declaration ::=
 	      	 List relationizeMtdSubBody = new TypedList(new LinkedList(), Stmt.class, false);
 		 relationizeMtdSubBody.add(parser.nf.Eval(null, parser.nf.Unary(null, Unary.POST_INC, parser.nf.Field(null, parser.nf.This(null), "relationizerStep"))));
 		 //relationizeMtdSubBody.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newAtom", args)));
-		 cloneBody.add(parser.nf.Eval(null, parser.nf.Unary(null, Unary.POST_INC, parser.nf.Field(null, parser.nf.This(null), "clonerStep"))));
 	      	 List relationizeOldMtdBody = new TypedList(new LinkedList(), Stmt.class, false);
 		 //relationizeOldMtdBody.add(parser.nf.Eval(null, parser.nf.Assign(null, parser.nf.Field(null, parser.nf.This(null), "old"), Assign.ASSIGN, parser.nf.Call(null, null, "clone", parser.emptyArgs))));
 		 parser.BuildRelationizeOldAndCloneBody(y, relationizeOldMtdBody, relationizeMtdSubBody, cloneBody);

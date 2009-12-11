@@ -42,25 +42,25 @@ public class LList ensures isAcyclic()  {
 	ensures (this.isSorted() && this.isPermutationOf(this.old())) {
 	//int z = 1/0; // <-- TEST: RUN TIME ERROR INTRODUCED	
 	head = null; //<-- TEST: RUN TIME ERROR INTRODUCED	
-	LLNode n, t, p = head, last = null;
+	LLNode curr, tmp, prev = null, last = null;
 	while (last != head) {
-	    n = head;
-	    while (n.next != last) { // (n != last) <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
-		if (n.value > n.next.value) {
-		    if (n == head)
-			head = n.next;
+	    curr = head;
+	    while (curr.next != last) { // (curr != last) <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
+		if (curr.value > curr.next.value) {
+		    if (curr == head)
+			head = curr.next;
 		    else
-			p.next = n.next;
-		    p = n.next; // p = n; <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
-		    t = n.next.next;
-		    n.next.next = n;
-		    n.next = t;
+			prev.next = curr.next;
+		    prev = curr.next; // prev = curr; <-- TEST: ASSERTION VIOLATION BUG#1 INTRODUCED
+		    tmp = curr.next.next;
+		    curr.next.next = curr;
+		    curr.next = tmp;
 		} else {
-		    p = n;
-		    n = n.next;
+		    prev = curr;
+		    curr = curr.next;
 		}
 	    }
-	    last = n;
+	    last = curr;
 	}
 	System.out.println(this);
     }
@@ -100,9 +100,8 @@ public class LList ensures isAcyclic()  {
         LList tb = new LList();
 
 	Random rand = new Random(1111L);
-	int MAX_SIZE = 20;
+	int MAX_SIZE = 15;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
-
 
 	// create an array of the given size
 	int[] a = new int[MAX_SIZE];
@@ -116,8 +115,8 @@ public class LList ensures isAcyclic()  {
 	    tb.add(temp); //new Integer(temp));
 	    }
 
-	/*
 
+	/*
 	//int [] a = {1,2,3,4,4,5};
 	int [] b = {4,3,2,4,5,1};
 	for(int i=0;i<b.length;i++) {

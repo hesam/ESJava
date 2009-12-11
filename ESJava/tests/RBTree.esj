@@ -26,7 +26,7 @@ public class RBTree
     spec public ESJSet<Integer> nodeValues() { this.nodes().<value }
 
     spec public boolean isRBTree() {
-	isBinarySearchTree() && rootBlack() && redsChildren() && eqBlacks()
+	redsChildren() && eqBlacks() && rootBlack() && isBinarySearchTree()
     }
 
     spec public boolean isBinarySearchTree() {
@@ -68,8 +68,11 @@ public class RBTree
 
     public void insert(Node insertedNode)
 	modifies fields RBTree.root, Node.color, Node.left, Node.right, Node.parent
-    //modifies objects getAffectedNodesOnInsert(insertedNode)
+	modifies objects getAffectedNodesOnInsert(insertedNode)
 	ensures this.nodes().equals(this.old.nodes().plus(insertedNode)) {
+
+	System.out.println("adding " + insertedNode.value);
+
 	// no implementation...
 	if (!TEST_DELETE)
 	    assert nodes().size() != MAX_SIZE - 1;
@@ -85,7 +88,7 @@ public class RBTree
 
     public void delete(Integer value)
 	modifies fields RBTree.root, Node.color, Node.left, Node.right, Node.parent
-    //modifies objects getAffectedNodesOnDelete(value)
+	modifies objects getAffectedNodesOnDelete(value)
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
 	System.out.println("deleting: " + value);
@@ -99,8 +102,9 @@ public class RBTree
 	HashSet<Object> res = new HashSet<Object>();
 	res.add(node);
 	if (root != null) {
-	    Node n = getNewNodeParent(node);
+	    Node n = getNewNodeParentToBe(node);
 	    node.parent = n;
+	    res.add(n);
 	    getAffectedNodesOnInsert1(node, res);
 	}
 	return res;
@@ -198,6 +202,32 @@ public class RBTree
 		    if (insertedNode != null) {
 			n.right = insertedNode;
 		    }
+		    break;
+		} else {
+		    n = n.right;
+		}
+	    }
+	}
+	return n;
+    }
+
+    public Node getNewNodeParentToBe(Node insertedNode) {
+
+	Node n = root;
+	Integer value = insertedNode.value;
+	while (true) {
+	    int compResult = value.compareTo(n.value);
+	    if (compResult == 0) {
+		return n;
+	    } else if (compResult < 0) {
+		if (n.left == null) {
+		    break;
+		} else {
+		    n = n.left;
+		}
+	    } else {
+		assert compResult > 0;
+		if (n.right == null) {
 		    break;
 		} else {
 		    n = n.right;
@@ -449,10 +479,11 @@ public class RBTree
 ////
         
     public static void main(String[] args) {
-	LogMap.SolverOpt_debugLevel(1);
-	MAX_SIZE = 10;
+	//LogMap.SolverOpt_debugLevel(1);
+	//LogMap.SolverOpt_SymmetryBreaking(20);
+	MAX_SIZE = 20;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
-	TEST_DELETE = true;
+	TEST_DELETE = false;
 
 	Random rand = new Random(1111L);
 
@@ -482,6 +513,7 @@ public class RBTree
 		i = 0; // fixme
 	    }
 	}
+
     }
     
 }
