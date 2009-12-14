@@ -30,7 +30,7 @@ public class RBTree
     }
 
     spec public boolean isBinarySearchTree() {
-	isAcyclic() && parentDef() && isValidBinarySearch() 
+	isValidBinarySearch() && parentDef() &&  isAcyclic()
     }
 
     spec public boolean rootBlack() { this.root == null || this.root.color == Color.BLACK }

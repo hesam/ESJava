@@ -674,7 +674,10 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		  return b;
 	    } else if (ensuresExpr instanceof Call) {
 		  Call c = (Call) ensuresExpr;
-		  return  nf.Call(null, castResultVarInEnsuresClause(c.target(),returnType), c.name(), c.arguments());
+		  List args = new TypedList(new LinkedList(), Expr.class, false);
+		  for (Expr e : (List<Expr>) c.arguments())
+		      args.add(castResultVarInEnsuresClause(e,returnType));
+		  return  nf.Call(null, castResultVarInEnsuresClause(c.target(),returnType), c.name(), args);
 	    } else if (ensuresExpr instanceof Field) {
 		  Field c = (Field) ensuresExpr;
 		  return  nf.Field(null, castResultVarInEnsuresClause(c.target(),returnType), c.name());
@@ -682,7 +685,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		  Conditional c = (Conditional) ensuresExpr;
 		  return nf.JL5Conditional(null, c.cond(), castResultVarInEnsuresClause(c.consequent(),returnType), castResultVarInEnsuresClause(c.alternative(),returnType));
 	    } else if (ensuresExpr instanceof AmbExpr) {
-		if (((AmbExpr) ensuresExpr).name().equals("result"))		
+		if (((AmbExpr) ensuresExpr).name().equals("result"))
 		    return nf.JL5Cast(null, returnType, (Expr) ensuresExpr);
 		else
 		    return (Expr) ensuresExpr;
@@ -691,7 +694,12 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		    return nf.JL5Cast(null, returnType, nf.Field(null, nf.This(null), "result"));
 		else
 		    return (Expr) ensuresExpr;
-	    } else {
+	    } /*else if (ensuresExpr instanceof ESJQuantifyExpr) {
+	       	  ESJQuantifyExpr q = (ESJQuantifyExpr) ensuresExpr;
+		  List quantVarD2 = new TypedList(new LinkedList(), JL5LocalDecl.class, false);
+		  getQuantVarDs(q.quantClauseExpr().expr(), quantVarD2);
+		  return nf.ESJQuantifyExpr(null, q.quantKind(), q.quantVarN(), q.quantVarD(), quantVarD2, q.quantListExpr(), castResultVarInEnsuresClause(q.quantClauseExpr().expr(),returnType), q.isComprehension());
+		  } */else {
 		return (Expr) ensuresExpr;
 	    }
      }

@@ -137,10 +137,11 @@ public class GridBag2Constraints implements Cloneable, java.io.Serializable, pol
     public GridBag2Constraints clone() {
         if (isCloned())
             return this;
+        this.clonerStep =
+          polyglot.ext.esj.tologic.LogMap.clonerStep();
         GridBag2Constraints res =
           new GridBag2Constraints(new polyglot.ext.esj.tologic.LogVar(null),
                                   false);
-        this.clonerStep++;
         res.isOld =
           true;
         this.old =
@@ -152,6 +153,8 @@ public class GridBag2Constraints implements Cloneable, java.io.Serializable, pol
         return true;
     }
     
+    long startMethodTime;
+    
     Object result;
     
     public void result(Object r) {
@@ -160,6 +163,8 @@ public class GridBag2Constraints implements Cloneable, java.io.Serializable, pol
     }
     
     void initEnsuredMethod() {
+        this.startMethodTime =
+          System.currentTimeMillis();
         polyglot.ext.esj.tologic.LogMap.initRelationize();
         clone();
     }

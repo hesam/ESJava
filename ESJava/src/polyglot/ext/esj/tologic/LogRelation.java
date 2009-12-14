@@ -167,7 +167,7 @@ public class LogRelation extends Hashtable {
 	    dB = dB.product(LogMap.ProblemBounds.upperBound(listInstVarDomain_log2()));
 
 	TupleSet res = isResultVar ? rB : dB.product(rB);
-	if (modifiableObjects != null)
+	if (modifiableObjects != null && lower != null)
 	    res.addAll(lower);
 	return res;
     }
@@ -214,6 +214,9 @@ public class LogRelation extends Hashtable {
     */
 
     public String lowerBound_log(HashSet<?> modifiableObjects) {
+	// FIXME:
+	if (isResultVar)
+	    return null;
 	LogRelation r = this;
 	boolean filterObjects = false;
 	Set s = r.keySet();
@@ -289,6 +292,9 @@ public class LogRelation extends Hashtable {
     }
 
     public TupleSet lowerBound_log2(HashSet<?> modifiableObjects) {
+	// FIXME:
+	if (isResultVar)
+	    return null;
 	LogRelation r = this;
 	boolean filterObjects = false;
 	Set s = r.keySet();

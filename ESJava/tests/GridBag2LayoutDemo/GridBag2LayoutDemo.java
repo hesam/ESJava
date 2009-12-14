@@ -48,7 +48,7 @@ public class GridBag2LayoutDemo {
 
     //HS
     static boolean fallbackOn;
-    final static int SPEC_GRID = 9; 
+    final static int SPEC_GRID = 1; //9; 
     static { ESJButton.setSpecGrid(SPEC_GRID); }
     //HS END
     

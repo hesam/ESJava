@@ -35,19 +35,23 @@ public class Log2Set extends Log2Object {
     public int listSize() { return listSize; }
     public Class range() { return range; }
 
+    /*
     public IntExpression get_log2(Expression obj) {
 	return obj.join(expression).sum();
+	} */                             
+
+    public Expression get_log2(Expression obj) {
+	return obj.join(expression);
     }                              
 
     public Expression get_log2(IntExpression index) {
 	return index.toExpression().join(expression);
     }                              
 
-    /*
     public Expression get_log2(ESJObject itm) {
 	return itm.var_log2().expression().join(expression);
     }
-    */
+    
 
     public Formula contains_log2(Log2Object itm) {
 	return expression.intersection(itm.expression()).some();
@@ -101,8 +105,13 @@ public class Log2Set extends Log2Object {
 	return new Log2Set(expression.difference(o2.toExpression()));
     }
 
+    /*
     public IntExpression size_log2() {
 	return expression.count();
+	} */                             
+
+    public Expression size_log2() {
+	return expression.count().toExpression();
     }                              
 
     public Log2Set allButLast_log2() {

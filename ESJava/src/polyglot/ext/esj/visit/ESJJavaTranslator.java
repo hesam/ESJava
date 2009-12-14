@@ -56,7 +56,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	LogMtdRetTypes.put("java.lang.Integer","LogInt");
 	// kodkod translation
 	Log2MtdRetTypes.put("boolean","Formula");
-	Log2MtdRetTypes.put("java.lang.Integer","IntExpression");
+	Log2MtdRetTypes.put("java.lang.Integer","Expression"); //"IntExpression");
 
 	// kodkod binaries
 	LogBinaryOps.put(Binary.NE, "eq");
@@ -588,7 +588,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    Expr rtLog = (Expr) toLogicExpr2(b.right());
 	    
 	    // FIXME
-	    //System.out.println("hi2: " + lf + " " + lf.type() + " " + lfLog + " " + rt + " " + rt.type());
+	    //System.out.println("hi2: " + lf + " " + lf.type() + " " + lfLog + " " + rt + " " + rt.type() + " " + rtLog);
 	    /*
  	    if (!(lf instanceof IntLit || lf instanceof Local || lf instanceof ESJBinary || (lfLog instanceof Call && ((Call)lfLog).name().equals("sum"))))
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
@@ -596,15 +596,20 @@ public class ESJJavaTranslator extends ContextVisitor {
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
 	    */
 	    
-
-	    boolean isLfInt = lf.type().toString().equals("java.lang.Integer");
+	    String lfStr = lf.type().toString();
+	    boolean isLfInt = lfStr.equals("java.lang.Integer") || lfStr.equals("int");
 	    if (!(rt.toString().equals("null") && isLfInt)) { //HACK FIXME
+		String rtStr = rt.type().toString();
+		boolean isRtInt = rtStr.equals("java.lang.Integer") || rtStr.equals("int");
+
 		if (lf instanceof Field || lf instanceof Cast || 
-		    (lf instanceof Local && !(isLfInt || (lfLog instanceof Call && ((Call)lfLog).target().toString().equals("kodkod.ast.IntConstant"))))) { // || (lfLog instanceof Call && !((Call)lfLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
+		    (lf instanceof Local && !(isLfInt || (lfLog instanceof Call && ((Call)lfLog).target().toString().equals("kodkod.ast.IntConstant")))) ||
+		    (lf instanceof Call && isLfInt && !((Call) lf).name().equals("abs"))) {
 		    lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
 		}
 		if (rt instanceof Field || rt instanceof Cast || 
-		    (rt instanceof Local && !(rt.type().toString().equals("java.lang.Integer") || (rtLog instanceof Call && ((Call)rtLog).target().toString().equals("kodkod.ast.IntConstant"))))) { // || (rtLog instanceof Call && !((Call)rtLog).name().equals("sum") && !b.operator().equals(Binary.EQ)))
+		    (rt instanceof Local && !(isRtInt || (rtLog instanceof Call && ((Call)rtLog).target().toString().equals("kodkod.ast.IntConstant")))) ||
+		    (rt instanceof Call && isRtInt  && !((Call) rt).name().equals("abs"))) {
 		    rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
 		}
 	    }
@@ -626,15 +631,30 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    // FIXME
 	    //System.out.println("hi: " + lf + " " + lf.type() + rt + " " + rt.type());
 	    /*
- 	    if (!(lf instanceof IntLit || lf instanceof Local || lf instanceof ESJBinary || (lfLog instanceof Call && ((Call)lfLog).name().equals("sum"))))
-		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
-	    if (!(rt instanceof IntLit || rt instanceof Local || rt instanceof ESJBinary || (rtLog instanceof Call && ((Call)rtLog).name().equals("sum"))))
-		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
-	    */
 	    if (lf instanceof Field || lf instanceof Cast)
 		lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
 	    if (rt instanceof Field || rt instanceof Cast)
 		rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+	    */
+	    String lfStr = lf.type().toString();
+	    boolean isLfInt = lfStr.equals("java.lang.Integer") || lfStr.equals("int");
+	    if (!(rt.toString().equals("null") && isLfInt)) { //HACK FIXME
+		String rtStr = rt.type().toString();
+		boolean isRtInt = rtStr.equals("java.lang.Integer") || rtStr.equals("int");
+
+		if (lf instanceof Field || lf instanceof Cast || 
+		    (lf instanceof Local && !(isLfInt || (lfLog instanceof Call && ((Call)lfLog).target().toString().equals("kodkod.ast.IntConstant")))) ||
+		    (lf instanceof Call && isLfInt && !((Call) lf).name().equals("abs"))) {
+		    lfLog = nf.Call(null, lfLog, "sum", emptyArgs);
+		}
+		if (rt instanceof Field || rt instanceof Cast || 
+		    (rt instanceof Local && !(isRtInt || (rtLog instanceof Call && ((Call)rtLog).target().toString().equals("kodkod.ast.IntConstant")))) ||
+		    (rt instanceof Call && isRtInt && !((Call) rt).name().equals("abs"))) {
+		    rtLog = nf.Call(null, rtLog, "sum", emptyArgs);
+		}
+	    }
+
+
 	    args.add(rtLog);
 	    return nf.Call(null, lfLog, b.kodkodOp(), args);
 	} else if (r instanceof Binary) {

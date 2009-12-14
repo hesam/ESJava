@@ -87,7 +87,7 @@ public class Test {
 	Test t1 = new Test(13, 10);
 	System.out.println(t1);
 	//t1.baz();
-	//System.out.println(t1.twice(5));
+	System.out.println(t1.twice(5));
 	System.out.println(t1.pick());
 	//t1.foo();
 	//t1.blah();

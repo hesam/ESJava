@@ -13,10 +13,17 @@ public class LList ensures isAcyclic()  {
     // SPEC METHODS 
 
     spec public ESJSet<LLNode> nodes() { head.*next }
-    //spec public ESJSet<LLNode> allButLast() { { LLNode n : nodes() | n.next != null } }
-    //spec public ESJSet<Integer> values() { nodes().<value }
 
-    spec public ESJSet<LLNode> equalNodes(LLNode m) { 
+    //spec public ESJSet<LLNode> allButLast() { { LLNode n : nodes() | n.next != null } }
+    //spec public ESJSet<Integer> values() { this.nodes().<value }
+
+    
+    /*
+    spec public ESJSet<LLNode> nodesWithValue(Integer i) { 
+	{ LLNode n : nodes() | n.value == i  } 
+	} */   
+
+    spec public ESJSet<LLNode> eqNodes(LLNode m) { 
 	{ LLNode n : nodes() | n.value == m.value  } 
     }    
 
@@ -26,14 +33,16 @@ public class LList ensures isAcyclic()  {
 	    //  some LLNode n : nodes() | n.next == null
     }
 
-    spec public Integer count(LLNode m) { this.equalNodes(m).size() }
+    //spec public Integer occurrencesOf(Integer i) { this.nodesWithValue(i).size() }
+    spec public Integer occurrencesOf(LLNode n) { this.eqNodes(n).size() }
 
     spec public boolean isSorted() {
 	all LLNode n : nodes() | (n.next == null || n.value <= n.next.value)
     }
 
     spec public boolean isPermutationOf(LList l) {
-	all LLNode n | count(n) == l.count(n)
+	//all LLNode n | occurrencesOf(n.value) == l.occurrencesOf(n.value)
+	all LLNode n | occurrencesOf(n) == l.occurrencesOf(n)
     }
 
     // ENSURED METHODS    
@@ -100,7 +109,7 @@ public class LList ensures isAcyclic()  {
         LList tb = new LList();
 
 	Random rand = new Random(1111L);
-	int MAX_SIZE = 15;
+	int MAX_SIZE = 10;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 
 	// create an array of the given size

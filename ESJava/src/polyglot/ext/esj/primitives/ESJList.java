@@ -104,16 +104,16 @@ public class ESJList<E> extends ArrayList<E> {
 	return new LogIntAtom(LogObject.join_log(index.var_log().intValue_log().string(),rel_log.id()));
     }                              
 
-    public IntExpression get_log2(ESJObject index) {
-	return index.var_log2().expression().join(rel_log.kodkodRel()).sum();
+    public Expression get_log2(ESJObject index) {
+	return index.var_log2().expression().join(rel_log.kodkodRel());
     }                              
 
-    public IntExpression get_log2(IntExpression index) {
-	return index.toExpression().join(rel_log.kodkodRel()).sum();
+    public Expression get_log2(IntExpression index) {
+	return index.toExpression().join(rel_log.kodkodRel());
     }                              
 
-    public IntExpression get_log2(Log2IntAtom index) {
-	return index.sum().toExpression().join(rel_log.kodkodRel()).sum();
+    public Expression get_log2(Log2IntAtom index) {
+	return index.sum().toExpression().join(rel_log.kodkodRel());
     }                              
 
 
@@ -125,9 +125,13 @@ public class ESJList<E> extends ArrayList<E> {
 	return new LogInt("#(" + rel_log.id() + "." + itm.var_log().string() + ")");
     }
 
+    /*
     public IntExpression count_log2(ESJObject itm) {
-	//String id = rel_log.id(); //marks problem involved
 	return rel_log.kodkodRel().join(itm.var_log2().expression()).count();
+	}*/
+
+    public Expression count_log2(ESJObject itm) {
+	return rel_log.kodkodRel().join(itm.var_log2().expression()).count().toExpression();
     }
 
     public LogInt size_log() {
@@ -168,6 +172,8 @@ public class ESJList<E> extends ArrayList<E> {
     public int count(E e) { int ct = 0;
                                  for (int i = 0; i < size(); i++) if (e.equals(get(i))) ct++;
                                  return ct; }
+
+    public int sum() { int s = 0; for (int i = 0; i < size(); i++) s += (Integer) get(i); return s; }
     
     public static void main(String[] args) { ESJList<Integer> ta = new ESJList<Integer>();
                                              int[] a = { 1, 2, 3, 4, 4, 5 };

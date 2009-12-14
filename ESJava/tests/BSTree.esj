@@ -58,13 +58,16 @@ public class BSTree
 
     public void insert(Integer value) {
         Node insertedNode = new Node(value, null, null);
-	insert(insertedNode);
+	//insert(insertedNode);
+	insert(insertedNode, value);
     }
 
-    public void insert(Node node)
+    //public void insert(Integer value)
+    public void insert(Node node, Integer value)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-	modifies objects getNewNodeParentToBe(node)
-	ensures this.nodes().equals(this.old.nodes().plus(node)) {	
+	    //modifies objects getNewNodeParentToBe(node)
+	    //ensures this.nodes().equals(this.old.nodes().plus(node)) {
+	ensures this.nodeValues().equals(this.old.nodeValues().plus(value)) {
 	// no implementation...
 	if (TEST_INSERT)
 	    assert nodes().size() != MAX_SIZE - 1;
@@ -215,7 +218,7 @@ public class BSTree
 	//LogMap.SolverOpt_Kodkodi(true);
 	//LogMap.SolverOpt_SymmetryBreaking(20);
 
-	MAX_SIZE = 30;
+	MAX_SIZE = 10;
 	ESJInteger.setBounds(0,MAX_SIZE-1);
 	TEST_DELETE = false;
 	TEST_BALANCE = false;

@@ -550,6 +550,9 @@ public class LogMap {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
 	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
+	    if (SolverOpt_debug2)
+		System.out.println("rel " + r.getId() + " " + r.instVar() + " " + r.isUnknown() + " " + isModifiableRelation);
+	    
 	    String rBound = (!r.isUnknown() || isModifiableRelation) ? r.log(isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType) : instVarRelOld_log(r).log(null, null);
 	    problem.append("bounds " + k + ": " + rBound + spacer);
 	    if (isUnknown) {
@@ -626,6 +629,9 @@ public class LogMap {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
 	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
+	    if (SolverOpt_debug2)
+		System.out.println("rel " + r.getId() + " " + r.instVar() + " " + r.isUnknown() + " " + isModifiableRelation);
+
 	    if (!r.isUnknown() || isModifiableRelation)
 		r.log2(r.getKodkodRel(), isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType);
 	    else 
