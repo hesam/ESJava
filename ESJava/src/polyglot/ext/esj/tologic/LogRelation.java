@@ -147,14 +147,16 @@ public class LogRelation extends Hashtable {
 	return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
     }
 
-    public TupleSet fullDomainRange_log2(Class resultVarType, HashSet<?> modifiableObjects, TupleSet lower) {
+    public TupleSet fullDomainRange_log2(Class resultVarType, HashSet<?> modifiableObjects, TupleSet lower, boolean fromOld) {
 	TupleSet dB;
-	if (modifiableObjects == null) {
+	if (fromOld) {
+	    dB = LogMap.tupleSetNewInstBounds_log2(domain);
+	    System.out.println("yep" + dB);
+	} else if (modifiableObjects == null) {
 	    Relation d = domain_log2();
 	    dB = LogMap.ProblemBounds.upperBound(d);
 	} else
 	    dB = LogMap.tupleSetBounds_log2(domain, false, modifiableObjects);
-
 	boolean addNull = !(isRangeEnum || range == Integer.class);
 	TupleSet rB;
 	if (addNull)
@@ -167,7 +169,7 @@ public class LogRelation extends Hashtable {
 	    dB = dB.product(LogMap.ProblemBounds.upperBound(listInstVarDomain_log2()));
 
 	TupleSet res = isResultVar ? rB : dB.product(rB);
-	if (modifiableObjects != null && lower != null)
+	if ((fromOld || modifiableObjects != null) && lower != null)
 	    res.addAll(lower);
 	return res;
     }
@@ -357,10 +359,14 @@ public class LogRelation extends Hashtable {
 	return lower;
     }
 
-    public void log2(Relation kodkodRel, HashSet<?> modifiableObjects, Class resultVarType) {
-	TupleSet lower = lowerBound_log2(modifiableObjects);
-	if (isUnknown()) {
-	    TupleSet upper = fullDomainRange_log2(resultVarType, modifiableObjects, lower);
+    public void log2(Relation kodkodRel, HashSet<?> modifiableObjects, Class resultVarType, LogRelation myOld) {
+	boolean fromOld = myOld != null; 
+	TupleSet lower = fromOld ? myOld.lowerBound_log2(null) : 
+	    lowerBound_log2(modifiableObjects);
+	if (!isUnknown() || (fromOld && !LogMap.ClassNewInstAtoms.containsKey(domain))) {
+	    LogMap.ProblemBounds.boundExactly(kodkodRel, lower);
+	} else {
+	    TupleSet upper = fullDomainRange_log2(resultVarType, modifiableObjects, lower, fromOld);
 	    if (isaCollectionInstVar) {
 		Relation i = LogMap.bounds_log2(indexingDomain, false);
 		TupleSet iB = LogMap.ProblemBounds.upperBound(i);
@@ -375,9 +381,8 @@ public class LogRelation extends Hashtable {
 		LogMap.ProblemBounds.bound(kodkodRel, upper);
 	    else
 		LogMap.ProblemBounds.bound(kodkodRel, lower, upper);
-	} else {
-	    LogMap.ProblemBounds.boundExactly(kodkodRel, lower);
-	}
+	    LogMap.addAsFunDef2(this, funDef_log2());
+	} 
     }
 
     public String funDef_log() {

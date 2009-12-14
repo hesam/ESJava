@@ -66,9 +66,8 @@ public class Node
         return parent.sibling();
     }
 
-
+    // NOTE:
     public boolean equals(Object n) { return n instanceof Node &&  value == ((Node)n).value; }
-
     public int hashCode() { return value; }
 
     public String toString() { 

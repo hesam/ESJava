@@ -250,6 +250,7 @@ SingleCharacter = [^\r\n\'\\]
   "ensures"                      { return key(sym.ENSURES); }
   "modifies fields"              { return key(sym.MODIFIESFIELDS); }
   "modifies objects"             { return key(sym.MODIFIESOBJECTS); }
+  "adds"                         { return key(sym.ADDS); }
   "pure"                         { return key(sym.PURE); }
   "all"                          { return key(sym.ALL); }
   "some"                         { return key(sym.SOME); }

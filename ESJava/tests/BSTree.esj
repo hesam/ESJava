@@ -56,47 +56,50 @@ public class BSTree
 	ensures this.nodes().equals(this.old.nodes()) && isBalanced() {
     }
 
+    /*
     public void insert(Integer value) {
         Node insertedNode = new Node(value, null, null);
 	//insert(insertedNode);
 	insert(insertedNode, value);
-    }
+	}*/
 
-    //public void insert(Integer value)
-    public void insert(Node node, Integer value)
+    public void insert(Integer value)
+    //public void insert(Node node, Integer value)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-	    //modifies objects getNewNodeParentToBe(node)
+    //modifies objects getNewNodeParentToBe(value) //node)
+	adds 1 Node
 	    //ensures this.nodes().equals(this.old.nodes().plus(node)) {
 	ensures this.nodeValues().equals(this.old.nodeValues().plus(value)) {
 	// no implementation...
+
 	if (TEST_INSERT)
 	    assert nodes().size() != MAX_SIZE - 1;
 
+        Node node = new Node(value, null, null);
 	if (root == null) {
 	    root = node;
 	} else {
 	    Node n = getNewNodeParent(node);
 	    node.parent = n;
 	}
-
     }    
 
     public void delete(Integer value)
 	modifies fields BSTree.root, Node.left, Node.right, Node.parent
-	modifies objects getParentAndChildren(value)
+    //modifies objects getParentAndChildren(value)
 	ensures this.nodeValues().equals(this.old.nodeValues().minus(value)) {
 	// no implementation...
     }
 
-    public HashSet<Object> getNewNodeParentToBe(Node node) {
+    public HashSet<Object> getNewNodeParentToBe(Integer value) { //Node node) {
 	HashSet<Object> res = new HashSet<Object>();
-	res.add(node);
+	//res.add(node);
 	if (root == null) {
 	    res.add(this);
 	    return res;
 	}	    
 	Node n = root;
-	Integer value = node.value;
+	//Integer value = node.value;
 	while (true) {
 	    int compResult = value.compareTo(n.value);
 	    if (compResult == 0) {
@@ -214,7 +217,7 @@ public class BSTree
     ///
         
     public static void main(String[] args) {
-	//LogMap.SolverOpt_debugLevel(1);
+	LogMap.SolverOpt_debugLevel(1);
 	//LogMap.SolverOpt_Kodkodi(true);
 	//LogMap.SolverOpt_SymmetryBreaking(20);
 

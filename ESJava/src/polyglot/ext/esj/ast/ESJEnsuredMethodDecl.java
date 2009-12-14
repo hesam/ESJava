@@ -16,5 +16,6 @@ public interface ESJEnsuredMethodDecl extends JL5MethodDecl {
     public boolean ensuresExprHasOld();
     public List modifiableFields();
     public Expr modifiableObjects();
+    public List addedObjects();
 }
 

@@ -9,6 +9,7 @@ import polyglot.ext.esj.ast.*;
 import polyglot.ext.jl5.ast.*;
 import polyglot.ext.jl5.parse.*;
 
+
 parser Grm extends polyglot.ext.jl5.parse.Grm {:
     public final ESJTypeSystem ts;
     public final ESJNodeFactory nf;
@@ -159,26 +160,27 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
      }
 
      public ESJEnsuredMethodDecl makeESJEnsuredMethodDecl(Position pos, FlagAnnotations flags,
-				  TypeNode returnType, String name,
-				  List formals, List throwTypes, Block body, 
-				  List paramTypes, Expr ensuresExpr, List modifiableFields,
-				  Expr modifiableObjects) throws Exception {
-	    FlagAnnotations fl = emptyFlags;
-	    TypeNode cftn = this.nf.CanonicalTypeNode(null, this.ts.Throwable());
-	    JL5Formal catchFormal = this.nf.JL5Formal(null, fl, cftn, "rte");
-	    FlagAnnotations fln = new FlagAnnotations();
-	    JL5LocalDecl resultVar = nf.JL5LocalDecl(null, makeFlagAnnotations(), returnType, "result", null);
-	    // if pure is set, modifiableFields is empty list:
-	    if (flags.classicFlags().contains(this.ts.Pure())) {
-		modifiableFields = new TypedList(new LinkedList(), Name.class, false);
-		fln.classicFlags(flags.classicFlags().clear(this.ts.Pure()));
-	    } else 
-		fln.classicFlags(flags.classicFlags());
-	    fln.annotations(flags.annotations());
-       	    return this.nf.ESJEnsuredMethodDecl(pos, fln, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal, resultVar, modifiableFields, modifiableObjects); 
+							  TypeNode returnType, String name,
+							  List formals, List throwTypes, 
+							  Block body, List paramTypes, 
+							  Expr ensuresExpr, List modifiableFields,
+							  Expr modifiableObjects, List addedObjects) throws Exception {
+	 FlagAnnotations fl = emptyFlags;
+	 TypeNode cftn = this.nf.CanonicalTypeNode(null, this.ts.Throwable());
+	 JL5Formal catchFormal = this.nf.JL5Formal(null, fl, cftn, "rte");
+	 FlagAnnotations fln = new FlagAnnotations();
+	 JL5LocalDecl resultVar = nf.JL5LocalDecl(null, makeFlagAnnotations(), returnType, "result", null);
+	 // if pure is set, modifiableFields is empty list:
+	 if (flags.classicFlags().contains(this.ts.Pure())) {
+	     modifiableFields = new TypedList(new LinkedList(), Name.class, false);
+	     fln.classicFlags(flags.classicFlags().clear(this.ts.Pure()));
+	 } else 
+	     fln.classicFlags(flags.classicFlags());
+	 fln.annotations(flags.annotations());
+	 return this.nf.ESJEnsuredMethodDecl(pos, fln, returnType, name, formals, throwTypes, body, paramTypes, ensuresExpr, catchFormal, resultVar, modifiableFields, modifiableObjects, addedObjects); 
      }    
-
-     public List makeFallbackMtd(ESJEnsuredMethodDecl methodDecl, List modifiableFields, Expr modifiableObjects) throws Exception {
+     
+     public List makeFallbackMtd(ESJEnsuredMethodDecl methodDecl, List modifiableFields, Expr modifiableObjects, List addedObjects) throws Exception {
             List newL = new TypedList(new LinkedList(), ClassMember.class, false);
 	    TypeNode retTp = methodDecl.returnType();
 	    String retTpN = retTp.toString();
@@ -207,6 +209,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    gt.add(nf.CanonicalTypeNode(null, ts.String()));
 	    AmbTypeNode tn = nf.AmbTypeNode(null, "java.util.HashMap");
 	    AmbTypeNode atn = nf.JL5AmbTypeNode(null, ((AmbTypeNode)tn).qual(), ((AmbTypeNode)tn).name(), gt);
+
 	    int lCtr = 0;
 	    if (modifiableFields != null) {
 		lCtr++;
@@ -219,6 +222,35 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 		    l.add(nf.Eval(null, nf.Call(null, nf.Local(null,"modifiableFields"), "put", as)));
 		}
 	    }
+	    List gt2 = new TypedList(new LinkedList(), TypeNode.class, false);
+	    gt2.add(nf.CanonicalTypeNode(null, ts.Class()));
+	    gt2.add(nf.CanonicalTypeNode(null, ts.typeForName("java.lang.Integer")));
+	    AmbTypeNode atn2 = nf.JL5AmbTypeNode(null, ((AmbTypeNode)tn).qual(), ((AmbTypeNode)tn).name(), gt2);
+	    if (addedObjects != null) {
+		lCtr++;
+		l.add(nf.LocalDecl(null, fl.classicFlags(), atn2, "newInstances", nf.JL5New(null, atn2, new TypedList(new LinkedList(), Expr.class, false), null, new TypedList(new LinkedList(), TypeNode.class, false))));
+		for(int kk=0; kk < addedObjects.size(); kk += 2) {
+		    List as = new TypedList(new LinkedList(), Expr.class, false);
+		    as.add(nf.ClassLit(null, nf.AmbTypeNode(null, ((Name) addedObjects.get(kk)).toString())));
+		    as.add(nf.IntLit(null, IntLit.INT, Integer.parseInt(((Name) addedObjects.get(kk+1)).toString())));
+		    lCtr++;
+		    l.add(nf.Eval(null, nf.Call(null, nf.Local(null,"newInstances"), "put", as)));
+		}
+	    }
+
+	    List args5 = new TypedList(new LinkedList(), Expr.class, false);
+	    args5.add(addedObjects == null ? nf.NullLit(null) : nf.Local(null,"newInstances"));
+	    l.add(nf.Eval(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "ObjToAtomMap", args5)));
+	    l.add(nf.Eval(null, nf.Call(null, nf.Field(null, nf.This(null), "old"), "relationize", emptyArgs)));
+	    lCtr+=2;
+	    for (Formal f : (List<Formal>) methodDecl.formals()) {
+		if (!(((AmbTypeNode) f.type()).name().equals("Integer"))) { //f.type().type().isReference() && !f.type().toString().equals("java.lang.Integer")) { //HACK FIXME		
+		    l.add(nf.Eval(null, nf.Call(null, nf.Field(null, nf.Local(null,f.name()), "old"), "relationize", emptyArgs)));
+		    lCtr++;
+		}
+	    }
+
+
 	    l.add(d1);
 	    l.add(d2);
 	    l.add(nf.JL5Assert(null, nf.Local(null,"isSatisfiable"), nf.StringLit(null, "Formula UNSAT! Recovery failed...")));
@@ -277,6 +309,29 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    l.add(nf.Return(null, newExpr));
 	    return nf.Block(null, l); 
      }    
+
+     public void BuildLogOpsMethods(List l, FlagAnnotations fl1) throws SemanticException {
+	 TypeNode logFormulaTN = nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula"));  
+	 TypeNode logFormulaTN2 = nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.Formula"));  
+	 List frms = new TypedList(new LinkedList(), Formal.class, false);
+	 frms.add(nf.JL5Formal(null, emptyFlags, nf.CanonicalTypeNode(null, ts.String()), "kodkodiOp"));
+	 frms.add(nf.JL5Formal(null, emptyFlags, nf.CanonicalTypeNode(null, ts.String()), "kodkodOp"));
+	 frms.add(nf.JL5Formal(null, emptyFlags, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.primitives.ESJObject")), "o2"));
+	 List lfArgs = new TypedList(new LinkedList(), Expr.class, false);
+	 lfArgs.add(nf.Call(null, nf.Field(null, nf.This(null), "var_log"), "string", emptyArgs));
+	 lfArgs.add(nf.Local(null,"kodkodiOp"));
+	 lfArgs.add(nf.Local(null,"kodkodOp"));
+	 lfArgs.add(nf.Call(null, nf.Call(null, nf.Local(null,"o2"), "var_log", emptyArgs), "string", emptyArgs));
+	 l.add(nf.JL5MethodDecl(null, fl1, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), nf.Block(null, nf.JL5Return(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));		 frms.set(2,nf.JL5Formal(null, emptyFlags, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogObject")), "o2"));
+	 lfArgs.set(3,nf.Call(null, nf.Local(null,"o2"), "string", emptyArgs));
+	 l.add(nf.JL5MethodDecl(null, fl1, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), nf.Block(null, nf.JL5Return(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
+	 List args4 = new TypedList(new LinkedList(), Expr.class, false);
+	 args4.add(nf.This(null));
+	 Expr sumE1 = nf.Call(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "objToSingletonRelation_log2", args4), "sum", emptyArgs);
+	 Expr sumE2 = nf.Call(null, nf.Field(null, nf.This(null), "var_log2"), "expression", emptyArgs);
+	 Expr sumCondE = nf.JL5Conditional(null, nf.ESJBinary(null, nf.Field(null, nf.This(null), "var_log2"), Binary.EQ, nf.NullLit(null)), sumE1, sumE2); 
+	 l.add(nf.JL5MethodDecl(null, fl1,  nf.CanonicalTypeNode(null, ts.typeForName("kodkod.ast.Expression")), "sum", emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), nf.Block(null, nf.JL5Return(null, sumCondE)), new TypedList(new LinkedList(), TypeNode.class, false)));	 
+     }
 
      public void BuildRelationizeOldAndCloneBody(List y, List relationizeOldMtdBody, List relationizeMtdSubBody, List cloneBody) throws SemanticException {
 	 for (Node n : (List<Node>) y) {
@@ -759,6 +814,7 @@ terminal Token SPEC;
 terminal Token ENSURES;
 terminal Token ENSURED;
 terminal Token PURE;
+terminal Token ADDS;
 terminal Token MODIFIESFIELDS;
 terminal Token MODIFIESOBJECTS;
 terminal Token SOME;
@@ -777,7 +833,7 @@ non terminal Return fn_statement;
 non terminal Expr quantify_expression, comprehension_expression, quant_list_expr, ensures_opt, ensures_clause;
 non terminal FormulaBinary.Operator quant_kind;
 non terminal FormulaBinary.Operator closure_kind;
-non terminal List fields_closure, fields_closure_multi, identifiers_union, modifies_fields_opt, modifiableFields, modifiableFields_list;
+non terminal List fields_closure, fields_closure_multi, identifiers_union, modifies_fields_opt, modifiableFields, modifiableFields_list, adds_opt, addedObjects, addedObjects_list;
 non terminal Expr modifies_objects_opt, modifiableObjects;
 non terminal ESJEnsuredClassDecl ensured_class_declaration;
 non terminal Expr predicate_expr, conditional_predicate_expr;
@@ -1181,26 +1237,26 @@ ensured_method_declaration ::=
 	   {: ESJEnsuredMethodDecl mainMtdDecl = (ESJEnsuredMethodDecl) a.body(b);
               List l = new TypedList(new LinkedList(), ClassMember.class, false);
 	      l.add(mainMtdDecl);
-	      l.addAll(parser.makeFallbackMtd(mainMtdDecl, mainMtdDecl.modifiableFields(), mainMtdDecl.modifiableObjects()));
+	    l.addAll(parser.makeFallbackMtd(mainMtdDecl, mainMtdDecl.modifiableFields(), mainMtdDecl.modifiableObjects(), mainMtdDecl.addedObjects()));
               RESULT = l; 
 	   :}
 	   ;
 
 ensured_method_header ::=
-        modifiers_or_annotations_opt:a type:b method_declarator:c throws_opt:d modifies_fields_opt:y modifies_objects_opt:x ensures_clause:z 
+    modifiers_or_annotations_opt:a type:b method_declarator:c throws_opt:d modifies_fields_opt:y modifies_objects_opt:x adds_opt:w ensures_clause:z 
            {: 
-	    RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, b, c.name(), c.formals(), d, null, new TypedList(new LinkedList(), TypeNode.class, false), parser.castResultVarInEnsuresClause(z,b), y, x); 
+	    RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, b, c.name(), c.formals(), d, null, new TypedList(new LinkedList(), TypeNode.class, false), parser.castResultVarInEnsuresClause(z,b), y, x, w); 
            :}
- |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c type:d method_declarator:e throws_opt:f modifies_fields_opt:y modifies_objects_opt:x ensures_clause:z 
+ |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c type:d method_declarator:e throws_opt:f modifies_fields_opt:y modifies_objects_opt:x adds_opt:w ensures_clause:z 
            {: 
-	       RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, d, e.name(), e.formals(), f, null, c, parser.castResultVarInEnsuresClause(z,d), y, x); 
+	       RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, d, e.name(), e.formals(), f, null, c, parser.castResultVarInEnsuresClause(z,d), y, x, w); 
 	   :}
- |  modifiers_or_annotations_opt:a VOID:b method_declarator:c throws_opt:e modifies_fields_opt:y modifies_objects_opt:x ensures_clause:z 
+ |  modifiers_or_annotations_opt:a VOID:b method_declarator:c throws_opt:e modifies_fields_opt:y modifies_objects_opt:x adds_opt:w ensures_clause:z 
            {: 
-	       RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, parser.nf.CanonicalTypeNode(parser.pos(b), parser.ts.Void()), c.name(), c.formals(), e, null, new TypedList(new LinkedList(), TypeNode.class, false), z, y, x); 
+	       RESULT = parser.makeESJEnsuredMethodDecl(c.position(), a, parser.nf.CanonicalTypeNode(parser.pos(b), parser.ts.Void()), c.name(), c.formals(), e, null, new TypedList(new LinkedList(), TypeNode.class, false), z, y, x, w); 
            :}
- |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c VOID:d method_declarator:e throws_opt:f modifies_fields_opt:y modifies_objects_opt:x ensures_clause:z 
- {:                                                                                                  RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, parser.nf.CanonicalTypeNode(parser.pos(d), parser.ts.Void()), e.name(), e.formals(), f, null, c, z, y, x); 
+ |  modifiers_or_annotations_opt:a LT:b type_parameter_list_1:c VOID:d method_declarator:e throws_opt:f modifies_fields_opt:y modifies_objects_opt:x adds_opt:w ensures_clause:z 
+ {:                                                                                                  RESULT = parser.makeESJEnsuredMethodDecl(e.position(), a, parser.nf.CanonicalTypeNode(parser.pos(d), parser.ts.Void()), e.name(), e.formals(), f, null, c, z, y, x, w); 
            :};
 
 ensures_opt ::=
@@ -1253,6 +1309,34 @@ modifies_objects_opt ::=
      |  modifiableObjects:a 
            {:  
 	      RESULT = a;  
+	   :};
+
+adds_opt ::=
+           {:
+	      RESULT = null;
+           :}
+     |  addedObjects:a 
+           {:  
+	      RESULT = a;  
+	   :};
+
+addedObjects ::=
+        ADDS addedObjects_list:a 
+           {:  
+              RESULT = a;  
+	   :};
+
+addedObjects_list ::=
+    INTEGER_LITERAL:n name:a 
+           {: List l = new TypedList(new LinkedList(), Name.class, false);
+	      l.add(a);
+	      l.add(new JL5Name(parser, null,n.getValue()+""));
+	      RESULT = l; 
+	   :}
+      |  addedObjects_list:a COMMA INTEGER_LITERAL:n name:b 
+           {: RESULT = a;
+	      a.add(b); 
+	      a.add(new JL5Name(parser, null,n.getValue()+""));
 	   :};
 
 // PART3:      ESJClassInvariantDecl
@@ -1374,22 +1458,8 @@ ensured_class_declaration ::=
 		 l.add(parser.nf.JL5MethodDecl(null, parser.makeFlagAnnotations(fs2), log2SetTN, "allInstances_log2", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null,parser.nf.JL5Return(null, parser.nf.JL5New(null, log2SetTN, args3, null, new TypedList(new LinkedList(), TypeNode.class, false)))), new TypedList(new LinkedList(), TypeNode.class, false)));
 
 		 // define LogObject general log methods (cmpOp, etc.)
-		 TypeNode logFormulaTN = parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula"));  
-		 TypeNode logFormulaTN2 = parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("kodkod.ast.Formula"));  
-		 List frms = new TypedList(new LinkedList(), Formal.class, false);
-		 frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.String()), "kodkodiOp"));
-		 frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.String()), "kodkodOp"));
-		 frms.add(parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.primitives.ESJObject")), "o2"));
-		 List lfArgs = new TypedList(new LinkedList(), Expr.class, false);
-		 lfArgs.add(parser.nf.Call(null, parser.nf.Field(null, parser.nf.This(null), "var_log"), "string", parser.emptyArgs));
-		 lfArgs.add(parser.nf.Local(null,"kodkodiOp"));
-		 lfArgs.add(parser.nf.Local(null,"kodkodOp"));
-		 lfArgs.add(parser.nf.Call(null, parser.nf.Call(null, parser.nf.Local(null,"o2"), "var_log", parser.emptyArgs), "string", parser.emptyArgs));
-		 l.add(parser.nf.JL5MethodDecl(null, fl1, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));		 frms.set(2,parser.nf.JL5Formal(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogObject")), "o2"));
-		 lfArgs.set(3,parser.nf.Call(null, parser.nf.Local(null,"o2"), "string", parser.emptyArgs));
-		 l.add(parser.nf.JL5MethodDecl(null, fl1, logFormulaTN, "cmpOp", frms, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogFormula")), "binaryOp", lfArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
-		 l.add(parser.nf.JL5MethodDecl(null, fl1,  parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("kodkod.ast.Expression")), "sum", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, parser.nf.JL5Return(null, parser.nf.Call(null, parser.nf.Field(null, parser.nf.This(null), "var_log2"), "expression", parser.emptyArgs))), new TypedList(new LinkedList(), TypeNode.class, false)));
-		 				 
+		 parser.BuildLogOpsMethods(l, fl1);
+
 	      	 // define relationize() and relationizeOld() and clone()...
 	      	 List args = new TypedList(new LinkedList(), Expr.class, false);
 	      	 args.add(parser.nf.This(null));

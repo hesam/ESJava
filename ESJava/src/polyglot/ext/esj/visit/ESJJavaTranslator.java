@@ -126,6 +126,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 	List catchBody = new TypedList(new LinkedList(), Stmt.class, false);
 	catchBody.add(nf.Eval(null, nf.Call(null, nf.Local(null,"rte"), "printStackTrace",
 					      new TypedList(new LinkedList(), Expr.class, false))));
+	/*
 	catchBody.add(nf.Eval(null, nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "ObjToAtomMap", emptyArgs)));
 	catchBody.add(nf.Eval(null, nf.Call(null, nf.Field(null, nf.This(null), "old"), "relationize", emptyArgs)));
 	for (Formal f : (List<Formal>) methodDecl.formals()) {
@@ -133,7 +134,7 @@ public class ESJJavaTranslator extends ContextVisitor {
 		catchBody.add(nf.Eval(null, nf.Call(null, nf.Field(null, nf.Local(null,f.name()), "old"), "relationize", emptyArgs)));
 	    }
 	}
-
+	*/
 
 	List args1 = new TypedList(new LinkedList(), Expr.class, false);
 	List args2 = new TypedList(new LinkedList(), Expr.class, false);

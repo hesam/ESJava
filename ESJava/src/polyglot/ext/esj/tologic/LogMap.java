@@ -55,7 +55,9 @@ public class LogMap {
     static HashMap JtoLog; // = new HashMap(); // Java Objs to Solver Atoms
     static HashMap JtoLog2; // = new HashMap(); // Java Objs to Kodkod (singleton) relations
     static HashMap LogtoJ; // = new HashMap(); 
-    static HashMap ProblemRels; // Holds relations for given problem  
+    static HashMap ProblemRels; // Holds relations for given problem
+    static Formula ProblemFunDefs2;
+    static ArrayList ProblemUnknowns;
     static HashMap<Object,Relation> ClassRels; // Holds kodkod relations for each class
     static ArrayList<Integer> ProblemAtoms; // = new HashSet(); // kodkod atoms
     static Bounds ProblemBounds; // kodkod bounds
@@ -63,6 +65,7 @@ public class LogMap {
     static HashMap InstVarRels = new HashMap(); // Holds inst var relations for each class
     static HashMap InstVarRels2 = new HashMap(); // Holds inst var Kodkod relations for each class
     static HashMap ClassAtoms = new HashMap(); // Holds atoms for each class
+    static HashMap ClassNewInstAtoms = new HashMap(); // Holds atoms for new instances for each class
     static HashMap ClassConstrs = new HashMap(); // Holds class constr for each class
     static HashMap Enums = new HashMap(); // Holds enums
     //static HashMap EnumAtoms = new HashMap(); // Holds atoms for enums
@@ -116,7 +119,7 @@ public class LogMap {
     public static Bounds ProblemBounds() { return ProblemBounds; }
     public static HashMap<Object,Relation> ClassRels() { return ClassRels; }
     public static HashMap ClassAtoms() { return ClassAtoms; }
-
+    public static HashMap ClassNewInstAtoms() { return ClassNewInstAtoms; }
     public static void resetMaps() {
 	JtoLog = new HashMap();
 	LogtoJ = new HashMap();
@@ -140,7 +143,7 @@ public class LogMap {
     }
 
 
-    public static void ObjToAtomMap() {
+    public static void ObjToAtomMap(HashMap<Class,Integer> newInstances) {
 
 	if (SolverOpt_debug1)
 	    System.out.println("classes: " + ClassAtoms);
@@ -155,7 +158,13 @@ public class LogMap {
 		    r.clear();
 
 	    ClassAtoms.put(c, new ArrayList());
-	    newAtoms(c, isEnum);
+	    boolean newObjsAllowed = newInstances != null && newInstances.containsKey(c);
+	    if (newObjsAllowed)
+		ClassNewInstAtoms.put(c, new ArrayList());
+	    if (SolverOpt_debug1 && newObjsAllowed)
+		System.out.println(c + " can instantiate " + newInstances.get(c) + " new obj.");
+
+	    newAtoms(c, isEnum, newObjsAllowed ? newInstances.get(c) : 0);
 	}
 	if (SolverOpt_debug1)
 	    System.out.println(" JtoLog --> " + JtoLog);
@@ -175,7 +184,7 @@ public class LogMap {
 	    System.out.println(ClassRels);
     }
 
-    public static void newAtoms(Class c, boolean isEnum) { // FIXME?
+    public static void newAtoms(Class c, boolean isEnum, int newInstances) { // FIXME?
 	if (SolverOpt_debug1)
 	    System.out.println("initing class: " + c + " (ctr=" + AtomCtr+")" + "\n");
 
@@ -203,6 +212,18 @@ public class LogMap {
 			LogMap.put1(o.old(),AtomCtr);
 		}
 		AtomCtr++;
+	    }
+
+	    int i = newInstances;
+	    if (i > 0) {
+		ArrayList classNIAs = (ArrayList) ClassNewInstAtoms.get(c);
+		while (i-- > 0) {
+		    int a = AtomCtr++;
+		    ProblemAtoms.add(a);
+		    classAs.add(a);
+		    classNIAs.add(a);
+		    LogtoJ.put(a,c);
+		}
 	    }
 
 	} catch (Exception e) { e.printStackTrace(); System.exit(1); }
@@ -296,16 +317,31 @@ public class LogMap {
     public static TupleSet tupleSetBounds_log2(Class range, boolean addNull, HashSet<?> modifiableObjects) {
 	TupleFactory factory = LogMap.ProblemFactory();
 	TupleSet rB = factory.noneOf(1);
-	ArrayList atoms = (ArrayList) LogMap.ClassAtoms().get(range);
+	ArrayList atoms = (ArrayList) ClassAtoms.get(range);
 	if (modifiableObjects == null)
 	    for (Object a : atoms)
 		rB.add(ProblemFactory.tuple(a));
-	else
+	else {
 	    for (Object a : atoms)
 		if (modifiableObjects.contains(a))
 		    rB.add(ProblemFactory.tuple(a));
+	    if (ClassNewInstAtoms.containsKey(range)) { 
+		ArrayList nAtoms = (ArrayList) ClassNewInstAtoms.get(range);
+		for (Object a : nAtoms)
+		    rB.add(ProblemFactory.tuple(a));
+	    }
+	}
 	if (addNull)
 	    rB.add(factory.tuple(LogMap.get1(null)));
+	return rB;
+    }
+
+    public static TupleSet tupleSetNewInstBounds_log2(Class range) {
+	TupleFactory factory = LogMap.ProblemFactory();
+	TupleSet rB = factory.noneOf(1);
+	ArrayList atoms = (ArrayList) ClassNewInstAtoms.get(range);
+	for (Object a : atoms)
+	    rB.add(ProblemFactory.tuple(a));
 	return rB;
     }
 
@@ -520,7 +556,6 @@ public class LogMap {
 	return new Log2Set(res);
     }
 
-
     public static boolean solve(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects, long startMethodTime) {
 
 	CharArrayWriter problem = new CharArrayWriter();
@@ -550,7 +585,7 @@ public class LogMap {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
 	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
-	    if (SolverOpt_debug2)
+	    if (SolverOpt_debug1)
 		System.out.println("rel " + r.getId() + " " + r.instVar() + " " + r.isUnknown() + " " + isModifiableRelation);
 	    
 	    String rBound = (!r.isUnknown() || isModifiableRelation) ? r.log(isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType) : instVarRelOld_log(r).log(null, null);
@@ -608,8 +643,9 @@ public class LogMap {
     }
 
     public static boolean solve2(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects, long startMethodTime) {
-	Formula funDefs = null;
-	ArrayList unknowns = new ArrayList<LogRelation>();
+	ProblemFunDefs2 = null;
+	ProblemUnknowns = new ArrayList<LogRelation>();
+	//ArrayList unknowns = new ArrayList<LogRelation>();
 	String spacer = "\n";
 	boolean isNonVoid = resultVarType != null;
 	Set probRels = new HashSet(ProblemRels.keySet());
@@ -623,25 +659,26 @@ public class LogMap {
 		System.out.println("modifiable fields: " + modifiableFields);
 	    if (modifiableObjects != null)
 		System.out.println("modifiable objs: " + modifiableObjects);
-	}
-	
+	}       
+
 	for (Object k : probRels) {
 	    LogRelation r =  (LogRelation) ProblemRels.get(k);
 	    boolean isModifiableRelation = r.isModifiable(modifiableFields);
 	    boolean isUnknown = r.isUnknown() && isModifiableRelation;
-	    if (SolverOpt_debug2)
+	    if (SolverOpt_debug1)
 		System.out.println("rel " + r.getId() + " " + r.instVar() + " " + r.isUnknown() + " " + isModifiableRelation);
 
 	    if (!r.isUnknown() || isModifiableRelation)
-		r.log2(r.getKodkodRel(), isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType);
+		r.log2(r.getKodkodRel(), isUnknown && modifiableObjects != null ? LogMap.get1s(modifiableObjects) : null, resultVarType, null);
 	    else 
-		instVarRelOld_log(r).log2(r.getKodkodRel(), null, null);
-	    if (isUnknown) {
-		unknowns.add(r);
-		funDefs = funDefs == null ? r.funDef_log2() : funDefs.and(r.funDef_log2());
-	    }
+		//instVarRelOld_log(r).log2(r.getKodkodRel(), null, null);
+		r.log2(r.getKodkodRel(), null, null, instVarRelOld_log(r));
+	    //if (isUnknown) {
+	    //unknowns.add(r);
+		//funDefs = funDefs == null ? r.funDef_log2() : funDefs.and(r.funDef_log2());
+	    //}
 	}
-	Formula finalFormula = funDefs == null ? (Formula) formula : Formula.compose(FormulaOperator.AND, funDefs, (Formula) formula);
+	Formula finalFormula = ProblemFunDefs2 == null ? (Formula) formula : Formula.compose(FormulaOperator.AND, ProblemFunDefs2, (Formula) formula);
 	//ch.append(csq);
 	//ch.flush();
 	if (SolverOpt_debug1) {
@@ -673,11 +710,19 @@ public class LogMap {
 	if (model==null)
 	    return false;
 	else {
-	    commitModel2(obj, unknowns, model);
+	    commitModel2(obj, ProblemUnknowns, model);
 	    return true;
 	}
     }
 
+    public static void addAsFunDef2(LogRelation r, Formula f) { 
+	ProblemFunDefs2 = ProblemFunDefs2 == null ? f : ProblemFunDefs2.and(f);
+	ProblemUnknowns.add(r);
+    }
+
+    public static void addAsUnknown(LogRelation r) { 
+	ProblemUnknowns.add(r);
+    }
 
     public static void addAsProblemRel(LogRelation r, String id) { 
 	ProblemRels.put(id,r); 
@@ -769,6 +814,7 @@ public class LogMap {
 
     public static void commitModel2(Object obj, ArrayList unknowns, Instance model) {
 	ArrayList val = null;
+	HashMap<Integer,Object> newInstances = new HashMap<Integer,Object>();
 	for (LogRelation u : (ArrayList<LogRelation>) unknowns) {
 	    Iterator<Tuple> iter = model.tuples(u.getKodkodRel()).iterator();
 	    if (u.isResultVar) {
@@ -835,8 +881,28 @@ public class LogMap {
 			Method m = c.getDeclaredMethod(u.instVar(), paramTypes); 
 			while (iter.hasNext()) {
 			    Tuple itm = iter.next();		
-			    args[0] = get2((Integer) itm.atom(1));
-			    m.invoke(get2((Integer) itm.atom(0)),args);
+			    Integer i0 = (Integer) itm.atom(0);
+			    Integer i1 = (Integer) itm.atom(1);
+			    Object o0 = get2(i0);
+			    Object o1 = get2(i1);
+			    if (o1 instanceof Class) { // obj is new. must instantiate it!
+				if (newInstances.containsKey(i1))
+				    o1 = newInstances.get(i1);
+				else { 
+				    o1 = instantiateNewObj((Class) o1);
+				    newInstances.put(i1, o1);
+				}
+			    } 
+			    args[0] = o1;
+			    if (o0 instanceof Class) { // obj is new. must instantiate it!
+				if (newInstances.containsKey(i0))
+				    o0 = newInstances.get(i0);
+				else { 
+				    o0 = instantiateNewObj((Class) o0);
+				    newInstances.put(i0, o0);
+				}
+			    } 
+			    m.invoke(o0,args);
 			}
 		    } catch (Exception e) {
 			    e.printStackTrace();
@@ -848,6 +914,18 @@ public class LogMap {
 	}
     }
     
+    public static Object instantiateNewObj(Class c) {
+	Object [] args = new Object[2];
+	args[0] = null;
+	args[1] = false;
+	Object o = null;
+	try {
+	    o = ((Constructor) ClassConstrs.get(c)).newInstance(args);
+	    //o = c.newInstance();
+	} catch (Exception e) { e.printStackTrace(); System.exit(1); }
+	return o;
+    }
+
     public static String shortClassName(Class c) { 
 	String longName = c.getName();
 	int pi = longName.lastIndexOf(46); // char '.'

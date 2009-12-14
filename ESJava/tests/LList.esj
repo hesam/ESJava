@@ -1,9 +1,12 @@
 import polyglot.ext.esj.primitives.*;
 import polyglot.ext.esj.tologic.*;
 import java.util.Random;
+import java.util.Iterator;
 
 public class LList ensures isAcyclic()  {
     
+    static int MAX_SIZE;
+
     spec public LLNode head;
 
     public void head(LLNode h) { this.head = h; }
@@ -74,17 +77,49 @@ public class LList ensures isAcyclic()  {
 	System.out.println(this);
     }
 
+    /*
+    public LLNode last() { 
+	LLNode c = head;
+	while (c.next != null)
+	    c = c.next;
+	return c;
+	}*/
+    spec public ESJSet<LLNode> last() { 
+	{ LLNode l : nodes() | l.next == null } 
+    }
+   
+    spec public ESJSet<LLNode> butLast() { 
+	{ LLNode l : nodes() | (l.next != null && l.next.next == null) }
+    }
+
+    spec public boolean addSpec(LLNode n) {
+	all LLNode l : butLast() | l.next == n 
+    }
 
     public void add(Integer v) {
+	System.out.println("adding " + v);
 	LLNode res = new LLNode(v);
+	add(res);
+    }
+
+    public void add(LLNode n) 
+	modifies fields LList.head, LLNode.next
+	modifies objects last()
+	ensures addSpec(n) {
+	//LLNode n = new LLNode(v);
+	assert nodes().size() != MAX_SIZE;
+
 	if (head == null) { 
-	    head = res;
+	    head = n;
 	} else {
-	    LLNode n = head;
-	    while (n.next != null)
-		n = n.next;
-	    n.next = res;
+	    LLNode c = head;
+	    while (c.next != null)
+		c = c.next;
+	    c.next = n;
 	}
+	//System.out.println(this);
+	//System.out.println(last());
+	//System.out.println(butLast());
     }
 
     public String toString() { 
@@ -100,7 +135,7 @@ public class LList ensures isAcyclic()  {
     
     public static void main(String[] args) {
 	
-	//LogMap.SolverOpt_debugLevel(1);
+	LogMap.SolverOpt_debugLevel(1);
 	//LogMap.SolverOpt_Kodkodi(true);
 	//LogMap.SolverOpt_Solver2(kodkod.engine.satlab.SATFactory.DefaultSAT4J);
 	//LogMap.SolverOpt_SymmetryBreaking(10);
@@ -109,8 +144,8 @@ public class LList ensures isAcyclic()  {
         LList tb = new LList();
 
 	Random rand = new Random(1111L);
-	int MAX_SIZE = 10;
-	ESJInteger.setBounds(0,MAX_SIZE-1);
+	MAX_SIZE = 5;
+	ESJInteger.setBounds(0,MAX_SIZE);
 
 	// create an array of the given size
 	int[] a = new int[MAX_SIZE];
@@ -140,13 +175,15 @@ public class LList ensures isAcyclic()  {
 
 	System.out.print("B=");
         System.out.println(tb);
+	/*
 	System.out.print("B sorted: ");
 	System.out.println(tb.isSorted());
 	System.out.print("permutations: ");
 	System.out.println(tb.isPermutationOf(tb));
-
 	System.out.println("sorting B...");
-	tb.bubbleSort();
+	*/
+	//tb.bubbleSort();
+	tb.add(MAX_SIZE);
 	System.out.print("B=");
         System.out.println(tb);
 
