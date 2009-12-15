@@ -120,7 +120,8 @@ public class GridBag2Constraints implements Cloneable, java.io.Serializable, pol
     }
     
     public kodkod.ast.Expression sum() {
-        return this.var_log2.expression();
+        return this.var_log2 ==
+                 null ? polyglot.ext.esj.tologic.LogMap.objToSingletonRelation_log2(this).sum() : this.var_log2.expression();
     }
     
     public void relationize() {

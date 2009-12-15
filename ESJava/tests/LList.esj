@@ -135,7 +135,7 @@ public class LList ensures isAcyclic()  {
     
     public static void main(String[] args) {
 	
-	LogMap.SolverOpt_debugLevel(1);
+	//LogMap.SolverOpt_debugLevel(1);
 	//LogMap.SolverOpt_Kodkodi(true);
 	//LogMap.SolverOpt_Solver2(kodkod.engine.satlab.SATFactory.DefaultSAT4J);
 	//LogMap.SolverOpt_SymmetryBreaking(10);
@@ -175,15 +175,15 @@ public class LList ensures isAcyclic()  {
 
 	System.out.print("B=");
         System.out.println(tb);
-	/*
+	
 	System.out.print("B sorted: ");
 	System.out.println(tb.isSorted());
 	System.out.print("permutations: ");
 	System.out.println(tb.isPermutationOf(tb));
 	System.out.println("sorting B...");
-	*/
-	//tb.bubbleSort();
-	tb.add(MAX_SIZE);
+
+	tb.bubbleSort();
+	//tb.add(MAX_SIZE);
 	System.out.print("B=");
         System.out.println(tb);
 

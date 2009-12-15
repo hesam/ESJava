@@ -244,7 +244,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    l.add(nf.Eval(null, nf.Call(null, nf.Field(null, nf.This(null), "old"), "relationize", emptyArgs)));
 	    lCtr+=2;
 	    for (Formal f : (List<Formal>) methodDecl.formals()) {
-		if (!(((AmbTypeNode) f.type()).name().equals("Integer"))) { //f.type().type().isReference() && !f.type().toString().equals("java.lang.Integer")) { //HACK FIXME		
+		if (f.type() instanceof AmbTypeNode && !(((AmbTypeNode) f.type()).name().equals("Integer"))) { //f.type().type().isReference() && !f.type().toString().equals("java.lang.Integer")) { //HACK FIXME		
 		    l.add(nf.Eval(null, nf.Call(null, nf.Field(null, nf.Local(null,f.name()), "old"), "relationize", emptyArgs)));
 		    lCtr++;
 		}

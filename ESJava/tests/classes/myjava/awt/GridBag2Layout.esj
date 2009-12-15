@@ -1712,7 +1712,7 @@ public class GridBag2Layout implements LayoutManager2,
 	    System.out.println("Before:");
 	    DumpLayoutInfo(layoutInfo);
 	    ArrangeGrid(parent);
-	    //ArrangeGridEnsured(parent);
+	    ArrangeGridEnsured(parent);
 	    System.out.println("after:");
 	    DumpLayoutInfo(layoutInfo);
 	    System.out.println(d);
@@ -1721,7 +1721,7 @@ public class GridBag2Layout implements LayoutManager2,
 	//System.out.println(getLayoutOrigin());
 	//System.out.println(location(100,5));
 	//System.out.println(getLayoutDimensions());
-	System.out.println(GetMinSize2(parent,layoutInfo));
+	//System.out.println(GetMinSize2(parent,layoutInfo));
 
     }
 
