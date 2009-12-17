@@ -129,9 +129,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 
 
 
-	Stmt fbCall = nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback2", args2));
+	Stmt fbCall = nf.Eval(null, nf.Call(null, null, methodDecl.name() + "_fallback", args2));
 
-	catchBody.add(isVoid ? fbCall : nf.JL5Return(null, nf.Call(null, null, methodDecl.name() + "_fallback2", args2)));
+	catchBody.add(isVoid ? fbCall : nf.JL5Return(null, nf.Call(null, null, methodDecl.name() + "_fallback", args2)));
 	Block catchBlock = nf.Block(null,catchBody);
 	catches.add(nf.JL5Catch(null, methodDecl.catchFormal(), catchBlock));
 	List mainBody = new TypedList(new LinkedList(), Stmt.class, false);
@@ -389,9 +389,9 @@ public class ESJJavaTranslator extends ContextVisitor {
 	    TypeNode logSetTN = nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogSet"));
 	    args.add(qListExpr);
 	    if (isComprehension) {
-		opM = "setComprehensionOp2";
+		opM = "setComprehensionOp";
 	    } else {
-		opM = "quantifyOp2";
+		opM = "quantifyOp";
 		args.add(nf.BooleanLit(null, quantKindIsaCount));
 		args.add(nf.StringLit(null, q.quantKind().toString()));
 	    }

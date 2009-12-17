@@ -119,7 +119,7 @@ public class LogSet extends LogObject {
     }
 
     // FIXME
-    public static Formula quantifyOp2(LogSet quantSet, boolean quantKindIsaOneOrLone, String quantKind, LogVar quantVar, Formula quantClause) {
+    public static Formula quantifyOp(LogSet quantSet, boolean quantKindIsaOneOrLone, String quantKind, LogVar quantVar, Formula quantClause) {
 	Expression quantSetExpr = quantSet.expression();
 	Variable v = (Variable) quantVar.expression();
 	if (quantSetExpr.arity() > 1)
@@ -128,7 +128,7 @@ public class LogSet extends LogObject {
 	return quantKind.equals("all") ? quantClause.forAll(varDecl) : quantClause.forSome(varDecl);
     }
 
-    public static LogSet setComprehensionOp2(LogSet quantSet, LogVar quantVar, Formula quantClause) {
+    public static LogSet setComprehensionOp(LogSet quantSet, LogVar quantVar, Formula quantClause) {
 	Expression quantSetExpr = quantSet.expression();
 	Variable v = (Variable) quantVar.expression();
 	return new LogSet(quantClause.comprehension(v.oneOf(quantSetExpr)));

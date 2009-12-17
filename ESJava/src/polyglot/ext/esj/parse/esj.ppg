@@ -193,7 +193,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    args3.add(modifiableObjects == null ? nf.NullLit(null) : modifiableObjects);
 	    args3.add(nf.Field(null,nf.This(null), "startMethodTime"));
 	    List l = new TypedList(new LinkedList(), Stmt.class, false);
-	    LocalDecl d2 = nf.LocalDecl(null, fl.classicFlags(), nf.CanonicalTypeNode(null, ts.Boolean()), "isSatisfiable", nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "solve2", args3));
+	    LocalDecl d2 = nf.LocalDecl(null, fl.classicFlags(), nf.CanonicalTypeNode(null, ts.Boolean()), "isSatisfiable", nf.Call(null, nf.CanonicalTypeNode(null, ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "solve", args3));
 	    l.add(nf.Eval(null,nf.Call(null, nf.Field(null, nf.CanonicalTypeNode(null, ts.typeForName("java.lang.System")),"out"), "println", args)));
 
 	    List gt = new TypedList(new LinkedList(), TypeNode.class, false);
@@ -245,7 +245,7 @@ parser Grm extends polyglot.ext.jl5.parse.Grm {:
 	    List frms = methodDecl.formals();
      	    newL.add(nf.ESJLogPredMethodDecl(null, fl,
 					   isVoid ? nf.CanonicalTypeNode(null,ts.Boolean()) : methodDecl.returnType(),
-					   methodDecl.name() + "_fallback2", 
+					   methodDecl.name() + "_fallback", 
 					   frms, 
 					   new TypedList(new LinkedList(), TypeNode.class, false), 						  
 					   nf.Block(null,l),
@@ -1448,6 +1448,12 @@ ensured_class_declaration ::=
 	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "initRelationize", new TypedList(new LinkedList(), Expr.class, false))));
 	      initEM.add(parser.nf.Eval(null, parser.nf.Call(null, null, "clone", parser.emptyArgs)));
 	      l.add(parser.nf.JL5MethodDecl(null, parser.emptyFlags, parser.nf.CanonicalTypeNode(null, parser.ts.Void()), "initEnsuredMethod", parser.emptyFormals, new TypedList(new LinkedList(), TypeNode.class, false), parser.nf.Block(null, initEM), new TypedList(new LinkedList(), TypeNode.class, false)));
+
+	      // mark class in LogMap
+	      List newCArgs = new TypedList(new LinkedList(), Expr.class, false);
+	      newCArgs.add(parser.nf.ClassLit(null, parser.nf.AmbTypeNode(null, parser.currClassName)));
+	      Block newCDefBody = parser.nf.Block(null, parser.nf.Eval(null,parser.nf.Call(null, parser.nf.CanonicalTypeNode(null, parser.ts.typeForName("polyglot.ext.esj.tologic.LogMap")), "newClassForLog", newCArgs)));
+	      l.add(parser.nf.Initializer(null, Flags.STATIC, newCDefBody));
 
 	      l.addAll(parser.defineESJExtraMethods(invariantMtdDecl));	
 	      l.addAll(y);

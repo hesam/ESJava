@@ -1,0 +1,22 @@
+
+public class IntSqrt {   
+
+    public IntSqrt() { super(); }
+
+    public pure Integer IntSqrt(Integer i) 
+	ensures result > 0 && 
+	        result <= i / result && 
+	        result + 1 >  i / (result + 1) {
+	return 1;
+    }	
+
+    public static void main(String[] args) {
+	boolean useSat4J = args.length > 0;
+	if (useSat4J)
+	    polyglot.ext.esj.tologic.LogMap.SolverOpt_Solver(kodkod.engine.satlab.SATFactory.DefaultSAT4J);
+
+	IntSqrt t1 = new IntSqrt();
+	System.out.println(t1.IntSqrt(10));
+    }
+
+}

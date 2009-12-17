@@ -36,8 +36,7 @@ import kodkod.engine.config.Options;
 
 public class LogMap {
 
-    static String SolverOpt_Solver = "\"MiniSat\"";
-    static SATFactory SolverOpt_Solver2 = SATFactory.MiniSat;
+    static SATFactory SolverOpt_Solver = SATFactory.MiniSat;   
     static String SolverOpt_Host = "localhost";
     static int SolverOpt_Port = 9128;
     static String SolverOpt_Flatten = "false";
@@ -90,8 +89,7 @@ public class LogMap {
 
     public static boolean SolverOpt_Kodkod() { return SolverOpt_Kodkod; }
     public static void SolverOpt_Kodkod(boolean b) { SolverOpt_Kodkod = b; }
-    public static void SolverOpt_Solver(String s) {  SolverOpt_Solver = s; }
-    public static void SolverOpt_Solver2(SATFactory s) { SolverOpt_Solver2 = s; }
+    public static void SolverOpt_Solver(SATFactory s) { SolverOpt_Solver = s; }
     public static void SolverOpt_SymmetryBreaking(int s) { SolverOpt_SymmetryBreaking = s; }
 
     public static void SolverOpt_debugLevel(int l) {
@@ -314,6 +312,30 @@ public class LogMap {
 	return rB;
     }
 
+    public static void newClassForLog(Class c) {
+	if (!(ClassAtoms.containsKey(c) || c == int.class || c == Integer.class)) {
+	    try {
+		ClassAtoms.put(c, new ArrayList());
+		if (c.isEnum()) {
+		    ArrayList es = new ArrayList();
+		    for (Object e : c.getEnumConstants())
+			es.add(e);
+		    Enums.put(c, es);
+		} else {
+		    Class[] parameterTypes = new Class[2];
+		    parameterTypes[0] = LogVar.class;
+		    parameterTypes[1] = boolean.class;
+		    ClassConstrs.put(c, c.getConstructor(parameterTypes));
+		}
+	    } catch (Exception e) { System.out.println(e); System.exit(1); }		
+	    if (!InstVarRels.containsKey(c)) {
+		InstVarRels.put(c, new HashMap());
+		InstVarRels2.put(c, new HashMap());
+	    }
+	}
+	
+    }
+
     public static String newInstVarRel(Class c, String instVar, Class domain, Class range, Class indexingDomain, boolean isaList, boolean isaMap, boolean isUnknown, boolean isResultVar) {
 	String k = instVar;
 	boolean isaCollection = isaList || isaMap;
@@ -321,45 +343,11 @@ public class LogMap {
 	if (!isUnknown) {
 	    k += "_old";
 	    // mark enum and class
-	    if (!(ClassAtoms.containsKey(range) || range == int.class || range == Integer.class)) {
-		try {
-		    ClassAtoms.put(range, new ArrayList());
-		    if (range.isEnum()) {
-			ArrayList es = new ArrayList();
-			for (Object e : range.getEnumConstants())
-			    es.add(e);
-			Enums.put(range, es);
-		    } else {
-			Class[] parameterTypes = new Class[2];
-			parameterTypes[0] = LogVar.class;
-			parameterTypes[1] = boolean.class;
-			ClassConstrs.put(range, range.getConstructor(parameterTypes));
-		    }
-		} catch (Exception e) { System.out.println(e); System.exit(1); }		
-	    }
-	    if (!ClassAtoms.containsKey(c)) {
-		ClassAtoms.put(c, new ArrayList());
-		Class[] parameterTypes = new Class[2];
-		parameterTypes[0] = LogVar.class;
-		parameterTypes[1] = boolean.class;
-		try {
-		    ClassConstrs.put(c, c.getConstructor(parameterTypes));
-		} catch (NoSuchMethodException e) { System.out.println(e); System.exit(1); }
-		if (!InstVarRels.containsKey(range)) {
-		    InstVarRels.put(range, new HashMap());
-		    InstVarRels2.put(range, new HashMap());
-	}
-
-	    }
+	    newClassForLog(range);	  
 	}
 	String rN = LogMap.shortClassName(c) + "." + k;
 	Relation r2 = isResultVar ? Relation.unary(rN) : Relation.nary(rN, relSize);
 	LogRelation r = new LogRelation(instVar, domain, range, indexingDomain, r2, isaList, isaMap, isUnknown, isResultVar);
-
-	if (!InstVarRels.containsKey(c)) {
-	    InstVarRels.put(c, new HashMap());
-	    InstVarRels2.put(c, new HashMap());
-	}
 	((HashMap) InstVarRels.get(c)).put(k,r);
 	((HashMap) InstVarRels2.get(c)).put(k,r2);
 	if (SolverOpt_debug1)
@@ -479,7 +467,7 @@ public class LogMap {
     }
 
 
-    public static boolean solve2(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects, long startMethodTime) {
+    public static boolean solve(Object obj, Object formula, Class resultVarType, HashMap<String,String> modifiableFields, HashSet<?> modifiableObjects, long startMethodTime) {
 	ProblemFunDefs2 = null;
 	ProblemUnknowns = new ArrayList<LogRelation>();
 	//ArrayList unknowns = new ArrayList<LogRelation>();
@@ -521,7 +509,7 @@ public class LogMap {
 	}
 
 	Solver solver = new Solver();
-	solver.options().setSolver(SolverOpt_Solver2);
+	solver.options().setSolver(SolverOpt_Solver);
 	solver.options().setBitwidth(ESJInteger.bitWidth());
 	solver.options().setFlatten(false);
 	solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
