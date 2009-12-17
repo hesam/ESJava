@@ -38,9 +38,7 @@
     <pathelement location="${lib}/java_cup.jar"/>
     <pathelement location="${lib}/JFlex.jar"/>
     <pathelement location="${lib}/ant.jar"/>
-    <pathelement location="${src}/polyglot/ext/esj/solver/kodkodi-1.1.4/jar/kodkod.jar"/>
-    <pathelement location="${src}/polyglot/ext/esj/solver/kodkodi-1.1.4/jar/kodkodi-esj.jar"/>
-    <pathelement location="${src}/polyglot/ext/esj/solver/kodkodi-1.1.4/jar/antlr-runtime-3.1.1.jar"/>
+    <pathelement location="${src}/polyglot/ext/esj/solver/kodkod/jar/kodkod.jar"/>
   </path>
 
   <target name="configure" description="Configure Polyglot"

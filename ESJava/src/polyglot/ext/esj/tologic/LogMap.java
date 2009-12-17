@@ -1,7 +1,6 @@
 package polyglot.ext.esj.tologic;
 
 import polyglot.ext.esj.primitives.*;
-//import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 
 import java.util.AbstractCollection;
 import java.util.HashMap;
@@ -18,11 +17,6 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.lang.reflect.Constructor;
-
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.Lexer;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.CommonTokenStream;
 
 import kodkod.ast.Formula;
 import kodkod.ast.operator.FormulaOperator;
