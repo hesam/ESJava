@@ -1,7 +1,7 @@
 package polyglot.ext.esj.tologic;
 
 import polyglot.ext.esj.primitives.*;
-import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
+//import polyglot.ext.esj.solver.Kodkodi.Kodkodi;
 
 import java.util.AbstractCollection;
 import java.util.HashMap;
@@ -50,7 +50,7 @@ public class LogMap {
     static int SolverOpt_SymmetryBreaking = 10;
     static int SolverOpt_debugLevel = 0;
     static boolean SolverOpt_debug1 = false, SolverOpt_debug2 = false;
-    static boolean SolverOpt_Kodkod = true, SolverOpt_Kodkodi = false;
+    static boolean SolverOpt_Kodkod = true;
 
     static HashMap JtoLog; // = new HashMap(); // Java Objs to Solver Atoms
     static HashMap JtoLog2; // = new HashMap(); // Java Objs to Kodkod (singleton) relations
@@ -95,9 +95,7 @@ public class LogMap {
     public static boolean SolverOpt_debug2() { return SolverOpt_debug2; }
 
     public static boolean SolverOpt_Kodkod() { return SolverOpt_Kodkod; }
-    public static boolean SolverOpt_Kodkodi() { return SolverOpt_Kodkodi; }
     public static void SolverOpt_Kodkod(boolean b) { SolverOpt_Kodkod = b; }
-    public static void SolverOpt_Kodkodi(boolean b) { SolverOpt_Kodkodi = b; }
     public static void SolverOpt_Solver(String s) {  SolverOpt_Solver = s; }
     public static void SolverOpt_Solver2(SATFactory s) { SolverOpt_Solver2 = s; }
     public static void SolverOpt_SymmetryBreaking(int s) { SolverOpt_SymmetryBreaking = s; }
