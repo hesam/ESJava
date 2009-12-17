@@ -21,10 +21,6 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					    TypeNode superType, List interfaces, ClassBody body, 
 					    List<ParamTypeNode> paramTypes);
 
-    ESJLogVarClassDecl ESJLogVarClassDecl(Position pos, FlagAnnotations fl, String name, 
-					  TypeNode superType, List interfaces, ClassBody body, 
-					  List<ParamTypeNode> paramTypes);
-
     ESJMethodDecl ESJMethodDecl(Position pos, FlagAnnotations flags,
 				TypeNode returnType, String name,
 				List formals,
@@ -40,14 +36,8 @@ public interface ESJNodeFactory extends JL5NodeFactory {
 					ESJQuantifyClauseExpr quantClauseExpr,
 					boolean isComprehension);
 
-    ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
-					      TypeNode returnType, String name,
-					      List formals, List throwTypes, Block body, 
-					      List paramTypes, List quantVarD, List quantVarD2, 
-					      boolean isPredicate, boolean isFallBack, 
-					      boolean isLogVar); 
 
-    ESJLog2PredMethodDecl ESJLog2PredMethodDecl(Position pos, FlagAnnotations flags,
+    ESJLogPredMethodDecl ESJLogPredMethodDecl(Position pos, FlagAnnotations flags,
 						TypeNode returnType, String name,
 						List formals, List throwTypes, Block body, 
 						List paramTypes, List quantVarD, List quantVarD2, 

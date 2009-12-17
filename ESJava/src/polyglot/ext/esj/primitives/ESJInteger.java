@@ -741,10 +741,8 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   // ESJInteger class init
 
   public LogVar var_log;
-  public Log2Var var_log2;
   public ESJInteger old;
   public LogVar var_log() { return var_log; }
-  public Log2Var var_log2() { return var_log2; }
   public Object result;
 
   static {
@@ -759,18 +757,9 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
 	      dontcare;
     }
 
-  public ESJInteger(Log2Var dontcare, boolean isQuantifyVar) {
-      super();
-      this.value = 0;
-      if (isQuantifyVar)
-	  this.var_log2 =
-	      dontcare;
-    }
-
   public void result(Object r) { this.result = r; }
 
   public boolean isQuantifyVar() { return this.var_log != null; }
-  public boolean isQuantifyVar2() { return this.var_log2 != null; }
 
   public ESJInteger old() { 
       return old; 
@@ -780,7 +769,7 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       return old == null;
   }
 
-  public IntExpression sum() { return var_log2.expression().sum(); }
+  public IntExpression sum() { return var_log.expression().sum(); }
 
   public void relationize() { 
 
@@ -811,28 +800,13 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   public static int log(int num) {
       return num - MIN_VALUE;
   }
+  
 
-  public static String log_str(int num) {
-      return "A" + (num - MIN_VALUE);
-  }
-
-  public String log_str() {
-      return ESJInteger.log_str(value);
-  }
-
-  public static LogSet atom_log(int num) {
-      return new LogSet("A" + log(num));
-  }
-
-  public static Expression atom_log2(int num) {
+  public static Expression atom_log(int num) {
       return IntConstant.constant(num).toExpression();
   }
 
   public static LogSet zeroTo_log(int n) {
-      return new LogSet("u" + n + (MIN_VALUE == 0 ? "" : "@" +  (-1 * MIN_VALUE)));
-  }
-
-  public static Log2Set zeroTo_log2(int n) {
 
       Bounds bounds = LogMap.ProblemBounds();
       TupleFactory factory = LogMap.ProblemFactory();
@@ -846,28 +820,16 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
       }
       bounds.boundExactly(Idxs, Idxs_upper);
 
-      return new Log2Set(Idxs, n);
+      return new LogSet(Idxs, n);
   }
+
 
   public static LogSet allInstances_log() {
-      return new LogSet("u" + BoundsSize());
+      return new LogSet(LogMap.ClassRels().get(Integer.class));
   }
 
-  public static Log2Set allInstances_log2() {
-      return new Log2Set(LogMap.ClassRels().get(Integer.class));
-  }
 
-  public static String intBounds_log() {
-	  CharArrayWriter res = new CharArrayWriter();
-	  res.append("int_bounds: " + MIN_VALUE + ": [");
-	  for(int i=MIN_VALUE;i<MAX_VALUE;i++) {
-	      res.append("{A" + log(i) + "},");
-	  }
-	  res.append("{A" + log(MAX_VALUE) + "}]");
-	  return res.toString();
-  }
-
-  public static void intBounds_log2() {
+  public static void intBounds_log() {
 
       Bounds bounds = LogMap.ProblemBounds();
       TupleFactory factory = LogMap.ProblemFactory();
@@ -903,129 +865,100 @@ public final class ESJInteger extends Number implements Comparable<ESJInteger>, 
   }
 
 
-  public LogFormula cmpOp(String kodkodiOp, String kodkodOp, LogObject o2) {
-      return new LogFormula("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.sumValue_log() + ")");
+  public LogIntAtom plus(IntExpression o2) {
+      return new LogIntAtom(var_log.expression().sum().plus(o2));
   }
 
-  public LogFormula cmpOp(String kodkodiOp, String kodkodOp, ESJObject o2) {
-      return new LogFormula("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")");
+  public LogIntAtom plus(ESJObject o2) {
+      return new LogIntAtom(var_log.expression().sum().plus(o2.var_log().expression().sum()));
   }
 
-  public LogFormula cmpOp(String kodkodiOp, String kodkodOp, Integer o2) {
-      LogInt nli = new LogInt(o2.toString());
-      return new LogFormula("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + nli.sumValue_log() + ")");
+  public LogIntAtom minus(IntExpression o2) {
+      return new LogIntAtom(var_log.expression().sum().minus(o2));
   }
 
-
-  //FIXME:
-  public LogIntComposite arithOp(String kodkodiOp, String kodkodOp, LogObject o2) {
-      return new LogIntComposite("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.sumValue_log() + ")");
-  }
-  /*
-  //FIXME:
-  public LogSet arithOp(String o, int o2) {
-      return new LogSet("(" + var_log.sumValue_log() + " " + o + " " + (new LogInt(o2 + "")).sumValue_log() + ")");
-      }*/
-
-  //FIXME:
-  public LogIntComposite arithOp(String kodkodiOp, String kodkodOp, ESJObject o2) {
-      return new LogIntComposite("(" + var_log.sumValue_log() + " " + kodkodiOp + " " + o2.var_log().sumValue_log() + ")");
+  public LogIntAtom minus(ESJObject o2) {
+      return new LogIntAtom(var_log.expression().sum().minus(o2.var_log().expression().sum()));
   }
 
-  public Log2IntAtom plus(IntExpression o2) {
-      return new Log2IntAtom(var_log2.expression().sum().plus(o2));
+  public LogIntAtom multiply(IntExpression o2) {
+      return new LogIntAtom(var_log.expression().sum().multiply(o2));
   }
 
-  public Log2IntAtom plus(ESJObject o2) {
-      return new Log2IntAtom(var_log2.expression().sum().plus(o2.var_log2().expression().sum()));
+  public LogIntAtom multiply(ESJObject o2) {
+      return new LogIntAtom(var_log.expression().sum().multiply(o2.var_log().expression().sum()));
   }
 
-  public Log2IntAtom minus(IntExpression o2) {
-      return new Log2IntAtom(var_log2.expression().sum().minus(o2));
+  public LogIntAtom divide(IntExpression o2) {
+      return new LogIntAtom(var_log.expression().sum().divide(o2));
   }
 
-  public Log2IntAtom minus(ESJObject o2) {
-      return new Log2IntAtom(var_log2.expression().sum().minus(o2.var_log2().expression().sum()));
-  }
-
-  public Log2IntAtom multiply(IntExpression o2) {
-      return new Log2IntAtom(var_log2.expression().sum().multiply(o2));
-  }
-
-  public Log2IntAtom multiply(ESJObject o2) {
-      return new Log2IntAtom(var_log2.expression().sum().multiply(o2.var_log2().expression().sum()));
-  }
-
-  public Log2IntAtom divide(IntExpression o2) {
-      return new Log2IntAtom(var_log2.expression().sum().divide(o2));
-  }
-
-  public Log2IntAtom divide(ESJObject o2) {
-      return new Log2IntAtom(var_log2.expression().sum().divide(o2.var_log2().expression().sum()));
+  public LogIntAtom divide(ESJObject o2) {
+      return new LogIntAtom(var_log.expression().sum().divide(o2.var_log().expression().sum()));
   }
 
   public Formula eq(IntExpression o2) {
-      return var_log2.expression().sum().eq(o2);
+      return var_log.expression().sum().eq(o2);
   }
 
   public Formula gt(IntExpression o2) {
-      return var_log2.expression().sum().gt(o2);
+      return var_log.expression().sum().gt(o2);
   }
 
   public Formula gte(IntExpression o2) {
-      return var_log2.expression().sum().gte(o2);
+      return var_log.expression().sum().gte(o2);
   }
 
   public Formula lt(IntExpression o2) {
-      return var_log2.expression().sum().lt(o2);
+      return var_log.expression().sum().lt(o2);
   }
 
   public Formula lte(IntExpression o2) {
-      return var_log2.expression().sum().lte(o2);
+      return var_log.expression().sum().lte(o2);
   }
 
   public Formula eq(ESJObject o2) {
-      return var_log2.expression().sum().eq(o2.var_log2().expression().sum());
+      return var_log.expression().sum().eq(o2.var_log().expression().sum());
   }
 
   public Formula gt(ESJObject o2) {
-      return var_log2.expression().sum().gt(o2.var_log2().expression().sum());
+      return var_log.expression().sum().gt(o2.var_log().expression().sum());
   }
 
   public Formula gte(ESJObject o2) {
-      return var_log2.expression().sum().gte(o2.var_log2().expression().sum());
+      return var_log.expression().sum().gte(o2.var_log().expression().sum());
   }
 
   public Formula lt(ESJObject o2) {
-      return var_log2.expression().sum().lt(o2.var_log2().expression().sum());
+      return var_log.expression().sum().lt(o2.var_log().expression().sum());
   }
 
   public Formula lte(ESJObject o2) {
-      return var_log2.expression().sum().lte(o2.var_log2().expression().sum());
+      return var_log.expression().sum().lte(o2.var_log().expression().sum());
   }
 
-  public Formula eq(Log2IntAtom o2) {
-      return var_log2.expression().sum().eq(o2.sum());
+  public Formula eq(LogIntAtom o2) {
+      return var_log.expression().sum().eq(o2.sum());
   }
 
-  public Formula gt(Log2IntAtom o2) {
-      return var_log2.expression().sum().gt(o2.sum());
+  public Formula gt(LogIntAtom o2) {
+      return var_log.expression().sum().gt(o2.sum());
   }
 
-  public Formula gte(Log2IntAtom o2) {
-      return var_log2.expression().sum().gte(o2.sum());
+  public Formula gte(LogIntAtom o2) {
+      return var_log.expression().sum().gte(o2.sum());
   }
 
-  public Formula lt(Log2IntAtom o2) {
-      return var_log2.expression().sum().lt(o2.sum());
+  public Formula lt(LogIntAtom o2) {
+      return var_log.expression().sum().lt(o2.sum());
   }
 
-  public Formula lte(Log2IntAtom o2) {
-      return var_log2.expression().sum().lte(o2.sum());
+  public Formula lte(LogIntAtom o2) {
+      return var_log.expression().sum().lte(o2.sum());
   }
 
   public Formula eq(Expression o2) {
-      return var_log2.expression().eq(o2);
+      return var_log.expression().eq(o2);
   }
 
   public static void main(String[] args) {

@@ -9,14 +9,9 @@ public class ESJSet<E> extends HashSet<E> {
 
     public Integer dontcare;
     int relationizerStep = 0;    
-    public LogVar var_log;
     public ESJSet<E> old;
     int clonerStep = 0;
     
-    public ESJSet(LogVar dontcare, boolean isQuantifyVar) {
-	super();
-    }
-
     public ESJSet() {
 	super();
     }

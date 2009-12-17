@@ -117,56 +117,44 @@ public class LogRelation extends Hashtable {
 	    modifiableFields.containsKey(domainName + "." + instVar);
     }
 
-    public String domain_log() { 
-	//return isaCollectionInstVar ? ESJInteger.zeroTo_log(fixedSize).string() : LogMap.bounds_log(domain, false, false).string();
-	return isaList ? ESJInteger.zeroTo_log(fixedSize).string() : LogMap.bounds_log(domain, false, false).string();
+
+    public Relation domain_log() { 
+	return isaList ? (Relation) ESJInteger.zeroTo_log(fixedSize).expression()  : 
+	    LogMap.bounds_log(domain, false);
     }
 
-    public Relation domain_log2() { 
-	return isaList ? (Relation) ESJInteger.zeroTo_log2(fixedSize).expression()  : 
-	    LogMap.bounds_log2(domain, false);
-    }
 
-    public String range_log(boolean isBoundsDef, Class resultVarType) { 
+    public Relation range_log(boolean isBoundsDef, Class resultVarType) { 
 	// have to add 'null' to the set of possible values for the ref field
-	return LogMap.bounds_log(isResultVar ? resultVarType : range, !isRangeEnum, isBoundsDef).string();
+	return LogMap.bounds_log(isResultVar ? resultVarType : range, isBoundsDef);
     }
 
-    public Relation range_log2(boolean isBoundsDef, Class resultVarType) { 
-	// have to add 'null' to the set of possible values for the ref field
-	return LogMap.bounds_log2(isResultVar ? resultVarType : range, isBoundsDef);
-    }
-
-    public Expression rangePlusNull_log2(boolean isBoundsDef, Class resultVarType, HashSet<?> modifiableObjects) { 
-	Expression res = range_log2(isBoundsDef, resultVarType);
+    public Expression rangePlusNull_log(boolean isBoundsDef, Class resultVarType, HashSet<?> modifiableObjects) { 
+	Expression res = range_log(isBoundsDef, resultVarType);
 	boolean addNull = !(isRangeEnum || range == Integer.class);
-	return addNull ? res.union(LogMap.null_log2()) : res;
+	return addNull ? res.union(LogMap.null_log()) : res;
     }
 
-    public String fullDomainRange_log(Class resultVarType) {
-	return (isResultVar ? "" : domain_log() + "->") + (isaCollectionInstVar ? listInstVarDomain_log() : "") + range_log(true, resultVarType);
-    }
-
-    public TupleSet fullDomainRange_log2(Class resultVarType, HashSet<?> modifiableObjects, TupleSet lower, boolean fromOld) {
+    public TupleSet fullDomainRange_log(Class resultVarType, HashSet<?> modifiableObjects, TupleSet lower, boolean fromOld) {
 	TupleSet dB;
 	if (fromOld) {
-	    dB = LogMap.tupleSetNewInstBounds_log2(domain);
+	    dB = LogMap.tupleSetNewInstBounds_log(domain);
 	    System.out.println("yep" + dB);
 	} else if (modifiableObjects == null) {
-	    Relation d = domain_log2();
+	    Relation d = domain_log();
 	    dB = LogMap.ProblemBounds.upperBound(d);
 	} else
-	    dB = LogMap.tupleSetBounds_log2(domain, false, modifiableObjects);
+	    dB = LogMap.tupleSetBounds_log(domain, false, modifiableObjects);
 	boolean addNull = !(isRangeEnum || range == Integer.class);
 	TupleSet rB;
 	if (addNull)
-	    rB = LogMap.tupleSetBounds_log2(range, true, null);
+	    rB = LogMap.tupleSetBounds_log(range, true, null);
 	else {
-	    Relation r = range_log2(true, resultVarType);
+	    Relation r = range_log(true, resultVarType);
 	    rB = LogMap.ProblemBounds.upperBound(r);
 	}
 	if (isaCollectionInstVar)
-	    dB = dB.product(LogMap.ProblemBounds.upperBound(listInstVarDomain_log2()));
+	    dB = dB.product(LogMap.ProblemBounds.upperBound(listInstVarDomain_log()));
 
 	TupleSet res = isResultVar ? rB : dB.product(rB);
 	if ((fromOld || modifiableObjects != null) && lower != null)
@@ -175,14 +163,9 @@ public class LogRelation extends Hashtable {
     }
 
     // FIXME
-    public String listInstVarDomain_log() {
-	return (fixedSize > 0 ? 
-		ESJInteger.zeroTo_log(fixedSize-1).string() : 
-		LogMap.bounds_log(indexingDomain, false, false).string()) + "->";
-    }
 
-    public Relation listInstVarDomain_log2() {
-	return LogMap.bounds_log2(indexingDomain, false);
+    public Relation listInstVarDomain_log() {
+	return LogMap.bounds_log(indexingDomain, false);
     }
    
     // FIXME
@@ -215,85 +198,8 @@ public class LogRelation extends Hashtable {
     }
     */
 
-    public String lowerBound_log(HashSet<?> modifiableObjects) {
-	// FIXME:
-	if (isResultVar)
-	    return null;
-	LogRelation r = this;
-	boolean filterObjects = false;
-	Set s = r.keySet();
-	if (isUnknown) {
-	    if (modifiableObjects == null)
-		return "{}";	    
-	    filterObjects = true;
-	    r = LogMap.instVarRelOld_log(this);
-	    HashSet sNew = new HashSet();
-	    for (Object k : r.keySet())
-		if (!modifiableObjects.contains(k))
-		    sNew.add(k);
-	    s = sNew;
-	}
-	CharArrayWriter o = new CharArrayWriter();
-	o.append("{");
-	Iterator itr = s.iterator();
-	for (int i=0;i<s.size()-1;i++) {
-	    Object k = itr.next();
-	    Object v = r.get(k);
-	    if (v instanceof ArrayList) {
-		if (isaCollectionInstVar) {
-		    ArrayList lv = (ArrayList) v;
-		    int lvs = lv.size() - 1;
-		    for(int c = 0; c <= lvs; c++)
-			o.append("[A" + k + ", A" + ESJInteger.log(c) + ", A" + lv.get(c) + "], ");
-		} else {
-		    for(Object e : (ArrayList) v)
-			o.append("[A" + k + ", A" + e + "], ");
-		}
-	    } else if (v instanceof HashMap) {
-		HashMap lv = (HashMap) v;
-		ArrayList keys = new ArrayList(lv.keySet());
-		int lvs = keys.size() - 1;
-		for(int c = 0; c <= lvs; c++) {
-		    Object theKey = keys.get(c);
-		    o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "], ");
-		}
-	    } else
-		o.append("[A" + k + ", A" + v + "], ");
-	}
-	if (itr.hasNext()) {
-	    Object k = itr.next();
-	    Object v = r.get(k);
-	    if (v instanceof ArrayList) {
-		ArrayList lv = (ArrayList) v;
-		int lvs = lv.size() - 1;
-		if (isaCollectionInstVar) {
-		    for(int c = 0; c < lvs; c++)
-			o.append("[A" + k + ", A" + ESJInteger.log(c) + ", A" + lv.get(c) + "],");
-		    o.append("[A" + k + ", A" + ESJInteger.log(lvs) + ", A" + lv.get(lvs) + "]");
-		} else {
-		    for(int c = 0; c < lvs; c++) {
-			o.append("[A" + k + ", A" + lv.get(c) + "],");
-		    }
-		    o.append("[A" + k + ", A" + lv.get(lvs) + "]");
-		}
-	    } else if (v instanceof HashMap) {
-		HashMap lv = (HashMap) v;
-		ArrayList keys = new ArrayList(lv.keySet());
-		int lvs = keys.size() - 1;
-		for(int c = 0; c < lvs; c++) {
-		    Object theKey = keys.get(c);
-		    o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "],");
-		}
-		Object theKey = keys.get(lvs);
-		o.append("[A" + k + ", A" + theKey + ", A" + lv.get(theKey) + "]");
-	    } else
-		o.append("[A" + k + ", A" + v + "]");
-	}
-	o.append("}");
-	return o.toString();
-    }
 
-    public TupleSet lowerBound_log2(HashSet<?> modifiableObjects) {
+    public TupleSet lowerBound_log(HashSet<?> modifiableObjects) {
 	// FIXME:
 	if (isResultVar)
 	    return null;
@@ -304,7 +210,7 @@ public class LogRelation extends Hashtable {
 	    if (modifiableObjects == null)
 		return null;	    
 	    filterObjects = true;
-	    r = LogMap.instVarRelOld_log(this);
+	    r = LogMap.instVarRelOld_log0(this);
 	    HashSet sNew = new HashSet();
 	    for (Object k : r.keySet())
 		if (!modifiableObjects.contains(k))
@@ -346,33 +252,20 @@ public class LogRelation extends Hashtable {
 	return lower;
     }
 
-    public String log(HashSet<?> modifiableObjects, Class resultVarType) {
-	String lower = lowerBound_log(modifiableObjects);
-	if (isUnknown()) {
-	    CharArrayWriter o = new CharArrayWriter();
-	    o.append("[" + lower + ", " + fullDomainRange_log(resultVarType) + "]");
-	    if (isaCollectionInstVar)
-		for (LogRelation s : (ArrayList<LogRelation>) subRels)
-		    o.append("\nbounds " + s.id() + ": [{}, " +  listInstVarDomain_log() + range_log(false, null) + "] ");
-	    return o.toString();
-	}
-	return lower;
-    }
-
-    public void log2(Relation kodkodRel, HashSet<?> modifiableObjects, Class resultVarType, LogRelation myOld) {
+    public void log(Relation kodkodRel, HashSet<?> modifiableObjects, Class resultVarType, LogRelation myOld) {
 	boolean fromOld = myOld != null; 
-	TupleSet lower = fromOld ? myOld.lowerBound_log2(null) : 
-	    lowerBound_log2(modifiableObjects);
+	TupleSet lower = fromOld ? myOld.lowerBound_log(null) : 
+	    lowerBound_log(modifiableObjects);
 	if (!isUnknown() || (fromOld && !LogMap.ClassNewInstAtoms.containsKey(domain))) {
 	    LogMap.ProblemBounds.boundExactly(kodkodRel, lower);
 	} else {
-	    TupleSet upper = fullDomainRange_log2(resultVarType, modifiableObjects, lower, fromOld);
+	    TupleSet upper = fullDomainRange_log(resultVarType, modifiableObjects, lower, fromOld);
 	    if (isaCollectionInstVar) {
-		Relation i = LogMap.bounds_log2(indexingDomain, false);
+		Relation i = LogMap.bounds_log(indexingDomain, false);
 		TupleSet iB = LogMap.ProblemBounds.upperBound(i);
 		boolean addNull = (range != Integer.class);
-		TupleSet rB = addNull ? LogMap.tupleSetBounds_log2(range, true, null) :
-		    LogMap.ProblemBounds.upperBound(LogMap.bounds_log2(range, false));
+		TupleSet rB = addNull ? LogMap.tupleSetBounds_log(range, true, null) :
+		    LogMap.ProblemBounds.upperBound(LogMap.bounds_log(range, false));
 		TupleSet sRelB = iB.product(rB);
 		for (LogRelation s : (ArrayList<LogRelation>) subRels)		    
 		    LogMap.ProblemBounds.bound(s.kodkodRel(), sRelB);
@@ -381,42 +274,26 @@ public class LogRelation extends Hashtable {
 		LogMap.ProblemBounds.bound(kodkodRel, upper);
 	    else
 		LogMap.ProblemBounds.bound(kodkodRel, lower, upper);
-	    LogMap.addAsFunDef2(this, funDef_log2());
+	    LogMap.addAsFunDef2(this, funDef_log());
 	} 
     }
 
-    public String funDef_log() {
-	if (isResultVar)
-	    return "one " + id() + " && ";
-	CharArrayWriter o = new CharArrayWriter();
-	String r = range_log(false, null);
-	if (isaCollectionInstVar) {
-	    String d = listInstVarDomain_log();	    
-	    for (LogRelation s : (ArrayList<LogRelation>) subRels)
-		o.append("FUNCTION(" + s.id() + ", " + d + "one " + r + ") && (" + 
-			 domain_log() + "." + id + " = " + s.id() + ") && ");
-	} else {
-	    String d = domain_log();	    
-	    o.append("FUNCTION(" + id + ", " + d + "->one " + r + ") && ");
-	}
-	return o.toString();
-    }
 
-    public Formula funDef_log2() {
+    public Formula funDef_log() {
 	if (isResultVar)
 	    return kodkodRel.one();
 	Formula f = null;
-	Expression r = rangePlusNull_log2(false, null, null);
+	Expression r = rangePlusNull_log(false, null, null);
 	if (isaCollectionInstVar) {
-	    Expression d = listInstVarDomain_log2();	    
-	    Expression dl = domain_log2().join(kodkodRel);	    
+	    Expression d = listInstVarDomain_log();	    
+	    Expression dl = domain_log().join(kodkodRel);	    
 	    for (LogRelation s : (ArrayList<LogRelation>) subRels) {
 		Relation sRel = s.kodkodRel();
 		Formula fNew = sRel.function(d,r).and(dl.eq(sRel));
 		f = f == null ? fNew : f.and(fNew);
 	    }
 	} else {
-	    Expression d = domain_log2();	    
+	    Expression d = domain_log();	    
 	    //o.append("FUNCTION(" + id + ", " + d + "->one " + r + ") && ");
 	    f = kodkodRel.function(d,r);
 	}
